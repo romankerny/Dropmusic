@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/DropMusic.iml" filepath="$PROJECT_DIR$/DropMusic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MulticastServer/MulticastServer.iml" filepath="$PROJECT_DIR$/MulticastServer/MulticastServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RMIClient/RMIClient.iml" filepath="$PROJECT_DIR$/RMIClient/RMIClient.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RMIServer/RMIServer.iml" filepath="$PROJECT_DIR$/RMIServer/RMIServer.iml" />
+    </modules>
+  </component>
+</project>
