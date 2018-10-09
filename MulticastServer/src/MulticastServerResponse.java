@@ -41,7 +41,7 @@ public class MulticastServerResponse extends Thread {
         String message = new String(packet.getData(), 0, packet.getLength());
         System.out.println(message);
 
-        if(message == "pila")
+        if(message.equals("pila"))
             sendResponseMulticast("cona");
 
 
