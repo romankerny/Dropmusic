@@ -31,7 +31,7 @@ public class MulticastServer extends Thread {
 
                 MulticastServerResponse threadToResolvePacket = new MulticastServerResponse(packet, PORT, MULTICAST_ADDRESS);
                 threadToResolvePacket.start();
-                
+
             }
         } catch (IOException e) {
             e.printStackTrace();

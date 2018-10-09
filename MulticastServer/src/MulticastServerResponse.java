@@ -33,7 +33,6 @@ public class MulticastServerResponse extends Thread {
             e.printStackTrace();
         }
 
-
     }
 
     public void run() {
@@ -41,6 +40,9 @@ public class MulticastServerResponse extends Thread {
         System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
         String message = new String(packet.getData(), 0, packet.getLength());
         System.out.println(message);
+
+        if(message == "pila")
+            sendResponseMulticast("cona");
 
 
     }
