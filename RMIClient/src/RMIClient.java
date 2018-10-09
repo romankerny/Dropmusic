@@ -1,16 +1,23 @@
+import java.rmi.RMISecurityManager;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 
-public class RMIClient implements RMIClientInterface {
+public class RMIClient extends UnicastRemoteObject implements Remote {
+
+    public RMIClient() throws RemoteException {
+        super();
+    }
 
     public static void main(String args[]) {
 
-		/* This might be necessary if you ever need to download classes:
-		System.getProperties().put("java.security.policy", "policy.all");
-		System.setSecurityManager(new RMISecurityManager());
-		*/
 
+		try {
+		    RMIServerInterface serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("rmiserver");
+        } catch (Exception e) {
+            System.out.println("Exception in RMIClient.java main(): "+ e);
+        }
 
     }
 }
