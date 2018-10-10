@@ -2,11 +2,13 @@ import java.net.MulticastSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.io.IOException;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MulticastServer extends Thread {
     private String MULTICAST_ADDRESS = "224.3.2.1";
     private int PORT = 5214;
     private MulticastSocket socket = null;
+    private CopyOnWriteArrayList<User> users;
 
     public static void main(String[] args) {
         MulticastServer server = new MulticastServer();

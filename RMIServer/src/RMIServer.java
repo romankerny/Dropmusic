@@ -81,6 +81,31 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             return resp;
     }
 
+    public String register(String name, String password) throws RemoteException {
+
+        String msg = "type | register; flag | S; username: | " + name + "; password: " + password; // protocol to register
+        boolean sair = false;
+        String rspToClient = null;
+
+        sendUDPDatagram(msg);
+
+        while(!sair) {
+            String rsp = receiveUDPDatagram();
+            String[] a_rsp =  rsp.split(" ");
+
+            if(a_rsp[2].equals("register") & a_rsp[5].equals('r') & a_rsp[8].equals(name) & a_rsp[11].equals(password)) {
+                rspToClient = "Registado com sucesso " + name + " " + password;
+                sair = true;
+            }
+        }
+
+        // type | register; flag | (s/r); username | name; password | pw; result (y/n)
+        // neste caso queremos receber p aceitar
+        // type | register; flag | r; username | name; password | pw; result y
+
+        return rspToClient;
+    }
+
 
     public void printOnServer(String s) throws RemoteException {
         System.out.println("> " + s);
