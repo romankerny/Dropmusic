@@ -24,11 +24,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         super();
     }
 
-    public String sendPila() throws RemoteException {
-        System.out.println("Print do lado do servidor");
+    public void sendUDPDatagram(String resp) {
 
         try {
-            String resp = "pila";
+
             MulticastSocket socket = new MulticastSocket();
             byte[] buffer = resp.getBytes();
 
@@ -40,9 +39,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             e.printStackTrace();
         }
 
-        // Receber
+    }
 
-        // wait for packets
+    public String receiveUDPDatagram() {
+
+        String message = null;
 
         try {
             MulticastSocket socket = new MulticastSocket(PORT);  // create socket and bind it
@@ -56,17 +57,28 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 socket.receive(packet);
 
                 System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
-                String message = new String(packet.getData(), 0, packet.getLength());
-                System.out.println(message);
+                message = new String(packet.getData(), 0, packet.getLength());
 
-                System.out.println(message);
-                return message;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return "merda";
+        return message;
+    }
+
+
+    public String sendPila() throws RemoteException {
+
+
+        sendUDPDatagram("pila");
+
+        String resp = receiveUDPDatagram();
+
+        if(!resp.equals("cona"))
+            return "merda";
+        else
+            return resp;
     }
 
 

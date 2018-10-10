@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.lang.invoke.MutableCallSite;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -20,11 +19,9 @@ public class MulticastServerResponse extends Thread {
 
     public void sendResponseMulticast(String resp) {
 
-
         try {
             MulticastSocket socket = new MulticastSocket();
             byte[] buffer = resp.getBytes();
-
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
             socket.send(packet);
