@@ -37,14 +37,17 @@ public class MulticastServerResponse extends Thread {
         // [0] [1]   [2]    [3] [4] [5]      [6]  [7] [8]   [9]   [10] [11] [12]
 
         // Verificar se existe
-        String name = tokens[8];
-        name.substring(0, name.length() - 1);
+
+        String name = tokens[8].substring(0, tokens[8].length() - 1);
+        String password = tokens[11].substring(0, tokens[11].length() - 1);
 
         System.out.println("Gonna register " + name +" with password ********");
 
         // Fazer registo e adicionar a BD o novo user
 
-        String rsp = "type | register; flag | r; username | "+name+"; password | "+tokens[11]+"; result | y";
+        System.out.println(name + password);
+
+        String rsp = "type | register; flag | r; username | "+name+"; password | "+password+"; result | y";
         sendResponseMulticast(rsp);
 
     }
