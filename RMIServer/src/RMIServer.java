@@ -93,7 +93,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram();
             String[] a_rsp =  rsp.split(" ");
 
-            if(a_rsp[2].equals("register") & a_rsp[5].equals('r') & a_rsp[8].equals(name) & a_rsp[11].equals(password)) {
+            if(a_rsp[2].equals("register;") & a_rsp[5].equals('r') & a_rsp[8].equals(name) & a_rsp[11].equals(password)) {
                 rspToClient = "Registado com sucesso " + name + " " + password;
                 sair = true;
             }

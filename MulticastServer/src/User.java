@@ -1,8 +1,11 @@
+import java.io.Serializable;
+import java.io.SerializablePermission;
+
 enum Status {
     ON, OFF;
 }
 
-public class User {
+public class User implements Serializable {
 
     public String name;
     private String password;
