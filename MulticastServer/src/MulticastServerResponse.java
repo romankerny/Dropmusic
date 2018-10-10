@@ -32,14 +32,24 @@ public class MulticastServerResponse extends Thread {
 
     }
 
+    public void register(String[] tokens) {
+
+    }
+
     public void run() {
 
         System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
         String message = new String(packet.getData(), 0, packet.getLength());
         System.out.println(message);
 
-        if(message.equals("pila"))
-            sendResponseMulticast("cona");
+        // Decode message
+        String[] tokens = message.split(" ");
+
+        if (tokens[2].equals("register")) {
+            register(tokens);
+        } else {
+            System.out.println("Invalid protocol message");
+        }
 
 
     }
