@@ -18,7 +18,7 @@ public class MulticastServer extends Thread {
 
 
     public void run() {
-
+        System.out.println("Musticast server ready");
         // wait for packets
 
         try {

@@ -51,15 +51,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             socket.joinGroup(group);
 
 
-            while (true) {
-                byte[] buffer = new byte[256];
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                socket.receive(packet);
+            byte[] buffer = new byte[256];
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+            socket.receive(packet);
 
-                System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
-                message = new String(packet.getData(), 0, packet.getLength());
+            System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
+            message = new String(packet.getData(), 0, packet.getLength());
 
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -83,7 +81,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public String register(String name, String password) throws RemoteException {
 
-        String msg = "type | register; flag | S; username: | " + name + "; password: " + password; // protocol to register
+        String msg = "type | register; flag | s; username | " + name + "; password | " + password+";"; // protocol to register
         boolean sair = false;
         String rspToClient = null;
 
@@ -93,7 +91,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram();
             String[] a_rsp =  rsp.split(" ");
 
-            if(a_rsp[2].equals("register;") & a_rsp[5].equals('r') & a_rsp[8].equals(name) & a_rsp[11].equals(password)) {
+            if(a_rsp[2].equals("register") & a_rsp[5].equals("r;") & a_rsp[8].equals(name) & a_rsp[11].equals(password)) {
                 rspToClient = "Registado com sucesso " + name + " " + password;
                 sair = true;
             }

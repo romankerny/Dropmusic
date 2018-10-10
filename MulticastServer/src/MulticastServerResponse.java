@@ -33,6 +33,19 @@ public class MulticastServerResponse extends Thread {
     }
 
     public void register(String[] tokens) {
+        // type | register; flag | (s/r); username | name; password | pw; result | (y/n)
+        // [0] [1]   [2]    [3] [4] [5]      [6]  [7] [8]   [9]   [10] [11] [12]
+
+        // Verificar se existe
+        String name = tokens[8];
+        name.substring(0, name.length() - 1);
+
+        System.out.println("Gonna register " + name +" with password ********");
+
+        // Fazer registo e adicionar a BD o novo user
+
+        String rsp = "type | register; flag | r; username | "+name+"; password | "+tokens[11]+"; result | y";
+        sendResponseMulticast(rsp);
 
     }
 
@@ -45,7 +58,7 @@ public class MulticastServerResponse extends Thread {
         // Decode message
         String[] tokens = message.split(" ");
 
-        if (tokens[2].equals("register")) {
+        if (tokens[2].equals("register;") && tokens[5].equals("s;")) {
             register(tokens);
         } else {
             System.out.println("Invalid protocol message");
