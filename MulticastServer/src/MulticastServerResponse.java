@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MulticastServerResponse extends Thread {
 
@@ -9,12 +10,14 @@ public class MulticastServerResponse extends Thread {
     private MulticastSocket sendSocket = null; // socket to respond to Multicast group
     private int PORT;
     private String MULTICAST_ADDRESS;
+    private CopyOnWriteArrayList<User> users;
 
-    MulticastServerResponse(DatagramPacket packet, int port, String ip) {
+    MulticastServerResponse(DatagramPacket packet, int port, String ip, CopyOnWriteArrayList<User> users) {
 
         this.packet = packet;
         PORT = port;
         MULTICAST_ADDRESS = ip;
+        this.users = users;
     }
 
     public void sendResponseMulticast(String resp) {
@@ -46,6 +49,12 @@ public class MulticastServerResponse extends Thread {
         // Fazer registo e adicionar a BD o novo user
 
         System.out.println(name + password);
+        this.users.add(new User(name, password));
+        System.out.println("Users: ");
+
+        for (User u : this.users)
+            System.out.println(u);
+
 
         String rsp = "type | register; flag | r; username | "+name+"; password | "+password+"; result | y";
         sendResponseMulticast(rsp);

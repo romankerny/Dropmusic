@@ -16,6 +16,7 @@ public class RMIClient extends UnicastRemoteObject implements Remote {
 		try {
 		    RMIServerInterface serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("rmiserver");
             System.out.println(serverInterface.register("diogo", "cona"));
+            System.out.println(serverInterface.register("roman", "conassa"));
         } catch (Exception e) {
             System.out.println("Exception in RMIClient.java main(): "+ e);
         }

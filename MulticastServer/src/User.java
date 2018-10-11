@@ -11,7 +11,14 @@ public class User implements Serializable {
     private String password;
     private Status status;
 
+    public User(String name, String password) {
+        this.name = name;
+        this.password = password;
+    }
 
+    public String toString() {
+        return "User: "+ name;
+    }
 
     // inbox de de notificações
     // musica secreta do user
