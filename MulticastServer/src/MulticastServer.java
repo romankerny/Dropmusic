@@ -9,7 +9,6 @@ public class MulticastServer extends Thread {
     private int PORT = 5214;
     private MulticastSocket socket = null;
     private CopyOnWriteArrayList<User> users = new CopyOnWriteArrayList<User>();
-    private CopyOnWriteArrayList<Artist> artists = null;
 
     public static void main(String[] args) {
         MulticastServer server = new MulticastServer();
@@ -19,33 +18,25 @@ public class MulticastServer extends Thread {
 
 
     public void run() {
-        System.out.println("Musticast server ready");
         // wait for packets
-
-        // criação de 1º membro admin : admin p usar operações de teste
-
-        User admin = new Editor("admin@admin.pt", "admin");
 
         try {
             socket = new MulticastSocket(PORT);  // create socket and bind it
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
 
+            System.out.println("Musticast server ready");
 
             while (true) {
                 byte[] buffer = new byte[256];
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
 
-                MulticastServerResponse threadToResolvePacket = new MulticastServerResponse(packet, PORT, MULTICAST_ADDRESS, users, artists);
+                System.out.println("Users size: "+users.size());
+
+                MulticastServerResponse threadToResolvePacket = new MulticastServerResponse(packet, PORT, MULTICAST_ADDRESS, users);
                 threadToResolvePacket.start();
 
-
-                if(users.size() > 1)
-                    System.out.println(users.size());
-                    System.out.println("-----");
-//                    System.out.println(users.get(0));
-                    System.out.println("++++");
 
             }
         } catch (IOException e) {
@@ -53,8 +44,6 @@ public class MulticastServer extends Thread {
         } finally {
             socket.close();
         }
-
-
     }
 
 }

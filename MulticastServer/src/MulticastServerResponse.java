@@ -11,16 +11,13 @@ public class MulticastServerResponse extends Thread {
     private int PORT;
     private String MULTICAST_ADDRESS;
     private CopyOnWriteArrayList<User> users;
-    private CopyOnWriteArrayList<Artist> artists;
 
-
-    MulticastServerResponse(DatagramPacket packet, int port, String ip, CopyOnWriteArrayList<User> users, CopyOnWriteArrayList<Artist> artists) {
+    MulticastServerResponse(DatagramPacket packet, int port, String ip, CopyOnWriteArrayList<User> users) {
 
         this.packet = packet;
         PORT = port;
         MULTICAST_ADDRESS = ip;
         this.users = users;
-        this.artists = artists;
     }
 
     public void sendResponseMulticast(String resp) {
@@ -44,18 +41,22 @@ public class MulticastServerResponse extends Thread {
 
         // Verificar se existe
 
-        String email = tokens[8].substring(0, tokens[8].length() - 1);
+        String name = tokens[8].substring(0, tokens[8].length() - 1);
         String password = tokens[11].substring(0, tokens[11].length() - 1);
 
-        System.out.println("Gonna register " + email +" with password ********");
+        System.out.println("Gonna register " + name +" with password ********");
 
-        // Creating user object and adding to the Server list
-        User newUser = new User(email, password);
-        this.users.add(newUser);
+        // Fazer registo e adicionar a BD o novo user
 
-        // System.out.println(email + password);
+        System.out.println(name + password);
+        this.users.add(new User(name, password));
+        System.out.println("Users: ");
 
-        String rsp = "type | register; flag | r; username | "+ email +"; password | "+password+"; result | y";
+        for (User u : this.users)
+            System.out.println(u);
+
+
+        String rsp = "type | register; flag | r; username | "+name+"; password | "+password+"; result | y";
         sendResponseMulticast(rsp);
 
     }
