@@ -7,18 +7,20 @@ enum Status {
 
 public class User implements Serializable {
 
-    public String name;
+    public String email;
     private String password;
     private Status status;
 
-    public User(String name, String password) {
-        this.name = name;
+    public User(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 
     public String toString() {
-        return "User: "+ name;
+        return "email: " + email + " ; password: " + password;
     }
+
+
 
     // inbox de de notificações
     // musica secreta do user

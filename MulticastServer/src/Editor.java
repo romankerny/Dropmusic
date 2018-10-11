@@ -1,5 +1,8 @@
 public class Editor extends User {
-    public Editor(String name, String password) {
-        super(name, password);
+
+    public Editor(String email, String password) {
+
+        super(email, password);
+
     }
 }
