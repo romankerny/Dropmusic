@@ -1,0 +1,20 @@
+type | register; flag | (s/r); username | name; password | pw; result (y/n)
+neste caso queremos receber p aceitar
+type | register; flag | r; username | name; password | pw; result y
+
+
+
+Register (1)
+    Request  -> flag | s; type | register; email | eeee; password | pppp;
+    Response -> flag | r; type | register; result | (y/n); email | eeee; password | pppp;
+
+Login (1)
+    Request  -> flag | s; type | login; email | eeee; password | pppp;
+    Response -> flag | r; type | login; resutl | (y/n); email | eeee; password | pppp;
+
+Pesquisa p/ nome do artista, o género musical ou o título do álbum (2)
+    Request  -> flag | s; type | search; param | (art, gen, tit); keyword | kkkk;
+    Response -> flag | r; type | search; param | (art, gen,tit); keyword | kkkk; item_count | n; iten_x_name | name; [...]
+
+
+
