@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MulticastServerResponse extends Thread {
 
@@ -9,12 +10,17 @@ public class MulticastServerResponse extends Thread {
     private MulticastSocket sendSocket = null; // socket to respond to Multicast group
     private int PORT;
     private String MULTICAST_ADDRESS;
+    private CopyOnWriteArrayList<User> users;
+    private CopyOnWriteArrayList<Artist> artists;
 
-    MulticastServerResponse(DatagramPacket packet, int port, String ip) {
+
+    MulticastServerResponse(DatagramPacket packet, int port, String ip, CopyOnWriteArrayList<User> users, CopyOnWriteArrayList<Artist> artists) {
 
         this.packet = packet;
         PORT = port;
         MULTICAST_ADDRESS = ip;
+        this.users = users;
+        this.artists = artists;
     }
 
     public void sendResponseMulticast(String resp) {
@@ -38,16 +44,18 @@ public class MulticastServerResponse extends Thread {
 
         // Verificar se existe
 
-        String name = tokens[8].substring(0, tokens[8].length() - 1);
+        String email = tokens[8].substring(0, tokens[8].length() - 1);
         String password = tokens[11].substring(0, tokens[11].length() - 1);
 
-        System.out.println("Gonna register " + name +" with password ********");
+        System.out.println("Gonna register " + email +" with password ********");
 
-        // Fazer registo e adicionar a BD o novo user
+        // Creating user object and adding to the Server list
+        User newUser = new User(email, password);
+        this.users.add(newUser);
 
-        System.out.println(name + password);
+        // System.out.println(email + password);
 
-        String rsp = "type | register; flag | r; username | "+name+"; password | "+password+"; result | y";
+        String rsp = "type | register; flag | r; username | "+ email +"; password | "+password+"; result | y";
         sendResponseMulticast(rsp);
 
     }
