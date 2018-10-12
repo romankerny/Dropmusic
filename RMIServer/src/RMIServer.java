@@ -10,11 +10,12 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface {
-    /**
-     *
-     */
+
+    private CopyOnWriteArrayList<RMIClientInterface> clients = new CopyOnWriteArrayList<RMIClientInterface>();
+
     private static final long serialVersionUID = 1L;
 
     private String MULTICAST_ADDRESS = "224.3.2.1";
@@ -22,6 +23,16 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public RMIServer() throws RemoteException {
         super();
+    }
+
+    public void subscribe(RMIClientInterface client) throws RemoteException {
+        if (this.clients.contains(client))
+            System.out.println("Client already subscribed");
+        else
+            this.clients.add(client);
+
+
+        client.printOnClient("Fuck you bitch you're subscribed now!");
     }
 
     public void sendUDPDatagram(String resp) {
