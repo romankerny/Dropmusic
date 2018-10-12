@@ -1,4 +1,12 @@
 public class Review {
-    private int    rating;
+
     private String critic;
+    private int    rating;
+
+    public Review(String critic, int rating) {
+        this.critic = critic;
+        this.rating = rating;
+    }
+
+
 }

@@ -40,6 +40,23 @@ public class MulticastServerResponse extends Thread {
 
     }
 
+    ArrayList cleanTokens(String msg) {
+
+        String[] tokens = msg.split(";");
+        String[] p;
+
+        ArrayList<String[]> rtArray = new ArrayList<String[]>();
+
+        for (int i = 0; i < tokens.length; i++) {
+            tokens[i] = tokens[i].replaceAll("\\s+", "");
+            p = tokens[i].split(Pattern.quote("|"));
+            rtArray.add(p);
+        }
+        return rtArray;
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
     public void register(String[] tokens) {
         // type | register; flag | (s/r); username | name; password | pw; result | (y/n)
         // [0] [1]   [2]    [3] [4] [5]      [6]  [7] [8]   [9]   [10] [11] [12]
@@ -86,12 +103,31 @@ public class MulticastServerResponse extends Thread {
 
     public void writeCritic(String albumName, String critic, String rate) {
 
+        // flag | s; type | critic; album | name; critic | blabla; rate | n;
+        // flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n;
 
+        Iterator iArtists = artists.iterator();
+        boolean exit = false;
+        String rsp = "flag | r; type | critic; result | n; album | " + albumName + "; critic | " + critic +"; + rate | " + rate + ";";
 
+        while (iArtists.hasNext() & !exit) {
+            Artist a = (Artist) iArtists.next();
+            Iterator iAlbum = a.Albuns.iterator();
 
+            while(iAlbum.hasNext()) {
+                Album al = (Album) iAlbum.next();
+                if(al.tittle.equals(albumName)) {
+                    al.addCritic(critic, Integer.parseInt(rate));
+                    rsp = "flag | r; type | critic; result | y; album | " + albumName + "; critic | " + critic +"; + rate | " + rate + ";";
+                    exit = true;
+                }
+            }
+        }
 
-
+        sendResponseMulticast(rsp);
     }
+
+
 
     public void getDetails(String type, String keyword) {
         // flag | s; type | details; param | (art, alb); keyword | kkkk;
@@ -132,20 +168,7 @@ public class MulticastServerResponse extends Thread {
 
     }
 
-    ArrayList cleanTokens(String msg) {
 
-        String[] tokens = msg.split(";");
-        String[] p;
-
-        ArrayList<String[]> rtArray = new ArrayList<String[]>();
-
-        for (int i = 0; i < tokens.length; i++) {
-            tokens[i] = tokens[i].replaceAll("\\s+", "");
-            p = tokens[i].split(Pattern.quote("|"));
-            rtArray.add(p);
-        }
-        return rtArray;
-    }
 
     public void run() {
 
