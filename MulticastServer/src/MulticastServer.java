@@ -9,6 +9,7 @@ public class MulticastServer extends Thread {
     private int PORT = 5214;
     private MulticastSocket socket = null;
     private CopyOnWriteArrayList<User> users = new CopyOnWriteArrayList<User>();
+    private CopyOnWriteArrayList<Artist> artists = new CopyOnWriteArrayList<Artist>();
 
     public static void main(String[] args) {
         MulticastServer server = new MulticastServer();
@@ -25,16 +26,15 @@ public class MulticastServer extends Thread {
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
 
-            System.out.println("Musticast server ready");
+            System.out.println("Multicast server ready");
 
             while (true) {
+
                 byte[] buffer = new byte[256];
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
 
-                System.out.println("Users size: "+users.size());
-
-                MulticastServerResponse threadToResolvePacket = new MulticastServerResponse(packet, PORT, MULTICAST_ADDRESS, users);
+                MulticastServerResponse threadToResolvePacket = new MulticastServerResponse(packet, PORT, MULTICAST_ADDRESS, users, artists);
                 threadToResolvePacket.start();
 
 

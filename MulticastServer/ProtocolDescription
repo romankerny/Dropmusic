@@ -4,17 +4,21 @@ type | register; flag | r; username | name; password | pw; result y
 
 
 
-Register (1)
+(1) Register & Login
     Request  -> flag | s; type | register; email | eeee; password | pppp;
     Response -> flag | r; type | register; result | (y/n); email | eeee; password | pppp;
 
-Login (1)
     Request  -> flag | s; type | login; email | eeee; password | pppp;
-    Response -> flag | r; type | login; resutl | (y/n); email | eeee; password | pppp;
+    Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp;
 
 Pesquisa p/ nome do artista, o género musical ou o título do álbum (2)
     Request  -> flag | s; type | search; param | (art, gen, tit); keyword | kkkk;
-    Response -> flag | r; type | search; param | (art, gen,tit); keyword | kkkk; item_count | n; iten_x_name | name; [...]
+    Response -> flag | r; type | search; param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...]
 
+(4) Consultar detalhes sobre álbum e artista
+    Request  -> flag | s; type | details; param | (art, alb); keyword | kkkk;
+    Response -> flag | r; type | details; param | (art, alb); keyword | kkkk; result | (y/n); response | blablablabla;
 
-
+(5) Escrever uma crítica a um álbum
+    Request  -> flag | s; type | critic; album | name; critic | blabla; rate | n;
+    Response -> flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n;

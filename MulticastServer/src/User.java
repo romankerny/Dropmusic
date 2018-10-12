@@ -8,13 +8,19 @@ enum Status {
 public class User implements Serializable {
 
     public String email;
-    private String password;
-    private Status status;
+    public String password;
+    public Status status;
 
     public User(String email, String password) {
         this.email = email;
         this.password = password;
+        this.status = Status.OFF;
     }
+
+    public void login() {
+        this.status = Status.ON;
+    }
+
 
     public String toString() {
         return "email: " + email + " ; password: " + password;

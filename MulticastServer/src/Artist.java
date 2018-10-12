@@ -2,6 +2,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Artist {
 
-    CopyOnWriteArrayList Album;
+    String               name;
+    CopyOnWriteArrayList Albuns;
+
+    public String toString() {
+        return name + " " + Albuns.toString();
+    }
 
 }
