@@ -66,15 +66,11 @@ public class MulticastServerResponse extends Thread {
 
 
 
-        System.out.println("Gonna register " + email + " with password " + password);
-
         // Fazer registo e adicionar a BD o novo user
         User s = new Regular(email, password);
         this.users.add(s);
-        System.out.println("Users: ");
 
-        for (User u : this.users)
-            System.out.println(u);
+        System.out.println("Gonna register " + email + " with password " + password);
 
 
         String rsp = "type | register; flag | r; username | " + email + "; password | " + password + "; result | y";
@@ -211,23 +207,17 @@ public class MulticastServerResponse extends Thread {
 
     public void run() {
 
-        System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
+
         String message = new String(packet.getData(), 0, packet.getLength());
-        System.out.println(message);
+        System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:" + message);
 
         // Decode message
-
         cleanTokens(message);
-
-
-
         ArrayList<String[]> cleanMessage = cleanTokens(message); // if the packet contains "flag | s" the server has to respond
-
-        System.out.println(cleanMessage.get(0)[1]);
 
 
         if (cleanMessage.get(0)[1].equals("s")) {
-            System.out.println("AQUI CARALHO");
+
 
             if (cleanMessage.get(1)[1].equals("register")) { //register **** FALTA ACTUALIZAR ISTO P NOVO PROTOCOLO
                 register(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);    // (email, password)

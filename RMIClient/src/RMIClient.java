@@ -4,6 +4,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import sun.audio.*;
 
 public class RMIClient extends UnicastRemoteObject implements RMIClientInterface {
 
@@ -54,7 +57,15 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
 
 
+            /*
+            tstes fudidos
+            InputStream test = new FileInputStream("/home/diogo/Desktop/spaceDiscoMusic.mp3");
 
+            AudioStream audioStream = new AudioStream(test);
+
+            // play the audio clip with the audioplayer class
+            AudioPlayer.player.start(audioStream);
+*/
 
 
 
