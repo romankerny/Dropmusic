@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
@@ -57,28 +58,26 @@ public class MulticastServerResponse extends Thread {
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    public void register(String[] tokens) {
+    public void register(String email, String password) {
         // type | register; flag | (s/r); username | name; password | pw; result | (y/n)
         // [0] [1]   [2]    [3] [4] [5]      [6]  [7] [8]   [9]   [10] [11] [12]
 
         // Verificar se existe
 
-        String name = tokens[8].substring(0, tokens[8].length() - 1);
-        String password = tokens[11].substring(0, tokens[11].length() - 1);
 
-        System.out.println("Gonna register " + name + " with password ********");
+
+        System.out.println("Gonna register " + email + " with password " + password);
 
         // Fazer registo e adicionar a BD o novo user
-
-        System.out.println(name + password);
-        this.users.add(new User(name, password));
+        User s = new Regular(email, password);
+        this.users.add(s);
         System.out.println("Users: ");
 
         for (User u : this.users)
             System.out.println(u);
 
 
-        String rsp = "type | register; flag | r; username | " + name + "; password | " + password + "; result | y";
+        String rsp = "type | register; flag | r; username | " + email + "; password | " + password + "; result | y";
         sendResponseMulticast(rsp);
 
     }
@@ -123,6 +122,46 @@ public class MulticastServerResponse extends Thread {
                 }
             }
         }
+
+        sendResponseMulticast(rsp);
+    }
+
+    public void turnIntoEditor(String user1, String user2) {
+
+        // flag | s; type | privilege; user1 | username; user2; username;
+        // flag | r; type | privilege; result | (y/n): user1 | username; user2 | username;
+
+        Iterator iUsers1 = users.iterator();
+        Iterator iUsers2 = users.iterator();
+        User regularUser = null;
+        String rsp = "flag | r; type | privilege; result | n: user1 | " + user1 +"; user2 | " + user2 + ";";
+
+        boolean exit = false;
+
+        while(iUsers2.hasNext() & !exit) {
+            regularUser = (User) iUsers2.next();
+            if(regularUser.email.equals(user2) & regularUser.getType().equals("regular")) {
+                exit = true;
+            }
+        }
+
+        exit = false;
+
+        while (iUsers1.hasNext() & !exit) {
+            User s = (User) iUsers1.next();
+            if (s.email.equals(user1) && s.getType().equals("editor")) {
+                    users.remove(regularUser);
+                    users.add(new Editor(regularUser.email, regularUser.password));
+                    exit = true;
+                    rsp = "flag | r; type | privilege; result | y: user1 | " + user1 +"; user2 | " + user2 + ";";
+            }
+        }
+
+
+        System.out.println("user " + regularUser.email + " is now " + regularUser.getType());
+
+        for(User s : users)
+            System.out.println(s.toString());
 
         sendResponseMulticast(rsp);
     }
@@ -179,25 +218,30 @@ public class MulticastServerResponse extends Thread {
         // Decode message
 
         cleanTokens(message);
-        String[] tokens = message.split(" ");
+
 
 
         ArrayList<String[]> cleanMessage = cleanTokens(message); // if the packet contains "flag | s" the server has to respond
 
+        System.out.println(cleanMessage.get(0)[1]);
+
+
         if (cleanMessage.get(0)[1].equals("s")) {
+            System.out.println("AQUI CARALHO");
 
-
-            if (tokens[2].equals("register;") && tokens[5].equals("s;")) { //register **** FALTA ACTUALIZAR ISTO P NOVO PROTOCOLO
-                register(tokens);
+            if (cleanMessage.get(1)[1].equals("register")) { //register **** FALTA ACTUALIZAR ISTO P NOVO PROTOCOLO
+                register(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);    // (email, password)
 
             } else if (cleanMessage.get(1)[1].equals("login")) { // login
                 login(cleanMessage.get(2)[1], cleanMessage.get(3)[1]); // (email, password)
 
             } else if (cleanMessage.get(1)[1].equals("details")) { // search Artist, Album, Music
                 getDetails(cleanMessage.get(2)[1], cleanMessage.get(3)[1]); // (Artist or Album, keyword)
-            } else if(cleanMessage.get(1)[1].equals("critic")) {
+            } else if(cleanMessage.get(1)[1].equals("critic")) {            // add critic to album
                 writeCritic(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1]); // (email, critic, rate)
-
+            } else if(cleanMessage.get(1)[1].equals("privilege")) {
+                System.out.println("para editor");
+                turnIntoEditor(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);       // (Editor, regularToEditor)
 
             } else {
                 System.out.println("Invalid protocol message");

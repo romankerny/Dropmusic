@@ -22,3 +22,7 @@ Pesquisa p/ nome do artista, o género musical ou o título do álbum (2)
 (5) Escrever uma crítica a um álbum
     Request  -> flag | s; type | critic; album | name; critic | blabla; rate | n;
     Response -> flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n;
+
+(6) Dar previlégios de editor a um utilizador
+    Request  -> flag | s; type | privilege; user1 | username; user2; username;
+    Response -> flag | r; type | privilege; result | (y/n): user1 | username; user2; username;

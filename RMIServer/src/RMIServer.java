@@ -31,7 +31,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         else
             this.clients.add(client);
 
-
         client.printOnClient("Fuck you bitch you're subscribed now!");
     }
 
@@ -66,7 +65,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet);
 
-
             message = new String(packet.getData(), 0, packet.getLength());
             System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:" + message);
 
@@ -93,12 +91,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public String register(String name, String password) throws RemoteException {
 
-        String msg = "type | register; flag | s; username | " + name + "; password | " + password+";"; // protocol to register
+        String msg = "flag | s; type | register; username | " + name + "; password | " + password+";"; // protocol to register
         boolean sair = false;
         String rspToClient = null;
 
         sendUDPDatagram(msg);
-        System.out.println("aqui");
 
         while(!sair) {
             String rsp = receiveUDPDatagram();
@@ -132,9 +129,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             Registry r = LocateRegistry.createRegistry(7000);
             r.rebind("rmiserver", h);
             System.out.println("RMIServer ready.");
-
-
-
 
 
 

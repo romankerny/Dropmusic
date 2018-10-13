@@ -21,9 +21,16 @@ public class User implements Serializable {
         this.status = Status.ON;
     }
 
+    public void logout() {
+        this.status = Status.OFF;
+    }
+
+    public String getType() {
+        return "user";
+    }
 
     public String toString() {
-        return "email: " + email + " ; password: " + password;
+        return "email: " + email + " ; password: " + password + " " + getType();
     }
 
 

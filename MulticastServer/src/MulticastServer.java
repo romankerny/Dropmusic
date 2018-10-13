@@ -28,6 +28,9 @@ public class MulticastServer extends Thread {
 
             System.out.println("Multicast server ready");
 
+            Editor admin = new Editor("admin", "admin");
+            users.add(admin);
+
             while (true) {
 
                 byte[] buffer = new byte[256];
