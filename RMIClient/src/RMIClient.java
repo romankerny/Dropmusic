@@ -3,6 +3,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Scanner;
 
 public class RMIClient extends UnicastRemoteObject implements RMIClientInterface {
 
@@ -16,12 +17,45 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
     public static void main(String args[]) {
 
+        Scanner scan = new Scanner(System.in);
+        String input, email, password;
+        boolean exit = false, go = false;
 
 		try {
 		    RMIServerInterface serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("rmiserver");
 
 		    // Need to send interface to server first
 		    serverInterface.subscribe((RMIClientInterface) new RMIClient());
+
+
+
+
+            System.out.println("1. Get an account\n2. Login");
+            while(!exit) {
+                input = scan.nextLine();
+                if(input.equals("1")){
+                    System.out.println("Email: ");
+                    email = scan.nextLine();
+                    System.out.println("Password: ");
+                    password = scan.nextLine();
+                    serverInterface.register(email, password);
+                    go = true;
+
+                } else if(input.equals("2") | go) {
+                    System.out.println("Email: ");
+                    email = scan.nextLine();
+                    System.out.println("Password: ");
+                    password = scan.nextLine();
+                    // serverInterface.login(email, password);
+                    exit = true;
+                }
+            }
+
+
+
+
+
+
 
 
             System.out.println(serverInterface.register("diogo", "cona"));
