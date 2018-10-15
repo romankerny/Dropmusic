@@ -8,9 +8,12 @@ public class Album {
     public          int     nCritics;                   // to count n
     public          String  details;
     public          CopyOnWriteArrayList<User> notifyIfEdited;
-
-
     private CopyOnWriteArrayList<Review> reviews;
+
+    Album(String tittle, String description) {
+        this.tittle = tittle;
+        this.description = description;
+    }
 
 
     public void addCritic(String critica, int rate, String email) {
@@ -31,7 +34,17 @@ public class Album {
     }
 
     public String toString() {
-        return tittle + " " + description + " " + ratingC;
+
+        String rsp;
+        rsp = "Tittle: " + tittle + "\n" + "Description: " + description + "\n" + "Track-list: ";
+        for (Music m : this.tracks)
+            rsp += m.title + " ";
+        rsp += "Critics: ";
+        for (Review r : reviews) {
+            rsp += r.toString();
+        }
+
+        return rsp;
     }
 
 }

@@ -74,16 +74,14 @@ public class MulticastServerResponse extends Thread {
         }
 
         if(found == true) {
-            rsp = "type | register; flag | r; username | " + email + "; password | " + password + "; result | y";
+            rsp = "type | register; flag | r; username | " + email + "; password | " + password + "; result | n";
+            System.out.println("User " + email + " already has an acc.");
         } else {
 
             // Fazer registo e adicionar a BD o novo user
             User s = new Regular(email, password);
             this.users.add(s);
-
             System.out.println("Gonna register " + email + " with password " + password);
-
-
             rsp = "type | register; flag | r; username | " + email + "; password | " + password + "; result | y";
             sendResponseMulticast(rsp);
         }

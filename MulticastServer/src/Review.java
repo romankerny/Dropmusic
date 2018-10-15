@@ -10,5 +10,9 @@ public class Review {
         this.email = email;
     }
 
+    public String toString() {
+        return "email: " + email + " rating: " + rating + " critic: " + critic;
+    }
+
 
 }
