@@ -115,12 +115,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         // [PROTOCOL] flag | s; type | login; email | eeee; password | pppp;
 
         String msg = "flag | s; type | login; email | "+email+"; password | "+password+";";
-        boolean sair = false;
+        boolean exit = false;
         String rspToClient = "Failed to login";
 
         sendUDPDatagram(msg);
 
-        while(!sair) {
+        while(!exit) {
             String rsp = receiveUDPDatagram();
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
@@ -131,7 +131,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                         this.clients.add(client);
 
-                        sair = true;
+                        exit = true;
                     }
                 } else {
                     // result | n
@@ -140,6 +140,35 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             }
         }
 
+        return rspToClient;
+    }
+
+    public String rateAlbum(int stars, String albumName, String review, String email) throws RemoteException {
+        //   Request  -> flag | s; type | critic; album | name; critic | blabla; rate | n; email | eeee;
+        //   Response -> flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n; email | eeee;
+        String msg = "flag | s; type | critic; album | "+albumName+"; critic | "+review+"; rate | "+stars+"; email | "+email+";";
+        boolean exit = false;
+        String rspToClient = "Failed to rate "+albumName;
+
+        sendUDPDatagram(msg);
+
+        while(!exit) {
+            String rsp = receiveUDPDatagram();
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("critic")) {
+                System.out.println(cleanMessage.get(2)[1]);
+                if (cleanMessage.get(2)[1].equals("y")) {
+                    System.out.println("Im in");
+                    rspToClient = "Edited sucessfully";
+                    exit = true;
+                } else {
+                    rspToClient = "Failed to edit";
+                    exit = true;
+                }
+            }
+        }
+        System.out.println(rspToClient);
         return rspToClient;
     }
 

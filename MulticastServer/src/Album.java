@@ -13,6 +13,8 @@ public class Album {
     Album(String tittle, String description) {
         this.tittle = tittle;
         this.description = description;
+        this.reviews = new CopyOnWriteArrayList<Review>();
+        this.notifyIfEdited = new CopyOnWriteArrayList<User>();
     }
 
 

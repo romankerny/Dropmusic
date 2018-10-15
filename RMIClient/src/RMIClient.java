@@ -10,7 +10,7 @@ import sun.audio.*;
 
 public class RMIClient extends UnicastRemoteObject implements RMIClientInterface {
 
-    private static String email;
+    private static String email = "";
 
     public RMIClient() throws RemoteException {
         super();
@@ -34,11 +34,10 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- register [email] [password]\n"+
                     "- login [email] [password]\n"+
                     "- rate [album name] [1-5] [review] (max 300 chars)";
-        String input, email, password;
 
 		try {
 		    RMIServerInterface serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("rmiserver");
-
+            System.out.println(help);
             while(!exit) {
                 userInput = sc.nextLine();
                 tokens = userInput.split(" ");
@@ -60,12 +59,13 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                 } else if (tokens[0].equals("rate")) {
                     if (tokens.length >= 4) {
                         int stars = Integer.parseInt(tokens[2]);
-                        String review = "";
-                        if (stars < 5 && stars > 1) {
+                        if (stars <= 5 && stars >= 1) {
                             // Concatenar review
+                            String review = "";
                             for (int i = 3; i < tokens.length; i++)
                                 review = review + tokens[i] + " " ;
 
+                            System.out.println(serverInterface.rateAlbum(stars, tokens[1], review, email));
                         } else {
                             System.out.println("Rating must be between 1 and 5");
                         }

@@ -112,17 +112,17 @@ public class MulticastServerResponse extends Thread {
 
         Iterator iArtists = artists.iterator();
         boolean exit = false;
-        String rsp = "flag | r; type | critic; result | n; album | " + albumName + "; critic | " + critic +"; + rate | " + rate + ";";
+        String rsp = "flag | r; type | critic; result | n; album | " + albumName + "; critic | " + critic +"; rate | " + rate + ";";
 
         while (iArtists.hasNext() & !exit) {
             Artist a = (Artist) iArtists.next();
-            Iterator iAlbum = a.Albuns.iterator();
+            Iterator iAlbum = a.albums.iterator();
 
             while(iAlbum.hasNext()) {
                 Album al = (Album) iAlbum.next();
                 if(al.tittle.equals(albumName)) {
                     al.addCritic(critic, Integer.parseInt(rate), email);
-                    rsp = "flag | r; type | critic; result | y; album | " + albumName + "; critic | " + critic +"; + rate | " + rate + ";";
+                    rsp = "flag | r; type | critic; result | y; album | " + albumName + "; critic | " + critic +"; rate | " + rate + ";";
                     exit = true;
                 }
             }
@@ -194,7 +194,7 @@ public class MulticastServerResponse extends Thread {
                     exit = true;
                     result = 'y';
                 } else if(type.equals("alb")){
-                    Iterator iAlbum = a.Albuns.iterator();
+                    Iterator iAlbum = a.albums.iterator();
                     while(iAlbum.hasNext()) {
                         Album al = (Album) iAlbum.next();
                         if (al.tittle.equals(keyword)) {
@@ -244,7 +244,7 @@ public class MulticastServerResponse extends Thread {
 
             while (iArtists.hasNext()) {
                 Artist a = (Artist) iArtists.next();
-                Iterator iAlbum = a.Albuns.iterator();
+                Iterator iAlbum = a.albums.iterator();
                 while(iAlbum.hasNext()) {
                     Album alb = (Album) iAlbum.next();
                     if(alb.tittle.equals(keyword)) {

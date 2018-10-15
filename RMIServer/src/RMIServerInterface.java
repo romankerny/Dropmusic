@@ -7,4 +7,7 @@ public interface RMIServerInterface extends Remote {
     // 1.
     public String  register(String name, String password) throws RemoteException;
     public String login(String email, String password, RMIClientInterface client) throws RemoteException;
+
+    // 5.
+    public String rateAlbum(int stars, String albumName, String review, String email) throws RemoteException;
 }
