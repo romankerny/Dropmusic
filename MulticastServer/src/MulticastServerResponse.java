@@ -212,7 +212,6 @@ public class MulticastServerResponse extends Thread {
         System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:" + message);
 
         // Decode message
-        cleanTokens(message);
         ArrayList<String[]> cleanMessage = cleanTokens(message); // if the packet contains "flag | s" the server has to respond
 
 

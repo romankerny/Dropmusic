@@ -3,4 +3,5 @@ import java.rmi.RemoteException;
 
 public interface RMIClientInterface extends Remote {
     public void printOnClient(String msg) throws RemoteException;
+    public String getEmail() throws RemoteException;
 }

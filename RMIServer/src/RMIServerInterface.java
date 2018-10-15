@@ -3,7 +3,8 @@ import java.rmi.RemoteException;
 
 public interface RMIServerInterface extends Remote {
     public void    printOnServer(String s) throws RemoteException;
-    public String  sendPila() throws java.rmi.RemoteException;
+
+    // 1.
     public String  register(String name, String password) throws RemoteException;
-    public void    subscribe(RMIClientInterface client) throws RemoteException;
+    public String login(String email, String password, RMIClientInterface client) throws RemoteException;
 }

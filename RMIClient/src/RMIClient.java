@@ -10,6 +10,8 @@ import sun.audio.*;
 
 public class RMIClient extends UnicastRemoteObject implements RMIClientInterface {
 
+    private static String email;
+
     public RMIClient() throws RemoteException {
         super();
     }
@@ -18,47 +20,69 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         System.out.println(msg);
     }
 
+    public String getEmail() throws RemoteException {
+        return email;
+    }
+
     public static void main(String args[]) {
 
-        Scanner scan = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
+        String userInput = "";
+        String[] tokens;
+        boolean exit = false;
+        String help = "Commands:\n"+
+                    "- register [email] [password]\n"+
+                    "- login [email] [password]\n"+
+                    "- rate [album name] [1-5] [review] (max 300 chars)";
         String input, email, password;
-        boolean exit = false, go = false;
 
 		try {
 		    RMIServerInterface serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("rmiserver");
 
-		    // Need to send interface to server first
-		    serverInterface.subscribe((RMIClientInterface) new RMIClient());
-
-
-
-
-            System.out.println("1. Get an account\n2. Login");
             while(!exit) {
-                input = scan.nextLine();
-                if(input.equals("1")){
-                    System.out.println("Email: ");
-                    email = scan.nextLine();
-                    System.out.println("Password: ");
-                    password = scan.nextLine();
-                    serverInterface.register(email, password);
-                    go = true;
+                userInput = sc.nextLine();
+                tokens = userInput.split(" ");
 
-                } else if(input.equals("2") | go) {
-                    System.out.println("Email: ");
-                    email = scan.nextLine();
-                    System.out.println("Password: ");
-                    password = scan.nextLine();
-                    // serverInterface.login(email, password);
-                    exit = true;
+                if (tokens[0].equals("register")) {
+                    if (tokens.length == 3) {
+                        System.out.println(serverInterface.register(tokens[1], tokens[2]));
+                    } else {
+                        System.out.println("Usage: register [email] [password]");
+
+                    }
+                } else if (tokens[0].equals("login")) {
+                    if (tokens.length == 3) {
+                        System.out.println(serverInterface.login(tokens[1], tokens[2], new RMIClient()));
+                        email = tokens[2];
+                    } else {
+                        System.out.println("Usage: login [email] [password]");
+                    }
+                } else if (tokens[0].equals("rate")) {
+                    if (tokens.length >= 4) {
+                        int stars = Integer.parseInt(tokens[2]);
+                        String review = "";
+                        if (stars < 5 && stars > 1) {
+                            // Concatenar review
+                            for (int i = 3; i < tokens.length; i++)
+                                review = review + tokens[i] + " " ;
+
+                        } else {
+                            System.out.println("Rating must be between 1 and 5");
+                        }
+                    } else {
+                        System.out.println("Usage: rate [1-5] [review] (max 300 chars)");
+                    }
+
+                } else if (tokens[0].equals("help")) {
+                    System.out.println(help);
+                } else {
+                    System.out.println("Invalid command. Type 'help' for more info");
                 }
             }
 
 
-
-
             /*
-            tstes fudidos
+            testes fudidos
             InputStream test = new FileInputStream("/home/diogo/Desktop/spaceDiscoMusic.mp3");
 
             AudioStream audioStream = new AudioStream(test);
@@ -66,11 +90,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
             // play the audio clip with the audioplayer class
             AudioPlayer.player.start(audioStream);
 */
-
-
-
-            System.out.println(serverInterface.register("diogo", "cona"));
-            System.out.println(serverInterface.register("roman", "conassa"));
         } catch (Exception e) {
             System.out.println("Exception in RMIClient.java main(): "+ e);
         }

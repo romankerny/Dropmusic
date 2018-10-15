@@ -10,7 +10,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Pattern;
 
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface {
 
@@ -25,14 +27,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         super();
     }
 
-    public void subscribe(RMIClientInterface client) throws RemoteException {
-        if (this.clients.contains(client))
-            System.out.println("Client already subscribed");
-        else
-            this.clients.add(client);
-
-        client.printOnClient("Fuck you bitch you're subscribed now!");
-    }
 
     public void sendUDPDatagram(String resp) {
 
@@ -75,18 +69,19 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return message;
     }
 
+    ArrayList<String[]> cleanTokens(String msg) {
 
-    public String sendPila() throws RemoteException {
+        String[] tokens = msg.split(";");
+        String[] p;
 
+        ArrayList<String[]> rtArray = new ArrayList<String[]>();
 
-        sendUDPDatagram("pila");
-
-        String resp = receiveUDPDatagram();
-
-        if(!resp.equals("cona"))
-            return "merda";
-        else
-            return resp;
+        for (int i = 0; i < tokens.length; i++) {
+            tokens[i] = tokens[i].replaceAll("\\s+", "");
+            p = tokens[i].split(Pattern.quote("|"));
+            rtArray.add(p);
+        }
+        return rtArray;
     }
 
     public String register(String name, String password) throws RemoteException {
@@ -110,6 +105,40 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         // type | register; flag | (s/r); username | name; password | pw; result (y/n)
         // neste caso queremos receber p aceitar
         // type | register; flag | r; username | name; password | pw; result y
+
+        return rspToClient;
+    }
+
+    public String login(String email, String password, RMIClientInterface client) throws RemoteException {
+
+        //
+        // [PROTOCOL] flag | s; type | login; email | eeee; password | pppp;
+
+        String msg = "flag | s; type | login; email | "+email+"; password | "+password+";";
+        boolean sair = false;
+        String rspToClient = "Failed to login";
+
+        sendUDPDatagram(msg);
+
+        while(!sair) {
+            String rsp = receiveUDPDatagram();
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("login")) {
+                if (cleanMessage.get(2)[1].equals("y")) {
+                    if (cleanMessage.get(3)[1].equals(email) && cleanMessage.get(4)[1].equals(password)) {
+                        rspToClient = "Logado com sucesso " + email + " " + password;
+
+                        this.clients.add(client);
+
+                        sair = true;
+                    }
+                } else {
+                    // result | n
+                    return rspToClient;
+                }
+            }
+        }
 
         return rspToClient;
     }
