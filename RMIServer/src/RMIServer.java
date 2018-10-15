@@ -21,7 +21,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     private static final long serialVersionUID = 1L;
 
     private String MULTICAST_ADDRESS = "224.3.2.1";
-    private int SEND_PORT = 5214, RCV_PORT = 5213;
+    private int SEND_PORT = 5213, RCV_PORT = 5214;
 
     public RMIServer() throws RemoteException {
         super();
