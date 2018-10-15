@@ -21,7 +21,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     private static final long serialVersionUID = 1L;
 
     private String MULTICAST_ADDRESS = "224.3.2.1";
-    private int PORT = 5214;
+    private int SEND_PORT = 5214, RCV_PORT = 5213;
 
     public RMIServer() throws RemoteException {
         super();
@@ -36,7 +36,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             byte[] buffer = resp.getBytes();
 
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, SEND_PORT);
             socket.send(packet);
 
         } catch (IOException e) {
@@ -50,7 +50,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String message = null;
 
         try {
-            MulticastSocket socket = new MulticastSocket(PORT);  // create socket and bind it
+            MulticastSocket socket = new MulticastSocket(RCV_PORT);  // create socket and bind it
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
 
@@ -108,6 +108,32 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         return rspToClient;
     }
+
+    public String regularToEditor(String editor, String regular) {
+        // Request  -> flag | s; type | privilege; user1 | username; user2; username;
+        // Response -> flag | r; type | privilege; result | (y/n): user1 | username; user2; username;
+
+        String msg = "flag | s; type | privilege; user1 | " + editor + "; user2; " + regular + ";";
+        boolean exit = false;
+        String rspToClient = "Failed to cast " + regular + " to editor";
+
+        sendUDPDatagram(msg);
+
+        while(!exit) {
+            String rsp = receiveUDPDatagram();
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+            if(cleanMessage.get(0)[1].equals("r") & cleanMessage.get(1)[1].equals("privilege") & cleanMessage.get(3)[1].equals(editor)
+                & cleanMessage.get(4)[1].equals(regular) & cleanMessage.get(2)[1].equals("y")) {
+                rspToClient = regular + " casted to Editor with success";
+
+            }
+        }
+
+        return rspToClient;
+    }
+
+
+
 
     public String login(String email, String password, RMIClientInterface client) throws RemoteException {
 

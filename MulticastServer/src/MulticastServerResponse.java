@@ -12,15 +12,14 @@ public class MulticastServerResponse extends Thread {
 
     private DatagramPacket packet;
     private MulticastSocket sendSocket = null; // socket to respond to Multicast group
-    private int PORT;
+    private int RCV_PORT = 5214;
     private String MULTICAST_ADDRESS;
     private CopyOnWriteArrayList<User> users;
     private CopyOnWriteArrayList<Artist> artists;
 
-    MulticastServerResponse(DatagramPacket packet, int port, String ip, CopyOnWriteArrayList<User> users, CopyOnWriteArrayList<Artist> artists) {
+    MulticastServerResponse(DatagramPacket packet, String ip, CopyOnWriteArrayList<User> users, CopyOnWriteArrayList<Artist> artists) {
 
         this.packet = packet;
-        PORT = port;
         MULTICAST_ADDRESS = ip;
         this.users = users;
         this.artists = artists;
@@ -32,7 +31,7 @@ public class MulticastServerResponse extends Thread {
             MulticastSocket socket = new MulticastSocket();
             byte[] buffer = resp.getBytes();
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, RCV_PORT);
             socket.send(packet);
 
         } catch (IOException e) {
