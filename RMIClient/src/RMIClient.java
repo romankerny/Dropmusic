@@ -29,9 +29,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
 		    // Need to send interface to server first
 		    serverInterface.subscribe((RMIClientInterface) new RMIClient());
-
-
-
+		    
 
             System.out.println("1. Get an account\n2. Login");
             while(!exit) {
@@ -53,6 +51,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     exit = true;
                 }
             }
+            System.out.println("1.\n2.\n3.\n4.\n5.\n");
+
 
 
 

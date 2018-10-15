@@ -20,9 +20,14 @@ Pesquisa p/ nome do artista, o género musical ou o título do álbum (2)
     Response -> flag | r; type | details; param | (art, alb); keyword | kkkk; result | (y/n); response | blablablabla;
 
 (5) Escrever uma crítica a um álbum
-    Request  -> flag | s; type | critic; album | name; critic | blabla; rate | n;
-    Response -> flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n;
+    Request  -> flag | s; type | critic; album | name; critic | blabla; rate | n; email | eeee;
+    Response -> flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n; email | eeee;
 
 (6) Dar previlégios de editor a um utilizador
     Request  -> flag | s; type | privilege; user1 | username; user2; username;
     Response -> flag | r; type | privilege; result | (y/n): user1 | username; user2; username;
+
+(7) Adicionar / alterar detalhes
+    * P/ enquanto ainda só funciona c/ o param details de Album e Artist
+    Request  -> flag | s; type | detail; gen | (art, album); keyword | vvvvv; detail | ddddddddddddddddddd; email | eeee;
+    Response -> flag | r; type | detail; gen | (art, album); keyword | vvvvv; response | (y/n); email | eeee;

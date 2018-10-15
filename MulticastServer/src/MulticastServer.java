@@ -31,6 +31,11 @@ public class MulticastServer extends Thread {
             Editor admin = new Editor("admin", "admin");
             users.add(admin);
 
+            artists.add(new Artist("Kendrick Lamar"));
+
+
+
+
             while (true) {
 
                 byte[] buffer = new byte[256];
