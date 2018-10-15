@@ -31,6 +31,14 @@ public class MulticastServer extends Thread {
             Editor admin = new Editor("admin", "admin");
             users.add(admin);
 
+            artists.add(new Artist("Kendrick Lamar"));
+            artists.get(0).Albuns.add(new Album("To Pimp a Butterfly", "Hip-Hop e assim"));
+
+
+
+
+
+
             while (true) {
 
                 byte[] buffer = new byte[256];

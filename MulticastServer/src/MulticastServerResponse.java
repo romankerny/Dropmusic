@@ -63,19 +63,28 @@ public class MulticastServerResponse extends Thread {
         // [0] [1]   [2]    [3] [4] [5]      [6]  [7] [8]   [9]   [10] [11] [12]
 
         // Verificar se existe
+        String rsp;
+        boolean found = false;
+        Iterator iUser = users.iterator();
+        while(iUser.hasNext()) {
+            User s = (User) iUser.next();
+            if(s.email.equals("email")) {
+                found = true;
+            }
+        }
 
+        if(found == true) {
+            rsp = "type | register; flag | r; username | " + email + "; password | " + password + "; result | n";
+            System.out.println("User " + email + " already has an acc.");
+        } else {
 
-
-        // Fazer registo e adicionar a BD o novo user
-        User s = new Regular(email, password);
-        this.users.add(s);
-
-        System.out.println("Gonna register " + email + " with password " + password);
-
-
-        String rsp = "type | register; flag | r; username | " + email + "; password | " + password + "; result | y";
-        sendResponseMulticast(rsp);
-
+            // Fazer registo e adicionar a BD o novo user
+            User s = new Regular(email, password);
+            this.users.add(s);
+            System.out.println("Gonna register " + email + " with password " + password);
+            rsp = "type | register; flag | r; username | " + email + "; password | " + password + "; result | y";
+            sendResponseMulticast(rsp);
+        }
     }
 
     public void login(String email, String password) {
@@ -96,10 +105,10 @@ public class MulticastServerResponse extends Thread {
         sendResponseMulticast(rsp);
     }
 
-    public void writeCritic(String albumName, String critic, String rate) {
+    public void writeCritic(String albumName, String critic, String rate, String email) {
 
-        // flag | s; type | critic; album | name; critic | blabla; rate | n;
-        // flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n;
+        // flag | s; type | critic; album | name; critic | blabla; rate | n email | eeee;
+        // flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n; email | eeee;
 
         Iterator iArtists = artists.iterator();
         boolean exit = false;
@@ -112,7 +121,7 @@ public class MulticastServerResponse extends Thread {
             while(iAlbum.hasNext()) {
                 Album al = (Album) iAlbum.next();
                 if(al.tittle.equals(albumName)) {
-                    al.addCritic(critic, Integer.parseInt(rate));
+                    al.addCritic(critic, Integer.parseInt(rate), email);
                     rsp = "flag | r; type | critic; result | y; album | " + albumName + "; critic | " + critic +"; + rate | " + rate + ";";
                     exit = true;
                 }
@@ -203,6 +212,51 @@ public class MulticastServerResponse extends Thread {
 
     }
 
+    public void addDetail(String gen, String keyword, String detail, String email) {
+        // Request  -> flag | s; type | detail; gen | (art, album); keyword | vvvvv; detail | ddddddddddddddddddd; email | eeee;
+        // Response -> flag | r; type | detail; gen | (art, album); keyword | vvvvv; response | (y/n); email | eeee;
+
+        Iterator iUsers = users.iterator();
+        User editor = null;
+
+        while (iUsers.hasNext()) {
+            User s = (User) iUsers.next();
+            if (s.email.equals((email))) {
+                editor = s;
+            }
+        }
+
+        if(gen.equals("art")) {
+
+            Iterator iArtists = artists.iterator();
+
+            while (iArtists.hasNext()) {
+                Artist a = (Artist) iArtists.next();
+                if(a.name.equals(keyword)) {
+                    a.setDetails(detail, editor);
+                }
+            }
+
+        } else if(gen.equals(("album"))) {
+
+            Iterator iArtists = artists.iterator();
+
+
+            while (iArtists.hasNext()) {
+                Artist a = (Artist) iArtists.next();
+                Iterator iAlbum = a.Albuns.iterator();
+                while(iAlbum.hasNext()) {
+                    Album alb = (Album) iAlbum.next();
+                    if(alb.tittle.equals(keyword)) {
+                        alb.setDetails(detail, editor);
+                    }
+                }
+            }
+
+        }
+
+    }
+
 
 
     public void run() {
@@ -227,7 +281,7 @@ public class MulticastServerResponse extends Thread {
             } else if (cleanMessage.get(1)[1].equals("details")) { // search Artist, Album, Music
                 getDetails(cleanMessage.get(2)[1], cleanMessage.get(3)[1]); // (Artist or Album, keyword)
             } else if(cleanMessage.get(1)[1].equals("critic")) {            // add critic to album
-                writeCritic(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1]); // (email, critic, rate)
+                writeCritic(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]); // (email, critic, rate, email)
             } else if(cleanMessage.get(1)[1].equals("privilege")) {
                 System.out.println("para editor");
                 turnIntoEditor(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);       // (Editor, regularToEditor)

@@ -6,16 +6,27 @@ public class Album {
     private         Music[] tracks;
     public          double  ratingC;                    // += every single rate
     public          int     nCritics;                   // to count n
-
+    public          String  details;
+    public          CopyOnWriteArrayList<User> notifyIfEdited;
     private CopyOnWriteArrayList<Review> reviews;
 
+    Album(String tittle, String description) {
+        this.tittle = tittle;
+        this.description = description;
+    }
 
-    public void addCritic(String critica, int rate) {
 
-        reviews.add(new Review(critica, rate));
+    public void addCritic(String critica, int rate, String email) {
+
+        reviews.add(new Review(critica, rate, email));
         ratingC += rate;
         nCritics++;
 
+    }
+
+    public void setDetails(String details, User s) {
+        this.details = details;
+        this.notifyIfEdited.add(s);
     }
 
     public double overallRating() {
@@ -23,7 +34,17 @@ public class Album {
     }
 
     public String toString() {
-        return tittle + " " + description + " " + ratingC;
+
+        String rsp;
+        rsp = "Tittle: " + tittle + "\n" + "Description: " + description + "\n" + "Track-list: ";
+        for (Music m : this.tracks)
+            rsp += m.title + " ";
+        rsp += "Critics: ";
+        for (Review r : reviews) {
+            rsp += r.toString();
+        }
+
+        return rsp;
     }
 
 }
