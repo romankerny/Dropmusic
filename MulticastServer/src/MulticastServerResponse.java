@@ -295,10 +295,15 @@ public class MulticastServerResponse extends Thread {
             } else if (cleanMessage.get(1)[1].equals("login")) { // login
                 login(cleanMessage.get(2)[1], cleanMessage.get(3)[1]); // (email, password)
 
+            } else if (cleanMessage.get(2)[1].equals("logout")) { // logout
+                logout(cleanMessage.get(2)[1]);  // (email)
+
             } else if (cleanMessage.get(1)[1].equals("details")) { // search Artist, Album, Music
                 getDetails(cleanMessage.get(2)[1], cleanMessage.get(3)[1]); // (Artist or Album, keyword)
+
             } else if(cleanMessage.get(1)[1].equals("critic")) {            // add critic to album
-                writeCritic(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]); // (album, critic, rate, email)
+                writeCritic(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]);// (album, critic, rate, email)
+
             } else if(cleanMessage.get(1)[1].equals("privilege")) {
                 System.out.println("para editor");
                 turnIntoEditor(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);       // (Editor, regularToEditor)
