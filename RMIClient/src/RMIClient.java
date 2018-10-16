@@ -34,6 +34,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         String help = "Commands:\n"+
                     "- register [email] [password]\n"+
                     "- login [email] [password]\n"+
+                    "- logout (no arguments)\n"+
                     "- rate [album name] [1-5] [review] (max 300 chars)\n"+
                     "Editor-specific:\n"+
                     "- promote [email]";
@@ -59,6 +60,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     } else {
                         System.out.println("Usage: login [email] [password]");
                     }
+                } else if (tokens[0].equals("logout")) {
+                    System.out.println(serverInterface.logout(email));
                 } else if (tokens[0].equals("rate")) {
                     if (tokens.length >= 4) {
 
