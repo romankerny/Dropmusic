@@ -97,6 +97,15 @@ public class MulticastServerResponse extends Thread {
             User s = (User) iUsers.next();
             if (s.email.equals((email)) & s.password.equals(password)) {
                 s.login();
+                // enviar notificações
+
+                Iterator iMessages = s.notifications.iterator();
+                while(iMessages.hasNext()) {
+                    String notification = (String) iMessages.next();
+                    sendResponseMulticast("flag | r; type | notify; message | " + notification + "; user_count | 1; user_0_email | " + email + ";");
+                }
+
+
                 rsp = "flag | r; type | login; result | y; email | " + email + "; password | " + password + ";";
                 System.out.println(email + " logged in");
             }
@@ -146,6 +155,17 @@ public class MulticastServerResponse extends Thread {
         }
 
         sendResponseMulticast(rsp);
+    }
+
+    public void offUserNotified(String email, String message) {
+        Iterator iUsers = users.iterator();
+
+        while (iUsers.hasNext()) {
+            User offUser = (User) iUsers.next();
+            offUser.logout();
+            offUser.addNotification(message);
+            System.out.println("Set user: " + email + " off");
+        }
     }
 
     public void turnIntoEditor(String user1, String user2) {
@@ -310,7 +330,9 @@ public class MulticastServerResponse extends Thread {
             } else if(cleanMessage.get(1)[1].equals("privilege")) {
                 System.out.println("para editor");
                 turnIntoEditor(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);       // (Editor, regularToEditor)
-
+            } else if(cleanMessage.get(1)[1].equals("notify")) {
+                offUserNotified(cleanMessage.get(4)[1], cleanMessage.get(2)[1]);    // (email, message)
+            
             } else {
                 System.out.println("Invalid protocol message");
             }

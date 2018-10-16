@@ -24,7 +24,6 @@ Resposta aos clientes c/ notify de alteração em música
 
 
 
-
 (4) Consultar detalhes sobre álbum e artista
     Request  -> flag | s; type | details; param | (art, alb); keyword | kkkk;
     Response -> flag | r; type | details; param | (art, alb); keyword | kkkk; result | (y/n); response | blablablabla;
