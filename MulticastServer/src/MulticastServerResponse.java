@@ -119,7 +119,7 @@ public class MulticastServerResponse extends Thread {
 
             while(iAlbum.hasNext()) {
                 Album al = (Album) iAlbum.next();
-                if(al.tittle.equals(albumName)) {
+                if(al.tittle.replaceAll(" ", "").equals(albumName)) {
                     al.addCritic(critic, Integer.parseInt(rate), email);
                     rsp = "flag | r; type | critic; result | y; album | " + albumName + "; critic | " + critic +"; rate | " + rate + ";";
                     exit = true;
@@ -157,7 +157,7 @@ public class MulticastServerResponse extends Thread {
                     users.remove(regularUser);
                     users.add(new Editor(regularUser.email, regularUser.password));
                     exit = true;
-                    rsp = "flag | r; type | privilege; result | y: user1 | " + user1 +"; user2 | " + user2 + ";";
+                    rsp = "flag | r; type | privilege; result | y; user1 | " + user1 +"; user2 | " + user2 + ";";
             }
         }
 
@@ -280,7 +280,7 @@ public class MulticastServerResponse extends Thread {
             } else if (cleanMessage.get(1)[1].equals("details")) { // search Artist, Album, Music
                 getDetails(cleanMessage.get(2)[1], cleanMessage.get(3)[1]); // (Artist or Album, keyword)
             } else if(cleanMessage.get(1)[1].equals("critic")) {            // add critic to album
-                writeCritic(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]); // (email, critic, rate, email)
+                writeCritic(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]); // (album, critic, rate, email)
             } else if(cleanMessage.get(1)[1].equals("privilege")) {
                 System.out.println("para editor");
                 turnIntoEditor(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);       // (Editor, regularToEditor)

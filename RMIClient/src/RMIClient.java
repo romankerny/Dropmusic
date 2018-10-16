@@ -27,7 +27,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
     public static void main(String args[]) {
 
         Scanner sc = new Scanner(System.in);
-        String userInput = "";
+        Scanner scanner;
+        String userInput;
         String[] tokens;
         boolean exit = false;
         String help = "Commands:\n"+
@@ -58,19 +59,35 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     }
                 } else if (tokens[0].equals("rate")) {
                     if (tokens.length >= 4) {
-                        int stars = Integer.parseInt(tokens[2]);
-                        if (stars <= 5 && stars >= 1) {
-                            // Concatenar review
-                            String review = "";
-                            for (int i = 3; i < tokens.length; i++)
-                                review = review + tokens[i] + " " ;
 
-                            System.out.println(serverInterface.rateAlbum(stars, tokens[1], review, email));
-                        } else {
-                            System.out.println("Rating must be between 1 and 5");
-                        }
+                        String albumName = "";
+                        int stars;
+                        String review = "";
+
+                        scanner = new Scanner(userInput);
+                        scanner.next(); // Skip "rate"
+
+                        while (!scanner.hasNextInt())
+                            albumName = albumName + scanner.next() + " ";
+
+                        albumName = albumName.replaceFirst(".$", "");
+                        stars = scanner.nextInt();
+
+                        while (scanner.hasNext())
+                            review = review + scanner.next() + " ";
+                        review = review.replaceFirst(".$", "");
+
+
+                        System.out.println(serverInterface.rateAlbum(stars, albumName, review, email));
+
                     } else {
-                        System.out.println("Usage: rate [1-5] [review] (max 300 chars)");
+                        System.out.println("Usage: rate [album name] [1-5] [review] (max 300 chars)");
+                    }
+                } else if (tokens[0].equals("promote")) {
+                    if (tokens.length == 2) {
+                        System.out.println(serverInterface.regularToEditor(email, tokens[1]));
+                    } else {
+                        System.out.println("Usage: promote [user]");
                     }
 
                 } else if (tokens[0].equals("help")) {

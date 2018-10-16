@@ -109,11 +109,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-    public String regularToEditor(String editor, String regular) {
-        // Request  -> flag | s; type | privilege; user1 | username; user2; username;
+    public String regularToEditor(String editor, String regular) throws RemoteException {
+        // Request  -> flag | s; type | privilege; user1 | username; user2 | username;
         // Response -> flag | r; type | privilege; result | (y/n): user1 | username; user2; username;
 
-        String msg = "flag | s; type | privilege; user1 | " + editor + "; user2; " + regular + ";";
+        String msg = "flag | s; type | privilege; user1 | " + editor + "; user2 | " + regular + ";";
         boolean exit = false;
         String rspToClient = "Failed to cast " + regular + " to editor";
 
@@ -122,9 +122,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         while(!exit) {
             String rsp = receiveUDPDatagram();
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
             if(cleanMessage.get(0)[1].equals("r") & cleanMessage.get(1)[1].equals("privilege") & cleanMessage.get(3)[1].equals(editor)
                 & cleanMessage.get(4)[1].equals(regular) & cleanMessage.get(2)[1].equals("y")) {
                 rspToClient = regular + " casted to Editor with success";
+                exit = true;
 
             }
         }
@@ -185,7 +187,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("critic")) {
                 System.out.println(cleanMessage.get(2)[1]);
                 if (cleanMessage.get(2)[1].equals("y")) {
-                    System.out.println("Im in");
                     rspToClient = "Edited sucessfully";
                     exit = true;
                 } else {
