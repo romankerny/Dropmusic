@@ -119,6 +119,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram();
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
+            System.out.println(rsp);
+
             if(cleanMessage.get(0)[1].equals("r") & cleanMessage.get(1)[1].equals("privilege") & cleanMessage.get(3)[1].equals(editor)
                 & cleanMessage.get(4)[1].equals(regular) & cleanMessage.get(2)[1].equals("y")) {
                 rspToClient = regular + " casted to Editor with success";
@@ -254,7 +256,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                         } catch (RemoteException re){
                             System.out.println("Exception: "+ re);
                             // To be tested!
-                            String failure = "flag | s; type | notify; message | Failed to printOnClient; | user_count | 1; user_1_email | "+email+";";
+                            String failure = "flag | s; type | notify; message | You got promoted to editor.; | user_count | 1; user_1_email | "+email+";";
                             h.sendUDPDatagram(failure);
 
 

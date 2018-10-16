@@ -8,7 +8,7 @@ public class Album {
     public          int     nCritics;                   // to count n
     public          String  details;
     public          CopyOnWriteArrayList<User> notifyIfEdited;
-    private CopyOnWriteArrayList<Review> reviews;
+    public CopyOnWriteArrayList<Review> reviews;
 
     Album(String tittle, String description) {
         this.tittle = tittle;

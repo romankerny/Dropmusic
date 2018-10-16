@@ -73,7 +73,7 @@ public class MulticastServerResponse extends Thread {
         }
 
         if(found == true) {
-            rsp = "type | register; flag | r; username | " + email + "; password | " + password + "; result | n";
+            rsp = "type|register;flag|r;username|" + email + ";password|" + password + ";result|n";
             System.out.println("User " + email + " already has an acc.");
         } else {
 
@@ -81,7 +81,7 @@ public class MulticastServerResponse extends Thread {
             User s = new Regular(email, password);
             this.users.add(s);
             System.out.println("Gonna register " + email + " with password " + password);
-            rsp = "type | register; flag | r; username | " + email + "; password | " + password + "; result | y";
+            rsp = "type|register;flag|r;username|" + email + ";password|" + password + ";result|y";
             sendResponseMulticast(rsp);
         }
     }
@@ -91,7 +91,7 @@ public class MulticastServerResponse extends Thread {
         // Response -> flag | r; type | login; resutl | (y/n); email | eeee; password | pppp;
 
         Iterator iUsers = users.iterator();
-        String rsp = "flag | r; type | login; result | n; email | " + email + "; password | " + password + ";";
+        String rsp = "flag|r;type|login;result|n;email|" + email + ";password|" + password + ";";
 
         while (iUsers.hasNext()) {
             User s = (User) iUsers.next();
@@ -102,11 +102,11 @@ public class MulticastServerResponse extends Thread {
                 Iterator iMessages = s.notifications.iterator();
                 while(iMessages.hasNext()) {
                     String notification = (String) iMessages.next();
-                    sendResponseMulticast("flag | r; type | notify; message | " + notification + "; user_count | 1; user_0_email | " + email + ";");
+                    sendResponseMulticast("flag|r;type|notify;message|" + notification + ";user_count|1;user_0_email|" + email + ";");
                 }
 
 
-                rsp = "flag | r; type | login; result | y; email | " + email + "; password | " + password + ";";
+                rsp = "flag|r;type|login;result|y;email|" + email + ";password|" + password + ";";
                 System.out.println(email + " logged in");
             }
         }
@@ -118,13 +118,13 @@ public class MulticastServerResponse extends Thread {
         // Response -> flag | r; type | logout; result | (y/n); email | eeee;
 
         Iterator iUsers = users.iterator();
-        String rsp = "flag | r; type | logout; result | n; email | " + email + ";";
+        String rsp = "flag|r;type|logout;result|n;email| " + email + ";";
 
         while (iUsers.hasNext()) {
             User s = (User) iUsers.next();
             if(s.email.equals(email)){
                 s.logout();
-                rsp = "flag | r; type | logout; result | y; email | " + email + ";";
+                rsp = "flag|r;type|logout;result|y;email| " + email + ";";
             }
         }
 
@@ -138,7 +138,7 @@ public class MulticastServerResponse extends Thread {
 
         Iterator iArtists = artists.iterator();
         boolean exit = false;
-        String rsp = "flag | r; type | critic; result | n; album | " + albumName + "; critic | " + critic +"; rate | " + rate + ";";
+        String rsp = "flag|r;type|critic;result|n;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";";
 
         while (iArtists.hasNext() & !exit) {
             Artist a = (Artist) iArtists.next();
@@ -147,8 +147,20 @@ public class MulticastServerResponse extends Thread {
             while(iAlbum.hasNext()) {
                 Album al = (Album) iAlbum.next();
                 if(al.tittle.replaceAll(" ", "").equals(albumName)) {
+                    // flag | r; type | notify; message | mmmmmmm; user_count | n; user_x_email | email; [...]
+                    String ts = "flag|r;type|notify;message|" + albumName + " has a new review by " + email + ";";
+                    int n = al.nCritics;
+                    ts += "user_count|" + n + ";";
+                    Iterator iReview = al.reviews.iterator();
+                    int i = 0;
+                    while(iReview.hasNext()) {
+                        Review r = (Review) iReview.next();
+                        ts += "user_" + i + "_email|" + r.email + ";";
+                        i++;
+                    }
+                    sendResponseMulticast(ts);
                     al.addCritic(critic, Integer.parseInt(rate), email);
-                    rsp = "flag | r; type | critic; result | y; album | " + albumName + "; critic | " + critic +"; rate | " + rate + ";";
+                    rsp = "flag|r;type|critic;result|y;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";";
                     exit = true;
                 }
             }
@@ -176,7 +188,7 @@ public class MulticastServerResponse extends Thread {
         Iterator iUsers1 = users.iterator();
         Iterator iUsers2 = users.iterator();
         User regularUser = null;
-        String rsp = "flag | r; type | privilege; result | n: user1 | " + user1 +"; user2 | " + user2 + ";";
+        String rsp = "flag|r;type|privilege;result|n:user1|" + user1 +";user2|" + user2 + ";";
 
         boolean exit = false;
 
@@ -196,14 +208,13 @@ public class MulticastServerResponse extends Thread {
                     Editor ed = new Editor(regularUser.email, regularUser.password);
                     users.add(ed);
                     exit = true;
-                    rsp = "flag | r; type | privilege; result | y; user1 | " + user1 +"; user2 | " + user2 + ";";
+                    rsp = "flag|r;type|privilege;result|y;user1|" + user1 +";user2|" + user2 + ";";
                     // flag | r; type | notify; user_count | n; user_x_email | email; [...] message | mmmmmmm;
-                    sendResponseMulticast("flag | r; type | notify;  message | You got promoted to Editor; user_count | 1; user_0_email | " + ed.email + ";");
+                    sendResponseMulticast("flag|r;type|notify;message|You got promoted to Editor;user_count|1;user_0_email|" + ed.email + ";");
             }
         }
 
 
-        System.out.println("user " + regularUser.email + " is now " + regularUser.getType());
 
         for(User s : users)
             System.out.println(s.toString());
@@ -247,7 +258,7 @@ public class MulticastServerResponse extends Thread {
             }
         }
 
-        rsp = "flag | s; type | details; param | " +type+"; keyword | "+keyword+"; result | "+result+"; response | "+ response+";";
+        rsp = "flag|s;type|details;param|" +type+";keyword|"+keyword+";result|"+result+";response| "+ response+";";
         sendResponseMulticast(rsp);
 
     }
@@ -332,7 +343,7 @@ public class MulticastServerResponse extends Thread {
                 turnIntoEditor(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);       // (Editor, regularToEditor)
             } else if(cleanMessage.get(1)[1].equals("notify")) {
                 offUserNotified(cleanMessage.get(4)[1], cleanMessage.get(2)[1]);    // (email, message)
-            
+
             } else {
                 System.out.println("Invalid protocol message");
             }

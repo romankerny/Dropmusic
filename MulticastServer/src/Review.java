@@ -1,8 +1,8 @@
 public class Review {
 
-    private String critic;
-    private int    rating;
-    private String email;
+    public String critic;
+    public int    rating;
+    public String email;
 
     public Review(String critic, int rating, String email) {
         this.critic = critic;
