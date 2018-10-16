@@ -34,7 +34,9 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         String help = "Commands:\n"+
                     "- register [email] [password]\n"+
                     "- login [email] [password]\n"+
-                    "- rate [album name] [1-5] [review] (max 300 chars)";
+                    "- rate [album name] [1-5] [review] (max 300 chars)\n"+
+                    "Editor-specific:\n"+
+                    "- promote [email]";
 
 		try {
 		    RMIServerInterface serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("rmiserver");
