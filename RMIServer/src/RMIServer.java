@@ -171,6 +171,28 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
+    public String logout(String email) throws RemoteException {
+        String msg = "flag | s; type | logout; email | "+email+";";
+        boolean exit = false;
+        String rspToClient = "Failed to logout";
+
+        sendUDPDatagram(msg);
+
+        while(!exit) {
+            String rsp = receiveUDPDatagram();
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("logout")) {
+                if (cleanMessage.get(2)[1].equals("y") && cleanMessage.get(3)[1].equals(email)) {
+                    rspToClient = "Logged out successfully";
+                    exit = true;
+                }
+
+            }
+        }
+        return rspToClient;
+    }
+
     public String rateAlbum(int stars, String albumName, String review, String email) throws RemoteException {
         //   Request  -> flag | s; type | critic; album | name; critic | blabla; rate | n; email | eeee;
         //   Response -> flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n; email | eeee;
