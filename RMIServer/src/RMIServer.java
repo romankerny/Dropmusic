@@ -7,12 +7,12 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface {
 
-    private HashMap<String, RMIClientInterface> clients = new HashMap<String, RMIClientInterface>();
+    private ConcurrentHashMap<String, RMIClientInterface> clients = new ConcurrentHashMap<String, RMIClientInterface>();
 
     private static final long serialVersionUID = 1L;
     private String MULTICAST_ADDRESS = "224.3.2.1";
@@ -83,24 +83,25 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public String register(String name, String password) throws RemoteException {
 
         String msg = "flag|s;type|register;username|" + name + ";password|" + password+";"; // protocol to register
-        boolean sair = false;
+        boolean exit = false;
         String rspToClient = null;
 
         sendUDPDatagram(msg);
 
-        while(!sair) {
+        while(!exit) {
             String rsp = receiveUDPDatagram();
-            String[] a_rsp =  rsp.split(" ");
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
-            if(a_rsp[2].equals("register;") & a_rsp[5].equals("r;") & a_rsp[8].equals(name+";") & a_rsp[11].equals(password+";")) {
-                rspToClient = "Registado com sucesso " + name + " " + password;
-                sair = true;
+            if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("register")) {
+                if (cleanMessage.get(2)[1].equals("y") && cleanMessage.get(3)[1].equals(name) && cleanMessage.get(4)[1].equals(password)) {
+                    rspToClient = "User "+name+" logged in successfully";
+
+                } else {
+                    rspToClient = "Failed to register";
+                    exit = true;
+                }
             }
         }
-
-        // type | register; flag | (s/r); username | name; password | pw; result (y/n)
-        // neste caso queremos receber p aceitar
-        // type | register; flag | r; username | name; password | pw; result y
 
         return rspToClient;
     }
@@ -119,8 +120,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram();
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
-            if(cleanMessage.get(0)[1].equals("r") & cleanMessage.get(1)[1].equals("privilege") & cleanMessage.get(3)[1].equals(editor)
-                & cleanMessage.get(4)[1].equals(regular) & cleanMessage.get(2)[1].equals("y")) {
+            if(cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("privilege") && cleanMessage.get(3)[1].equals(editor)
+                && cleanMessage.get(4)[1].equals(regular) && cleanMessage.get(2)[1].equals("y")) {
                 rspToClient = regular + " casted to Editor with success";
                 exit = true;
 
@@ -202,7 +203,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("critic")) {
-                System.out.println(cleanMessage.get(2)[1]);
                 if (cleanMessage.get(2)[1].equals("y")) {
                     rspToClient = "Edited sucessfully";
                     exit = true;
@@ -238,14 +238,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             while(true) {
                 // flag | r; type | notify; message | msg; user_count | n; user_x_email | email; [...]
                 msg = h.receiveUDPDatagram();
-                System.out.println(msg);
                 ArrayList<String[]> cleanMessage = h.cleanTokens(msg);
-
-                for (String[] s : cleanMessage) {
-                    for (String s2 : s) {
-                        System.out.println(s2);
-                    }
-                }
 
                 if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("notify")) {
 
