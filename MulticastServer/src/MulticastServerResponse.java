@@ -104,6 +104,24 @@ public class MulticastServerResponse extends Thread {
         sendResponseMulticast(rsp);
     }
 
+    public void logout(String email) {
+        // Request  -> flag | s; type | logout; email | eeee;
+        // Response -> flag | r; type | logout; result | (y/n); email | eeee;
+
+        Iterator iUsers = users.iterator();
+        String rsp = "flag | r; type | logout; result | n; email | " + email + ";";
+
+        while (iUsers.hasNext()) {
+            User s = (User) iUsers.next();
+            if(s.email.equals(email)){
+                s.logout();
+                rsp = "flag | r; type | logout; result | y; email | " + email + ";";
+            }
+        }
+
+        sendResponseMulticast(rsp);
+    }
+
     public void writeCritic(String albumName, String critic, String rate, String email) {
 
         // flag | s; type | critic; album | name; critic | blabla; rate | n email | eeee;
@@ -277,10 +295,15 @@ public class MulticastServerResponse extends Thread {
             } else if (cleanMessage.get(1)[1].equals("login")) { // login
                 login(cleanMessage.get(2)[1], cleanMessage.get(3)[1]); // (email, password)
 
+            } else if (cleanMessage.get(2)[1].equals("logout")) { // logout
+                logout(cleanMessage.get(2)[1]);  // (email)
+
             } else if (cleanMessage.get(1)[1].equals("details")) { // search Artist, Album, Music
                 getDetails(cleanMessage.get(2)[1], cleanMessage.get(3)[1]); // (Artist or Album, keyword)
+
             } else if(cleanMessage.get(1)[1].equals("critic")) {            // add critic to album
-                writeCritic(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]); // (album, critic, rate, email)
+                writeCritic(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]);// (album, critic, rate, email)
+
             } else if(cleanMessage.get(1)[1].equals("privilege")) {
                 System.out.println("para editor");
                 turnIntoEditor(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);       // (Editor, regularToEditor)

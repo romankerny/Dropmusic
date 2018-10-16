@@ -21,9 +21,8 @@ public class User implements Serializable {
         this.status = Status.ON;
     }
 
-    public void logout() {
-        this.status = Status.OFF;
-    }
+    public void logout() { this.status = Status.OFF;}
+
 
     public String getType() {
         return "user";

@@ -36,7 +36,6 @@ public class MulticastServer extends Thread {
 
 
 
-
             while (true) {
 
                 byte[] buffer = new byte[256];

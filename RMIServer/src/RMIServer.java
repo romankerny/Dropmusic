@@ -19,7 +19,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     private CopyOnWriteArrayList<RMIClientInterface> clients = new CopyOnWriteArrayList<RMIClientInterface>();
 
     private static final long serialVersionUID = 1L;
-
     private String MULTICAST_ADDRESS = "224.3.2.1";
     private int SEND_PORT = 5213, RCV_PORT = 5214;
 

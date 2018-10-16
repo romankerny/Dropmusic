@@ -4,12 +4,16 @@ type | register; flag | r; username | name; password | pw; result y
 
 
 
-(1) Register & Login
+(1) Register & Login & logout
     Request  -> flag | s; type | register; email | eeee; password | pppp;
     Response -> flag | r; type | register; result | (y/n); email | eeee; password | pppp;
 
     Request  -> flag | s; type | login; email | eeee; password | pppp;
     Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp;
+
+    Request  -> flag | s; type | logout; email | eeee;
+    Response -> flag | r; type | logout; result | (y/n); email | eeee;
+
 
 Pesquisa p/ nome do artista, o género musical ou o título do álbum (2)
     Request  -> flag | s; type | search; param | (art, gen, tit); keyword | kkkk;
