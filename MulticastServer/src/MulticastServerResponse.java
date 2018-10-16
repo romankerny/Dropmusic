@@ -146,7 +146,7 @@ public class MulticastServerResponse extends Thread {
 
             while(iAlbum.hasNext()) {
                 Album al = (Album) iAlbum.next();
-                if(al.tittle.replaceAll(" ", "").equals(albumName)) {
+                if(al.tittle.equals(albumName)) {
                     // flag | r; type | notify; message | mmmmmmm; user_count | n; user_x_email | email; [...]
                     String ts = "flag|r;type|notify;message|" + albumName + " has a new review by " + email + ";";
                     int n = al.nCritics;

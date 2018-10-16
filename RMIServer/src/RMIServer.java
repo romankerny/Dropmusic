@@ -234,7 +234,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
             // Handle notifications
-            /*
+
             while(true) {
                 // flag | r; type | notify; message | msg; user_count | n; user_x_email | email; [...]
                 msg = h.receiveUDPDatagram();
@@ -263,7 +263,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                 }
 
-            }*/
+            }
 
 
         } catch (RemoteException re) {
