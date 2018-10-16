@@ -104,6 +104,24 @@ public class MulticastServerResponse extends Thread {
         sendResponseMulticast(rsp);
     }
 
+    public void logout(String email) {
+        // Request  -> flag | s; type | logout; email | eeee;
+        // Response -> flag | r; type | logout; result | (y/n); email | eeee;
+
+        Iterator iUsers = users.iterator();
+        String rsp = "flag | r; type | logout; result | n; email | " + email + ";";
+
+        while (iUsers.hasNext()) {
+            User s = (User) iUsers.next();
+            if(s.email.equals(email)){
+                s.logout();
+                rsp = "flag | r; type | logout; result | y; email | " + email + ";";
+            }
+        }
+
+        sendResponseMulticast(rsp);
+    }
+
     public void writeCritic(String albumName, String critic, String rate, String email) {
 
         // flag | s; type | critic; album | name; critic | blabla; rate | n email | eeee;
