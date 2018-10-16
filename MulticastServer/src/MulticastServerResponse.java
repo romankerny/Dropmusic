@@ -64,7 +64,7 @@ public class MulticastServerResponse extends Thread {
         String rsp;
         boolean found = false;
         Iterator iUser = users.iterator();
-        
+
         while(iUser.hasNext()) {
             User s = (User) iUser.next();
             if(s.email.equals(email)) {
@@ -73,7 +73,7 @@ public class MulticastServerResponse extends Thread {
         }
 
         if(found == true) {
-            rsp = "type|register;flag|r;username|" + email + ";password|" + password + ";result|n";
+            rsp = "flag|r;type|register;result|n;flag|r;username|" + email + ";password|" + password + ";";
             System.out.println("User " + email + " already has an acc.");
         } else {
 
@@ -81,7 +81,7 @@ public class MulticastServerResponse extends Thread {
             User s = new Regular(email, password);
             this.users.add(s);
             System.out.println("Gonna register " + email + " with password " + password);
-            rsp = "type|register;flag|r;username|" + email + ";password|" + password + ";result|y";
+            rsp = "flag|r;type|register;result|y;flag|r;username|" + email + ";password|" + password + ";";
         }
         sendResponseMulticast(rsp);
     }
