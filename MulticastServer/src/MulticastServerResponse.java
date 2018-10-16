@@ -58,16 +58,16 @@ public class MulticastServerResponse extends Thread {
     // -----------------------------------------------------------------------------------------------------------------
 
     public void register(String email, String password) {
-        // type | register; flag | (s/r); username | name; password | pw; result | (y/n)
-        // [0] [1]   [2]    [3] [4] [5]      [6]  [7] [8]   [9]   [10] [11] [12]
+
 
         // Verificar se existe
         String rsp;
         boolean found = false;
         Iterator iUser = users.iterator();
+        
         while(iUser.hasNext()) {
             User s = (User) iUser.next();
-            if(s.email.equals("email")) {
+            if(s.email.equals(email)) {
                 found = true;
             }
         }
@@ -82,8 +82,8 @@ public class MulticastServerResponse extends Thread {
             this.users.add(s);
             System.out.println("Gonna register " + email + " with password " + password);
             rsp = "type|register;flag|r;username|" + email + ";password|" + password + ";result|y";
-            sendResponseMulticast(rsp);
         }
+        sendResponseMulticast(rsp);
     }
 
     public void login(String email, String password) {
@@ -323,7 +323,7 @@ public class MulticastServerResponse extends Thread {
         if (cleanMessage.get(0)[1].equals("s")) {
 
 
-            if (cleanMessage.get(1)[1].equals("register")) { //register **** FALTA ACTUALIZAR ISTO P NOVO PROTOCOLO
+            if (cleanMessage.get(1)[1].equals("register")) { //register
                 register(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);    // (email, password)
 
             } else if (cleanMessage.get(1)[1].equals("login")) { // login
