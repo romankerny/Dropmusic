@@ -94,12 +94,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("register")) {
                 if (cleanMessage.get(2)[1].equals("y") && cleanMessage.get(3)[1].equals(name) && cleanMessage.get(4)[1].equals(password)) {
-                    rspToClient = "User "+name+" logged in successfully";
+                    rspToClient = "User "+name+" registered successfully";
 
                 } else {
                     rspToClient = "Failed to register";
-                    exit = true;
                 }
+                exit = true;
             }
         }
 
@@ -234,7 +234,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
             // Handle notifications
-
+            /*
             while(true) {
                 // flag | r; type | notify; message | msg; user_count | n; user_x_email | email; [...]
                 msg = h.receiveUDPDatagram();
@@ -263,7 +263,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                 }
 
-            }
+            }*/
 
 
         } catch (RemoteException re) {

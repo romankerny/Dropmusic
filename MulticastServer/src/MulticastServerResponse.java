@@ -48,7 +48,7 @@ public class MulticastServerResponse extends Thread {
         ArrayList<String[]> rtArray = new ArrayList<String[]>();
 
         for (int i = 0; i < tokens.length; i++) {
-            tokens[i] = tokens[i].replaceAll("\\s+", "");
+            //tokens[i] = tokens[i].replaceAll("\\s+", "");
             p = tokens[i].split(Pattern.quote("|"));
             rtArray.add(p);
         }
@@ -81,7 +81,7 @@ public class MulticastServerResponse extends Thread {
             User s = new Regular(email, password);
             this.users.add(s);
             System.out.println("Gonna register " + email + " with password " + password);
-            rsp = "flag|r;type|register;result|y;flag|r;username|" + email + ";password|" + password + ";";
+            rsp = "flag|r;type|register;result|y;username|" + email + ";password|" + password + ";";
         }
         sendResponseMulticast(rsp);
     }
