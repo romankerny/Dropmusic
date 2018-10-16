@@ -11,12 +11,13 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface {
 
-    private CopyOnWriteArrayList<RMIClientInterface> clients = new CopyOnWriteArrayList<RMIClientInterface>();
+    private HashMap<String, RMIClientInterface> clients = new HashMap<String, RMIClientInterface>();
 
     private static final long serialVersionUID = 1L;
     private String MULTICAST_ADDRESS = "224.3.2.1";
@@ -156,7 +157,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     if (cleanMessage.get(3)[1].equals(email) && cleanMessage.get(4)[1].equals(password)) {
                         rspToClient = "Logado com sucesso " + email + " " + password;
 
-                        this.clients.add(client);
+                        this.clients.put(email, client);
 
                         exit = true;
                     }
@@ -228,7 +229,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     // =========================================================
     public static void main(String args[]) {
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String msg;
 
         try {
             RMIServer h = new RMIServer();
@@ -236,6 +237,33 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             r.rebind("rmiserver", h);
             System.out.println("RMIServer ready.");
 
+
+            // Handle notifications
+
+            while(true) {
+                // flag | r; type | notify; message | msg; user_count | n; user_x_email | email; [...]
+                msg = h.receiveUDPDatagram();
+                ArrayList<String[]> cleanMessage = h.cleanTokens(msg);
+
+                if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("notify")) {
+
+                    String userMsg = cleanMessage.get(2)[1];
+                    int numUsers = Integer.parseInt(cleanMessage.get(3)[1]);
+
+                    String email;
+                    for (int i = 0; i < numUsers; i++) {
+                        email = cleanMessage.get(3+i)[1];
+
+                        try {
+                            h.clients.get(email).printOnClient(userMsg);
+                        } catch (RemoteException re){
+                            System.out.println("Exception: "+ re);
+                        }
+                    }
+
+                }
+
+            }
 
 
         } catch (RemoteException re) {
