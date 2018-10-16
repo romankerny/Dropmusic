@@ -56,7 +56,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             socket.receive(packet);
 
             message = new String(packet.getData(), 0, packet.getLength());
-            System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:" + message);
+            System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message: " + message);
 
         } catch (IOException e) {
             e.printStackTrace();
