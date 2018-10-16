@@ -20,6 +20,7 @@ Pesquisa p/ nome do artista, o género musical ou o título do álbum (2)
     Response -> flag | r; type | search; param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...]
 
 Resposta aos clientes c/ notify de alteração em música
+    Request  -> flag | s; type | notify; message | mmmmmmm; user_count | n; user_x_email | email; [...]
     Response -> flag | r; type | notify; message | mmmmmmm; user_count | n; user_x_email | email; [...]
 
 
