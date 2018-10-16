@@ -73,7 +73,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         ArrayList<String[]> rtArray = new ArrayList<String[]>();
 
         for (int i = 0; i < tokens.length; i++) {
-            tokens[i] = tokens[i].replaceAll("\\s+", "");
+            //tokens[i] = tokens[i].replaceAll("\\s+", "");
             p = tokens[i].split(Pattern.quote("|"));
             rtArray.add(p);
         }
@@ -82,7 +82,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public String register(String name, String password) throws RemoteException {
 
-        String msg = "flag | s; type | register; username | " + name + "; password | " + password+";"; // protocol to register
+        String msg = "flag|s;type|register;username|" + name + ";password|" + password+";"; // protocol to register
         boolean sair = false;
         String rspToClient = null;
 
@@ -109,7 +109,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         // Request  -> flag | s; type | privilege; user1 | username; user2 | username;
         // Response -> flag | r; type | privilege; result | (y/n): user1 | username; user2; username;
 
-        String msg = "flag | s; type | privilege; user1 | " + editor + "; user2 | " + regular + ";";
+        String msg = "flag|s;type|privilege;user1|" + editor + ";user2|" + regular + ";";
         boolean exit = false;
         String rspToClient = "Failed to cast " + regular + " to editor";
 
@@ -138,7 +138,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         //
         // [PROTOCOL] flag | s; type | login; email | eeee; password | pppp;
 
-        String msg = "flag | s; type | login; email | "+email+"; password | "+password+";";
+        String msg = "flag|s;type|login;email|"+email+";password|"+password+";";
         boolean exit = false;
         String rspToClient = "Failed to login";
 
@@ -167,7 +167,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     public String logout(String email) throws RemoteException {
-        String msg = "flag | s; type | logout; email | "+email+";";
+        String msg = "flag|s;type|logout;email|"+email+";";
         boolean exit = false;
         String rspToClient = "Failed to logout";
 
@@ -191,7 +191,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public String rateAlbum(int stars, String albumName, String review, String email) throws RemoteException {
         //   Request  -> flag | s; type | critic; album | name; critic | blabla; rate | n; email | eeee;
         //   Response -> flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n; email | eeee;
-        String msg = "flag | s; type | critic; album | "+albumName+"; critic | "+review+"; rate | "+stars+"; email | "+email+";";
+        String msg = "flag|s;type|critic;album|"+albumName+";critic|"+review+";rate|"+stars+"; email|"+email+";";
         boolean exit = false;
         String rspToClient = "Failed to rate "+albumName;
 
@@ -238,7 +238,14 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             while(true) {
                 // flag | r; type | notify; message | msg; user_count | n; user_x_email | email; [...]
                 msg = h.receiveUDPDatagram();
+                System.out.println(msg);
                 ArrayList<String[]> cleanMessage = h.cleanTokens(msg);
+
+                for (String[] s : cleanMessage) {
+                    for (String s2 : s) {
+                        System.out.println(s2);
+                    }
+                }
 
                 if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("notify")) {
 
@@ -254,7 +261,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                         } catch (RemoteException re){
                             System.out.println("Exception: "+ re);
                             // To be tested!
-                            String failure = "flag | s; type | notify; message | Failed to printOnClient; | user_count | 1; user_1_email | "+email+";";
+                            String failure = "flag|s;type|notify;message|Failed to printOnClient;user_count|1;user_1_email|"+email+";";
                             h.sendUDPDatagram(failure);
 
 

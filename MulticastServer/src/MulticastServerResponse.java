@@ -91,7 +91,7 @@ public class MulticastServerResponse extends Thread {
         // Response -> flag | r; type | login; resutl | (y/n); email | eeee; password | pppp;
 
         Iterator iUsers = users.iterator();
-        String rsp = "flag | r; type | login; result | n; email | " + email + "; password | " + password + ";";
+        String rsp = "flag|r;type|login;result|n;email|" + email + ";password|" + password + ";";
 
         while (iUsers.hasNext()) {
             User s = (User) iUsers.next();
@@ -102,11 +102,11 @@ public class MulticastServerResponse extends Thread {
                 Iterator iMessages = s.notifications.iterator();
                 while(iMessages.hasNext()) {
                     String notification = (String) iMessages.next();
-                    sendResponseMulticast("flag | r; type | notify; message | " + notification + "; user_count | 1; user_0_email | " + email + ";");
+                    sendResponseMulticast("flag|r;type|notify;message|" + notification + ";user_count|1;user_0_email|" + email + ";");
                 }
 
 
-                rsp = "flag | r; type | login; result | y; email | " + email + "; password | " + password + ";";
+                rsp = "flag|r;type|login;result|y;email|" + email + ";password|" + password + ";";
                 System.out.println(email + " logged in");
             }
         }
@@ -146,7 +146,7 @@ public class MulticastServerResponse extends Thread {
 
             while(iAlbum.hasNext()) {
                 Album al = (Album) iAlbum.next();
-                if(al.tittle.replaceAll(" ", "").equals(albumName)) {
+                if(al.tittle.equals(albumName)) {
                     al.addCritic(critic, Integer.parseInt(rate), email);
                     rsp = "flag | r; type | critic; result | y; album | " + albumName + "; critic | " + critic +"; rate | " + rate + ";";
                     exit = true;
@@ -176,7 +176,7 @@ public class MulticastServerResponse extends Thread {
         Iterator iUsers1 = users.iterator();
         Iterator iUsers2 = users.iterator();
         User regularUser = null;
-        String rsp = "flag | r; type | privilege; result | n: user1 | " + user1 +"; user2 | " + user2 + ";";
+        String rsp = "flag|r;type|privilege;result|n:user1|" + user1 +";user2|" + user2 + ";";
 
         boolean exit = false;
 
@@ -196,9 +196,9 @@ public class MulticastServerResponse extends Thread {
                     Editor ed = new Editor(regularUser.email, regularUser.password);
                     users.add(ed);
                     exit = true;
-                    rsp = "flag | r; type | privilege; result | y; user1 | " + user1 +"; user2 | " + user2 + ";";
+                    rsp = "flag|r;type|privilege;result|y;user1|" + user1 +";user2|" + user2 + ";";
                     // flag | r; type | notify; user_count | n; user_x_email | email; [...] message | mmmmmmm;
-                    sendResponseMulticast("flag | r; type | notify;  message | You got promoted to Editor; user_count | 1; user_0_email | " + ed.email + ";");
+                    sendResponseMulticast("flag|r;type|notify;message|You got promoted to Editor;user_count|1;user_0_email|" + ed.email + ";");
             }
         }
 
