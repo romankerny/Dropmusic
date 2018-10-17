@@ -17,7 +17,7 @@ type | register; flag | r; username | name; password | pw; result y
 
 Pesquisa p/ nome do artista, o género musical ou o título do álbum (2)
     Request  -> flag | s; type | search; param | (art, gen, tit); keyword | kkkk;
-    Response -> flag | r; type | search; param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...]
+    Response -> flag | r; type | search; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...]
 
 Resposta aos clientes c/ notify de alteração em música
     Request  -> flag | s; type | notify; message | mmmmmmm; user_count | n; user_x_email | email; [...]

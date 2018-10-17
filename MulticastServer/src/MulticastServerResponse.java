@@ -51,7 +51,7 @@ public class MulticastServerResponse extends Thread {
         ArrayList<String[]> rtArray = new ArrayList<String[]>();
 
         for (int i = 0; i < tokens.length; i++) {
-            tokens[i] = tokens[i].replaceAll("\\s+", "");
+            //tokens[i] = tokens[i].replaceAll("\\s+", "");
             p = tokens[i].split(Pattern.quote("|"));
             rtArray.add(p);
         }
@@ -118,7 +118,7 @@ public class MulticastServerResponse extends Thread {
             User s = new Regular(email, password);
             this.users.add(s);
             System.out.println("Gonna register " + email + " with password " + password);
-            rsp = "flag|r;type|register;flag|r;username|" + email + ";password|" + password + ";";
+            rsp = "flag|r;type|register;result|y;username|" + email + ";password|" + password + ";";
         }
         sendResponseMulticast(rsp);
     }
@@ -183,7 +183,7 @@ public class MulticastServerResponse extends Thread {
 
             while(iAlbum.hasNext()) {
                 Album al = (Album) iAlbum.next();
-                if(al.tittle.replaceAll(" ", "").equals(albumName)) {
+                if(al.title.equals(albumName)) {
                     // flag | r; type | notify; message | mmmmmmm; user_count | n; user_x_email | email; [...]
                     String ts = "flag|r;type|notify;message|" + albumName + " has a new review by " + email + ";";
                     int n = al.nCritics;
@@ -260,10 +260,11 @@ public class MulticastServerResponse extends Thread {
 
 
     public void getDetails(String type, String keyword) {
-        // flag | s; type | details; param | (art, alb); keyword | kkkk;
-        // flag | r; type | details; param | (art, alb); keyword | kkkk; result | (y/n); response | blablablabla;
+        // Request  -> flag | s; type | search; param | (art, gen, tit); keyword | kkkk;
+        // Response -> flag | r; type | search; param | (art, gen, tit); keyword | kkkk; item_count | n; item_x_name | name; [...]
 
         // AINDA NAO TESTEI ESTE MÉTODO
+        // Roman: Alterei o metodo para dar num caso especifico (1 artista), precisa ser generalizado
 
         Iterator iArtists = artists.iterator();
         String rsp = " ", response = " ";
@@ -283,7 +284,7 @@ public class MulticastServerResponse extends Thread {
                     Iterator iAlbum = a.albums.iterator();
                     while(iAlbum.hasNext()) {
                         Album al = (Album) iAlbum.next();
-                        if (al.tittle.equals(keyword)) {
+                        if (al.title.equals(keyword)) {
                             response = al.toString();
                             exit = true;
                             result = 'y';
@@ -293,7 +294,7 @@ public class MulticastServerResponse extends Thread {
             }
         }
 
-        rsp = "flag|s;type|details;param|" +type+";keyword|"+keyword+";result|"+result+";response| "+ response+";";
+        rsp = "flag|r;type|details;result|" +result+";param|"+type+";keyword|"+keyword+";item_count|1;item_x_name|"+response+";";
         sendResponseMulticast(rsp);
 
     }
@@ -333,7 +334,7 @@ public class MulticastServerResponse extends Thread {
                 Iterator iAlbum = a.albums.iterator();
                 while(iAlbum.hasNext()) {
                     Album alb = (Album) iAlbum.next();
-                    if(alb.tittle.equals(keyword)) {
+                    if(alb.title.equals(keyword)) {
                         alb.setDetails(detail, editor);
                     }
                 }

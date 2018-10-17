@@ -42,6 +42,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- register [email] [password]\n"+
                     "- login [email] [password]\n"+
                     "- logout (no arguments)\n"+
+                    "- search {art, alb} keyword"+
                     "- rate [album name] [1-5] [review] (max 300 chars)\n"+
                     "- upload music_file\n"+
                     "Editor-specific:\n"+
@@ -70,6 +71,19 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     }
                 } else if (tokens[0].equals("logout")) {
                     System.out.println(serverInterface.logout(email));
+                } else if (tokens[0].equals("search")) {
+                    if (tokens.length >= 3) {
+
+                        String keyword = "";
+
+                        for (int i = 2; i < tokens.length; i++)
+                            keyword = keyword + tokens[i] +" ";
+                        keyword = keyword.replaceFirst(".$", "");
+
+                        System.out.println(serverInterface.search(tokens[1], keyword));
+                    } else {
+                        System.out.println("Usage: search {art, alb} [keyword]");
+                    }
                 } else if (tokens[0].equals("rate")) {
                     if (tokens.length >= 4) {
 
