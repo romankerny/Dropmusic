@@ -86,8 +86,7 @@ public class MulticastServerResponse extends Thread {
                             client = serverSocker.accept();
                             // receive File
                             InputStream in = new BufferedInputStream(client.getInputStream());
-                            m.music_file = AudioSystem.getAudioInputStream(in);
-                            System.out.println("Adding " + title + "from " + email);
+                            m.music_file = in;
                         }
                     }
                 }

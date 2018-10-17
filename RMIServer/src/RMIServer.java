@@ -143,6 +143,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload") &&
             cleanMessage.get(3)[1].equals(email) && cleanMessage.get(4)[1].equals("y"))
             {
+                System.out.println("Recebi datagram no uploadMusic vou retornar a porta");
                 return Integer.parseInt(cleanMessage.get(5)[1]);
             }
         }
