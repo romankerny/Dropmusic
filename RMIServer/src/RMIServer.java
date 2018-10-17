@@ -280,7 +280,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         try {
             RMIServer h = new RMIServer();
-            // Registry r = LocateRegistry.createRegistry(7000);
+            //Registry r = LocateRegistry.createRegistry(7000);
             Naming.rebind("rmiserver", h);
             System.out.println("RMIServer ready.");
 

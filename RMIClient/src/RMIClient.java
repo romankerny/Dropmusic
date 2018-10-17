@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.Naming;
 import java.rmi.RMISecurityManager;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -49,7 +50,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- promote [email]";
 
 		try {
-		    RMIServerInterface serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("rmiserver");
+		    RMIServerInterface serverInterface = (RMIServerInterface) Naming.lookup("rmiserver");
             System.out.println(help);
             while(!exit) {
                 userInput = sc.nextLine();
