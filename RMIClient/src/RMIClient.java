@@ -28,9 +28,18 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         return email;
     }
 
+    public static String strCatSpaces(String[] tokens, int index) {
+        String str = "";
+
+        for (int i = index; i < tokens.length; i++)
+            str = tokens[i] + " ";
+        str = str.replaceAll(".$", "");
+        return str;
+    }
 
 
-    public static void main(String args[]) {
+
+    public static void main(String args[]) throws IOException {
 
         Scanner sc = new Scanner(System.in);
         Scanner scanner;
@@ -44,7 +53,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- search {art, alb} keyword\n"+
                     "- rate [album name] [1-5] [review] (max 300 chars)\n\n"+
                     "- upload [path/to/file] [music title]\n"+
-                    "- download [user] [music title] [path]\n"+
+                    "- download [user] [music title]\n"+
+                    "- share [user] [music title]"+
                     "\nEditor-specific:\n"+
                     "- promote [email]";
 
@@ -73,12 +83,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     System.out.println(serverInterface.logout(email));
                 } else if (tokens[0].equals("search")) {
                     if (tokens.length >= 3) {
-
-                        String keyword = "";
-
-                        for (int i = 2; i < tokens.length; i++)
-                            keyword = keyword + tokens[i] +" ";
-                        keyword = keyword.replaceFirst(".$", "");
+                        String keyword = strCatSpaces(tokens, 2);
 
                         System.out.println(serverInterface.search(tokens[1], keyword));
                     } else {
@@ -119,20 +124,28 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                 } else if(tokens[0].equals("upload")) {
 
                     if (tokens.length >= 3) {
-                        String musicName = "";
+                        String musicName = strCatSpaces(tokens, 2);
 
-                        File music = new File(tokens[1]);
-                        for (int i = 2; i < tokens.length; i++)
-                            musicName = tokens[i] + " ";
-                        musicName = musicName.replaceAll(".$", "");
+                        File musicFile = new File(tokens[1]);
+                        FileInputStream fis = new FileInputStream(musicFile);
 
                         int port = serverInterface.uploadMusic(musicName, email);
                         // criar socket e mandar pa la o nosso file
                         Socket s = new Socket("localhost", port);
                         if (s.isConnected()) {
-                            ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
-                            oos.writeObject(music);
-                            oos.close();
+
+                            DataOutputStream out = new DataOutputStream(s.getOutputStream());
+                            // Send filename and size before actual bytes
+                            out.writeUTF(musicFile.getName());
+                            out.writeLong(musicFile.length());
+
+                            byte buffer[] = new byte[4096];
+                            int count;
+                            while ((count = fis.read(buffer)) != -1)
+                                out.write(buffer, 0, count);
+
+                            out.close();
+
                         }
                         s.close();
                     } else {
@@ -141,24 +154,37 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                 } else if (tokens[0].equals("download")) {
 
                     if (tokens.length >= 3) {
-                        String musicName = "";
-                        File musicFile;
+                        String musicName = strCatSpaces(tokens, 2);
 
-                        for (int i = 2; i < tokens.length; i++)
-                            musicName = tokens[i] + " ";
-                        musicName = musicName.replaceAll(".$", "");
-
-                        int port = serverInterface.downloadMusic(musicName, tokens[1]);
+                        int port = serverInterface.downloadMusic(musicName, tokens[1], email);
                         // Criar socket e receber o File
                         Socket s = new Socket("localhost", port);
                         if (s.isConnected()) {
-                            ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
-                            musicFile = (File) ois.readObject();
+                            DataInputStream in = new DataInputStream(s.getInputStream());
+                            String filename = in.readUTF();
+                            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream((new File(filename))));
 
+                            byte buffer[] = new byte[4096];
+                            int count;
+                            while ((count = in.read(buffer)) != -1)
+                                bos.write(buffer, 0, count);
+                            bos.flush();
+                            bos.close();
+                            in.close();
 
                         }
+                        s.close();
                     } else {
                         System.out.println("Usage: download [user] [music name]");
+                    }
+
+                } else if (tokens[0].equals("share")) {
+
+                    if (tokens.length >=3) {
+                        String musicName = strCatSpaces(tokens, 2);
+                        System.out.println(serverInterface.share(musicName, tokens[1], email));
+                    } else {
+                        System.out.println("Usage: share [user] [music name]");
                     }
 
 

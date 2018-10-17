@@ -89,24 +89,37 @@ public class MulticastServerResponse extends Thread {
 
                         System.out.println("socket is bound");
                         client = serverSocker.accept();
-                        // receive File
-                        ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
-                        File musicFile = (File) ois.readObject();
 
-                        m.musicFiles.put(email, new MusicFile(email, musicFile));
+                        DataInputStream in = new DataInputStream(client.getInputStream());
+
+                        // Filename and size first
+                        String filename = in.readUTF();
+                        long size = in.readLong();
+
+                        byte[] buffer = new byte[(int)size];
+                        int count;
+
+                        // Ler todos os bytes
+                        while((count = in.read(buffer)) != -1);
+
+                        m.musicFiles.put(email, new MusicFile(filename, buffer));
+
+                        in.close();
+                        serverSocker.close();
+
                     }
                 }
             }
         }
     }
 
-    public void downloadMusic(String title, String email) throws IOException, ClassNotFoundException {
-        // flag | s; type | requestTCPConnection; operation | download; email | eeee;
-        // flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; port | pppp;
+    public void downloadMusic(String title, String uploader, String email) throws IOException {
+        // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee;
+        // Response -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; port | pppp;
 
         sendResponseMulticast("flag|r;type|requestTCPConnection;operation|download;email|"+email+";result|y;port|"+TCPPort+";");
         Iterator iArtists = artists.iterator();
-        System.out.println("A dar upload de musica "+title);
+        System.out.println("A dar download de musica "+title);
 
         ServerSocket serverSocket = new ServerSocket(TCPPort);
         Socket client = null;
@@ -122,16 +135,61 @@ public class MulticastServerResponse extends Thread {
                 while(iMusic.hasNext()) {
                     Music m = (Music) iMusic.next();
                     if(m.title.equals(title)) {
+                        if (m.musicFiles.get(uploader).emails.contains(email)) {
+                            client = serverSocket.accept();
+                            DataOutputStream out = new DataOutputStream(client.getOutputStream());
+                            MusicFile mf = m.musicFiles.get(uploader);
 
-                        client = serverSocket.accept();
-                        // Send file
-                        ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
-                        oos.writeObject(m.musicFiles.get(email));
+                            // Send filename before raw data
+                            out.writeUTF(mf.filename);
+                            out.write(mf.rawData);
+                        } else {
+                            System.out.println("Nao tem permission");
+                        }
+
 
                     }
                 }
             }
         }
+    }
+
+    public void share(String title, String shareTo, String uploader) {
+        // Request  -> flag | s; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
+        // Response -> flag | r; type | share; result | (y/n); title | ttttt; shareTo | ssssss; uploader | uuuuu;
+
+        String rsp;
+        boolean found = false;
+        Iterator iArtists = artists.iterator();
+
+        while(iArtists.hasNext()) {
+            Artist a = (Artist) iArtists.next();
+            Iterator iAlbum = a.albums.iterator();
+
+            while(iAlbum.hasNext()) {
+                Album alb = (Album) iAlbum.next();
+                Iterator iMusic = alb.tracks.iterator();
+
+                while(iMusic.hasNext()) {
+                    Music m = (Music) iMusic.next();
+                    if(m.title.equals(title)) {
+
+                        if(m.musicFiles.containsKey(uploader)) {
+                            found = true;
+                            m.musicFiles.get(uploader).shareWith(shareTo);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        if (found) {
+            rsp = "flag|r;type|share;result|y;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";";
+        } else {
+            rsp = "flag|r;type|share;result|n;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";";
+        }
+        sendResponseMulticast(rsp);
     }
 
     public void register(String email, String password) {
@@ -419,6 +477,8 @@ public class MulticastServerResponse extends Thread {
                 turnIntoEditor(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);       // (Editor, regularToEditor)
             } else if(cleanMessage.get(1)[1].equals("notify")) {
                 offUserNotified(cleanMessage.get(4)[1], cleanMessage.get(2)[1]);    // (email, message)
+            } else if(cleanMessage.get(1)[1].equals("share")) {
+                share(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1]); // (title, shareTo, uploader)
             } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload")) {
                 // flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
 
@@ -430,7 +490,14 @@ public class MulticastServerResponse extends Thread {
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-
+            } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("download")) {
+               // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
+                try {
+                    System.out.println("A chamar o metodo de download");
+                    downloadMusic(cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]); // (title, uploader, email)
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             } else {
                 System.out.println("Invalid protocol message");
             }

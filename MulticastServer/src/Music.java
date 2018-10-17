@@ -22,11 +22,13 @@ public class Music {
 
 class MusicFile {
 
-    public File musicFile;
+    public String filename;
+    public byte[] rawData;
     ArrayList<String> emails;
 
-    MusicFile(String uploader, File m) {
-        this.musicFile = m;
+    MusicFile(String filename, byte[] rawData) {
+        this.filename = filename;
+        this.rawData = rawData;
         this.emails = new ArrayList<String>();
     }
 
