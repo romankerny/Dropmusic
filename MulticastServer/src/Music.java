@@ -1,4 +1,5 @@
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Music {
@@ -7,7 +8,7 @@ public class Music {
     private String compositor;
     private Date   duracao;
 
-    public InputStream music_file;
+
 
     Music(int track, String title) {
         this.track = track;
@@ -22,4 +23,22 @@ public class Music {
     public String toString() {
         return track+ " - "+title;
     }
+}
+
+class MusicFile {
+
+    public String uploader;
+    public InputStream music_file;
+    ArrayList<String> emails;
+
+    MusicFile(String uploader, InputStream m) {
+        this.uploader = uploader;
+        this.music_file = m;
+        this.emails = new ArrayList<String>();
+    }
+
+    public void shareWith(String email) {
+        emails.add(email);
+    }
+
 }
