@@ -32,7 +32,8 @@ public class MulticastServer extends Thread {
             users.add(admin);
 
             this.artists.add(new Artist("Kendrick Lamar"));
-            artists.get(0).albums.add(new Album("To Pimp a Butterfly", "Hip-Hop e assim"));
+            artists.get(0).albums.add(new Album("To Pimp a Butterfly", "Hip-Hop"));
+            artists.get(0).albums.get(0).tracks.add(new Music("u"));
 
 
 

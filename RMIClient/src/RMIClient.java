@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.rmi.RMISecurityManager;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -24,18 +28,22 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         return email;
     }
 
+
+
     public static void main(String args[]) {
 
         Scanner sc = new Scanner(System.in);
         Scanner scanner;
         String userInput;
         String[] tokens;
+        int portTCP = 6565;
         boolean exit = false;
         String help = "Commands:\n"+
                     "- register [email] [password]\n"+
                     "- login [email] [password]\n"+
                     "- logout (no arguments)\n"+
                     "- rate [album name] [1-5] [review] (max 300 chars)\n"+
+                    "- upload music_file\n"+
                     "Editor-specific:\n"+
                     "- promote [email]";
 
@@ -94,6 +102,13 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     } else {
                         System.out.println("Usage: promote [user]");
                     }
+                } else if(tokens[0].equals("upload")) {
+                        // serverInterface.upload(email, portTCP);
+
+                        // criar socket e esperar q o cliente se ligue
+
+
+
 
                 } else if (tokens[0].equals("help")) {
                     System.out.println(help);
@@ -111,7 +126,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
             // play the audio clip with the audioplayer class
             AudioPlayer.player.start(audioStream);
-*/
+            */
         } catch (Exception e) {
             System.out.println("Exception in RMIClient.java main(): "+ e);
         }

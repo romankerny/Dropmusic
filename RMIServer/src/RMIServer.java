@@ -131,6 +131,24 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
+    public int uploadMusic(String title, String email) {
+        // Request  -> flag | s; type | requestTCPConnection; operation | upload; title | tttt; email | eeee;
+        // Response -> flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
+        sendUDPDatagram("flag|s;type|requestTCPConnection;operation|upload;title|"+title+";email|"+email+";");
+
+        boolean exit = false;
+        while(!exit) {
+            String rsp = receiveUDPDatagram();
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+            if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload") &&
+            cleanMessage.get(3)[1].equals(email) && cleanMessage.get(4)[1].equals("y"))
+            {
+                return Integer.parseInt(cleanMessage.get(5)[1]);
+            }
+        }
+        return 0;
+
+    }
 
 
 

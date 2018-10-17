@@ -3,7 +3,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Artist {
 
     String               name;
-    CopyOnWriteArrayList<Album> albums;
+    public CopyOnWriteArrayList<Album> albums;
     public String        details;
     public               CopyOnWriteArrayList<User> notifyIfEdited;
 

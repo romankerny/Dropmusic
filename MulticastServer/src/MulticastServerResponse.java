@@ -1,7 +1,9 @@
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.*;
+import java.net.*;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -13,6 +15,7 @@ public class MulticastServerResponse extends Thread {
     private DatagramPacket packet;
     private MulticastSocket sendSocket = null; // socket to respond to Multicast group
     private int SEND_PORT = 5214;
+    private int TCPPort = 5252;
     private String MULTICAST_ADDRESS;
     private CopyOnWriteArrayList<User> users;
     private CopyOnWriteArrayList<Artist> artists;
@@ -57,6 +60,41 @@ public class MulticastServerResponse extends Thread {
 
     // -----------------------------------------------------------------------------------------------------------------
 
+
+    public void uploadMusic(String title, String email) throws IOException, UnsupportedAudioFileException {
+        // flag | s; type | requestTCPConnection; operation | upload; email | eeee;
+        // flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
+        sendResponseMulticast("flag|r;type|requestTCPConnection;operation|upload;email|"+email+";result|y;port|"+TCPPort+";");
+        Iterator iArtists = artists.iterator();
+
+        while(iArtists.hasNext()) {
+            Artist a = (Artist) iArtists.next();
+            Iterator iAlbum = a.albums.iterator();
+
+            while(iAlbum.hasNext()) {
+                Album alb = (Album) iAlbum.next();
+                Iterator iMusic = alb.tracks.iterator();
+
+                while(iMusic.hasNext()) {
+                    Music m = (Music) iMusic.next();
+                    if(m.title.equals(title)) {
+
+                        ServerSocket serverSocker = new ServerSocket(TCPPort);
+                        Socket client = null;
+                        serverSocker.bind(new InetSocketAddress(TCPPort));
+                        if (serverSocker.isBound()) {
+                            client = serverSocker.accept();
+                            // receive File
+                            InputStream in = new BufferedInputStream(client.getInputStream());
+                            m.music_file = AudioSystem.getAudioInputStream(in);
+                            System.out.println("Adding " + title + "from " + email);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void register(String email, String password) {
 
 
@@ -81,7 +119,7 @@ public class MulticastServerResponse extends Thread {
             User s = new Regular(email, password);
             this.users.add(s);
             System.out.println("Gonna register " + email + " with password " + password);
-            rsp = "flag|r;type|register;result|y;flag|r;username|" + email + ";password|" + password + ";";
+            rsp = "flag|r;type|register;flag|r;username|" + email + ";password|" + password + ";";
         }
         sendResponseMulticast(rsp);
     }
@@ -214,8 +252,6 @@ public class MulticastServerResponse extends Thread {
             }
         }
 
-
-
         for(User s : users)
             System.out.println(s.toString());
 
@@ -343,6 +379,17 @@ public class MulticastServerResponse extends Thread {
                 turnIntoEditor(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);       // (Editor, regularToEditor)
             } else if(cleanMessage.get(1)[1].equals("notify")) {
                 offUserNotified(cleanMessage.get(4)[1], cleanMessage.get(2)[1]);    // (email, message)
+            } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload")) {
+                // flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
+
+                try {
+                    System.out.println("A chamar o metodo de upload");
+                    uploadMusic(cleanMessage.get(3)[1], cleanMessage.get(4)[1]); // (title, email)
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedAudioFileException e) {
+                    e.printStackTrace();
+                }
 
             } else {
                 System.out.println("Invalid protocol message");

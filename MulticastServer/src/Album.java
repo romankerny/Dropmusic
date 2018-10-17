@@ -2,13 +2,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Album {
     public          String  tittle;
-    private         String  description;
-    private         Music[] tracks;
+    public          String  description;
+    public          CopyOnWriteArrayList<Music> tracks;
     public          double  ratingC;                    // += every single rate
     public          int     nCritics;                   // to count n
     public          String  details;
     public          CopyOnWriteArrayList<User> notifyIfEdited;
-    public CopyOnWriteArrayList<Review> reviews;
+    public          CopyOnWriteArrayList<Review> reviews;
 
     Album(String tittle, String description) {
         this.tittle = tittle;
@@ -39,7 +39,7 @@ public class Album {
 
         String rsp;
         rsp = "Tittle: " + tittle + "\n" + "Description: " + description + "\n" + "Track-list: ";
-        for (Music m : this.tracks)
+        for (Music m : tracks)
             rsp += m.title + " ";
         rsp += "Critics: ";
         for (Review r : reviews) {

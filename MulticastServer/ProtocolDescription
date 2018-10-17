@@ -41,3 +41,19 @@ Resposta aos clientes c/ notify de alteração em música
     * P/ enquanto ainda só funciona c/ o param details de Album e Artist
     Request  -> flag | s; type | detail; gen | (art, album); keyword | vvvvv; detail | ddddddddddddddddddd; email | eeee;
     Response -> flag | r; type | detail; gen | (art, album); keyword | vvvvv; response | (y/n); email | eeee;
+
+
+
+(10) (12) [TCP Upload e download]
+    [Upload]
+
+
+    Request  -> flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
+    Response -> flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
+
+    [Download]
+    ServidorMulticast cria socket e fica à espera q/ RMIClient se ligue
+    cliente liga-se e assim que o servidor fizer o accept cria input stream e envia, Input stream do lado do servidor
+    Request from RMIClient -> flag | s; type | requestTCPConnection; operation | download; email | eeee;
+    Response               -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; port | pppp;
+
