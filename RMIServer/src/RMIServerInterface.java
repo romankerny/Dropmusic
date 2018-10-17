@@ -17,4 +17,7 @@ public interface RMIServerInterface extends Remote {
 
     // 6.
     public String regularToEditor(String editor, String regular) throws RemoteException;
+
+    // 10.
+    public int uploadMusic(String title, String email) throws RemoteException;
 }

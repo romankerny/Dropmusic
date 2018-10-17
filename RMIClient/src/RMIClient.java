@@ -8,6 +8,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLOutput;
 import java.util.Scanner;
 import java.io.InputStream;
 import java.io.FileInputStream;
@@ -45,7 +46,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- logout (no arguments)\n"+
                     "- search {art, alb} keyword"+
                     "- rate [album name] [1-5] [review] (max 300 chars)\n"+
-                    "- upload music_file\n"+
+                    "- upload [path/to/file] [music title]\n"+
                     "Editor-specific:\n"+
                     "- promote [email]";
 
@@ -118,10 +119,17 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                         System.out.println("Usage: promote [user]");
                     }
                 } else if(tokens[0].equals("upload")) {
-                        // serverInterface.upload(email, portTCP);
 
-                        // criar socket e esperar q o cliente se ligue
+                    String musicName = "";
 
+                    File music = new File(tokens[1]);
+                    for (int i = 2; i < tokens.length; i++)
+                        musicName = tokens[i] + " ";
+                    musicName = musicName.replaceAll(".$", "");
+
+                    int port = serverInterface.uploadMusic(musicName, email);
+                    System.out.println(port);
+                    // criar socket e esperar q o cliente se ligue
 
 
 

@@ -64,8 +64,16 @@ public class MulticastServerResponse extends Thread {
     public void uploadMusic(String title, String email) throws IOException, UnsupportedAudioFileException {
         // flag | s; type | requestTCPConnection; operation | upload; email | eeee;
         // flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
+
         sendResponseMulticast("flag|r;type|requestTCPConnection;operation|upload;email|"+email+";result|y;port|"+TCPPort+";");
         Iterator iArtists = artists.iterator();
+        System.out.println("A dar upload de musica "+title);
+
+        ServerSocket serverSocker = new ServerSocket(TCPPort);
+        Socket client = null;
+        System.out.println("antes do bind");
+        // serverSocker.bind(new InetSocketAddress(TCPPort));
+        System.out.println("depois do bind");
 
         while(iArtists.hasNext()) {
             Artist a = (Artist) iArtists.next();
@@ -79,15 +87,12 @@ public class MulticastServerResponse extends Thread {
                     Music m = (Music) iMusic.next();
                     if(m.title.equals(title)) {
 
-                        ServerSocket serverSocker = new ServerSocket(TCPPort);
-                        Socket client = null;
-                        serverSocker.bind(new InetSocketAddress(TCPPort));
-                        if (serverSocker.isBound()) {
-                            client = serverSocker.accept();
-                            // receive File
-                            InputStream in = new BufferedInputStream(client.getInputStream());
-                            m.music_file = in;
-                        }
+                        System.out.println("socket is bound");
+                        client = serverSocker.accept();
+                        // receive File
+                        InputStream in = new BufferedInputStream(client.getInputStream());
+                        m.musicFiles.add(new MusicFile(email, in));
+
                     }
                 }
             }

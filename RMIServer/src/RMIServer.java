@@ -309,7 +309,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                             String failure = "flag|s;type|notify;message|Failed to printOnClient;user_count|1;user_1_email|"+email+";";
                             h.sendUDPDatagram(failure);
 
-
                         }
                     }
 

@@ -1,18 +1,20 @@
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Music {
     public int track;
     public  String title;
     private String compositor;
     private Date   duracao;
-
+    public CopyOnWriteArrayList<MusicFile> musicFiles;
 
 
     Music(int track, String title) {
         this.track = track;
         this.title = title;
+        this.musicFiles = new CopyOnWriteArrayList<MusicFile>();
     }
 
     Music(String title) {
