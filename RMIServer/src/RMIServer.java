@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -213,6 +214,36 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             }
         }
         System.out.println(rspToClient);
+        return rspToClient;
+    }
+
+    public String search(String param, String keyword) throws RemoteException {
+        // Request  -> flag | s; type | search; param | (art, gen, tit); keyword | kkkk;
+        // Response -> flag | r; type | search; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...
+
+        String msg = "flag|s;type|details;param|"+param+";keyword|"+keyword+";";
+        boolean exit = false;
+        String rspToClient = "";
+
+        sendUDPDatagram(msg);
+
+        while(!exit) {
+            String rsp = receiveUDPDatagram();
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if(cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("details")) {
+                if (cleanMessage.get(2)[1].equals("y")) {
+                    int numItems = Integer.parseInt(cleanMessage.get(5)[1]);
+                    System.out.println(numItems);
+                    for (int i = 0; i < numItems; i++) {
+                        rspToClient += cleanMessage.get(6+i)[1];
+                    }
+                } else {
+                    rspToClient = "Search failed";
+                }
+                exit = true;
+            }
+        }
         return rspToClient;
     }
 

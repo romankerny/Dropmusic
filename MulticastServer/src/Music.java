@@ -1,7 +1,16 @@
-import java.util.Date;
 
 public class Music {
-    public  String title;
-    private String compositor;
-    private Date   duracao;
+    public int track;
+    public String title;
+    // Falta o .mp3
+
+    public Music(int track, String title) {
+        this.track = track;
+        this.title = title;
+    }
+
+    @Override
+    public String toString() {
+        return track+ " - "+title;
+    }
 }
