@@ -1,5 +1,4 @@
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.Naming;
@@ -10,8 +9,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLOutput;
 import java.util.Scanner;
-import java.io.InputStream;
-import java.io.FileInputStream;
+
 import sun.audio.*;
 
 public class RMIClient extends UnicastRemoteObject implements RMIClientInterface {
@@ -38,16 +36,16 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         Scanner scanner;
         String userInput;
         String[] tokens;
-        int portTCP = 6565;
         boolean exit = false;
         String help = "Commands:\n"+
                     "- register [email] [password]\n"+
                     "- login [email] [password]\n"+
-                    "- logout (no arguments)\n"+
-                    "- search {art, alb} keyword"+
-                    "- rate [album name] [1-5] [review] (max 300 chars)\n"+
+                    "- logout (no arguments)\n\n"+
+                    "- search {art, alb} keyword\n"+
+                    "- rate [album name] [1-5] [review] (max 300 chars)\n\n"+
                     "- upload [path/to/file] [music title]\n"+
-                    "Editor-specific:\n"+
+                    "- download [user] [music title] [path]\n"+
+                    "\nEditor-specific:\n"+
                     "- promote [email]";
 
 		try {
@@ -120,17 +118,48 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     }
                 } else if(tokens[0].equals("upload")) {
 
-                    String musicName = "";
+                    if (tokens.length >= 3) {
+                        String musicName = "";
 
-                    File music = new File(tokens[1]);
-                    for (int i = 2; i < tokens.length; i++)
-                        musicName = tokens[i] + " ";
-                    musicName = musicName.replaceAll(".$", "");
+                        File music = new File(tokens[1]);
+                        for (int i = 2; i < tokens.length; i++)
+                            musicName = tokens[i] + " ";
+                        musicName = musicName.replaceAll(".$", "");
 
-                    int port = serverInterface.uploadMusic(musicName, email);
-                    System.out.println(port);
-                    // criar socket e esperar q o cliente se ligue
+                        int port = serverInterface.uploadMusic(musicName, email);
+                        // criar socket e mandar pa la o nosso file
+                        Socket s = new Socket("localhost", port);
+                        if (s.isConnected()) {
+                            ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
+                            oos.writeObject(music);
+                            oos.close();
+                        }
+                        s.close();
+                    } else {
+                        System.out.println("Usage: upload [path] [music name]");
+                    }
+                } else if (tokens[0].equals("download")) {
 
+                    if (tokens.length >= 3) {
+                        String musicName = "";
+                        File musicFile;
+
+                        for (int i = 2; i < tokens.length; i++)
+                            musicName = tokens[i] + " ";
+                        musicName = musicName.replaceAll(".$", "");
+
+                        int port = serverInterface.downloadMusic(musicName, tokens[1]);
+                        // Criar socket e receber o File
+                        Socket s = new Socket("localhost", port);
+                        if (s.isConnected()) {
+                            ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
+                            musicFile = (File) ois.readObject();
+
+
+                        }
+                    } else {
+                        System.out.println("Usage: download [user] [music name]");
+                    }
 
 
                 } else if (tokens[0].equals("help")) {

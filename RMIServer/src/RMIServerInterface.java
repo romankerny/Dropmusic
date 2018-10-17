@@ -20,4 +20,9 @@ public interface RMIServerInterface extends Remote {
 
     // 10.
     public int uploadMusic(String title, String email) throws RemoteException;
+
+    // 11.
+
+    // 12.
+    public int downloadMusic(String title, String email) throws RemoteException;
 }

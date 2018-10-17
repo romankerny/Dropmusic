@@ -61,7 +61,7 @@ public class MulticastServerResponse extends Thread {
     // -----------------------------------------------------------------------------------------------------------------
 
 
-    public void uploadMusic(String title, String email) throws IOException, UnsupportedAudioFileException {
+    public void uploadMusic(String title, String email) throws IOException, ClassNotFoundException {
         // flag | s; type | requestTCPConnection; operation | upload; email | eeee;
         // flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
 
@@ -90,8 +90,43 @@ public class MulticastServerResponse extends Thread {
                         System.out.println("socket is bound");
                         client = serverSocker.accept();
                         // receive File
-                        InputStream in = new BufferedInputStream(client.getInputStream());
-                        m.musicFiles.add(new MusicFile(email, in));
+                        ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
+                        File musicFile = (File) ois.readObject();
+
+                        m.musicFiles.put(email, new MusicFile(email, musicFile));
+                    }
+                }
+            }
+        }
+    }
+
+    public void downloadMusic(String title, String email) throws IOException, ClassNotFoundException {
+        // flag | s; type | requestTCPConnection; operation | download; email | eeee;
+        // flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; port | pppp;
+
+        sendResponseMulticast("flag|r;type|requestTCPConnection;operation|download;email|"+email+";result|y;port|"+TCPPort+";");
+        Iterator iArtists = artists.iterator();
+        System.out.println("A dar upload de musica "+title);
+
+        ServerSocket serverSocket = new ServerSocket(TCPPort);
+        Socket client = null;
+
+        while(iArtists.hasNext()) {
+            Artist a = (Artist) iArtists.next();
+            Iterator iAlbum = a.albums.iterator();
+
+            while(iAlbum.hasNext()) {
+                Album alb = (Album) iAlbum.next();
+                Iterator iMusic = alb.tracks.iterator();
+
+                while(iMusic.hasNext()) {
+                    Music m = (Music) iMusic.next();
+                    if(m.title.equals(title)) {
+
+                        client = serverSocket.accept();
+                        // Send file
+                        ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
+                        oos.writeObject(m.musicFiles.get(email));
 
                     }
                 }
@@ -392,7 +427,7 @@ public class MulticastServerResponse extends Thread {
                     uploadMusic(cleanMessage.get(3)[1], cleanMessage.get(4)[1]); // (title, email)
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (UnsupportedAudioFileException e) {
+                } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
 
