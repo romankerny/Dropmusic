@@ -6,9 +6,10 @@ public class Music {
     public  String title;
     private String compositor;
     private Date   duracao;
+
     public InputStream music_file;
 
-    public Music(int track, String title) {
+    Music(int track, String title) {
         this.track = track;
         this.title = title;
     }

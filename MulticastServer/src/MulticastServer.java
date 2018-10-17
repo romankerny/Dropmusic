@@ -89,8 +89,8 @@ public class MulticastServer extends Thread {
             kendrick.albums.add(butterfly);
             this.artists.add(kendrick);
 
-            //System.out.println(tool);
-            //System.out.println(kendrick);
+            // System.out.println(tool);
+            // System.out.println(kendrick);
 
             while (true) {
 

@@ -13,6 +13,7 @@ public class User implements Serializable {
     public Status status;
     public CopyOnWriteArrayList<String> notifications;
 
+
     public User(String email, String password) {
         this.email = email;
         this.password = password;

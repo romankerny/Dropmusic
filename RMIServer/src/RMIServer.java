@@ -2,7 +2,9 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.MulticastSocket;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -278,8 +280,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         try {
             RMIServer h = new RMIServer();
-            Registry r = LocateRegistry.createRegistry(7000);
-            r.rebind("rmiserver", h);
+            // Registry r = LocateRegistry.createRegistry(7000);
+            Naming.rebind("rmiserver", h);
             System.out.println("RMIServer ready.");
 
 
@@ -318,6 +320,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         } catch (RemoteException re) {
             System.out.println("Exception in RMIServer.main: " + re);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
 
     }

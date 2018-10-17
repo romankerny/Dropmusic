@@ -4,12 +4,12 @@ public class Album {
     public          String  title;
     public         String  description;
     public         String   genre;
-    public         CopyOnWriteArrayList<Music> tracks;
+    public          CopyOnWriteArrayList<Music> tracks;
     public          double  ratingC;                    // += every single rate
     public          int     nCritics;                   // to count n
     public          String  details;
     public          CopyOnWriteArrayList<User> notifyIfEdited;
-    public CopyOnWriteArrayList<Review> reviews;
+    public          CopyOnWriteArrayList<Review> reviews;
 
     Album(String title, String description, String genre) {
         this.title = title;
