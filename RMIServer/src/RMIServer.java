@@ -203,7 +203,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     return rspToClient;
     }
 
-
+    public void subscribe(String email, RMIClientInterface clientInterface) throws RemoteException{
+        this.clients.put(email, clientInterface);
+    }
 
     public String login(String email, String password, RMIClientInterface client) throws RemoteException {
 
@@ -225,7 +227,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     if (cleanMessage.get(3)[1].equals(email) && cleanMessage.get(4)[1].equals(password)) {
                         rspToClient = "Logado com sucesso " + email + " " + password;
 
-                        this.clients.put(email, client);
+                        subscribe(email, client);
                         exit = true;
                     }
                 } else {
@@ -353,7 +355,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                 try {
                     System.out.println("configuring....");
-                    sleep((long) (3000));
+                    sleep((long) (500));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -372,7 +374,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                         try {
 
-                            mainServerInterface = (RMIServerInterface) Naming.lookup("rmi://localhost:6789/rmiserver");
+                            mainServerInterface = (RMIServerInterface) Naming.lookup("rmiserver");
                             int mainServerHashSize = mainServerInterface.sizeHashMap();
                             System.out.println("Pinging MainRMI");
                             if (mainServerHashSize != sizeHashMap) {
@@ -383,8 +385,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                             }
 
                         } catch (RemoteException re) {
-                            Naming.rebind("rmi://localhost:6789/rmiserver", rmiServer);
-                            Naming.unbind("rmi://localhost:6789/rmiserver");
+                            Naming.rebind("rmiserver", rmiServer);
+                            Naming.unbind("rmiserver");
                             System.out.println("Failed to access MainRMI");
                             failCount++;
                             if (failCount == 5 && failedLastTime) {
@@ -394,8 +396,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                             failedLastTime = true;
 
                         } catch (NotBoundException ne) {
-                            Naming.rebind("rmi://localhost:6789/rmiserver", rmiServer);
-                            Naming.unbind("rmi://localhost:6789/rmiserver");
+                            Naming.rebind("rmiserver", rmiServer);
+                            Naming.unbind("rmiserver");
                             System.out.println("Failed to access MainRMI");
                             failCount++;
                             if (failCount == 5 && failedLastTime) {
@@ -406,7 +408,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                         }
 
-                        sleep((long) (3000));
+                        sleep((long) (500));
 
                     } catch (InterruptedException Et) {
 

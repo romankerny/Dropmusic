@@ -12,6 +12,8 @@ import java.util.Scanner;
 
 import sun.audio.*;
 
+import static java.lang.Thread.sleep;
+
 public class RMIClient extends UnicastRemoteObject implements RMIClientInterface {
 
     private static String email = "";
@@ -45,6 +47,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         Scanner scanner;
         String userInput;
         String[] tokens;
+        RMIClient client = new RMIClient();
         boolean exit = false;
         String help = "Commands:\n"+
                     "- register [email] [password]\n"+
@@ -74,8 +77,21 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     }
                 } else if (tokens[0].equals("login")) {
                     if (tokens.length == 3) {
-                        System.out.println(serverInterface.login(tokens[1], tokens[2], new RMIClient()));
-                        email = tokens[2];
+                        System.out.println("aqui");
+                        try {
+                            System.out.println(serverInterface.login(tokens[1], tokens[2], client));
+                        } catch (RemoteException re) {
+                            email = tokens[2];
+
+                            try {
+                                sleep((long) (2500));
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            serverInterface.subscribe(email, client);
+                            System.out.println(serverInterface.login(tokens[1], tokens[2], client));
+                        }
+
                     } else {
                         System.out.println("Usage: login [email] [password]");
                     }
