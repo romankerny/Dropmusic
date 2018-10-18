@@ -20,12 +20,12 @@ public interface RMIServerInterface extends Remote {
     public String regularToEditor(String editor, String regular) throws RemoteException;
 
     // 10.
-    public int uploadMusic(String title, String email) throws RemoteException;
+    public int uploadMusic(String title, String uploader) throws RemoteException;
 
     // 11.
-
+    public String share(String title, String shareTo, String uploader) throws RemoteException;
     // 12.
-    public int downloadMusic(String title, String email) throws RemoteException;
+    public int downloadMusic(String title, String uploader, String email) throws RemoteException;
 
     // RMIBackup Test
     public int sizeHashMap() throws RemoteException;

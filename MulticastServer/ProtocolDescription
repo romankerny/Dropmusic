@@ -34,8 +34,8 @@ Resposta aos clientes c/ notify de alteração em música
     Response -> flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n; email | eeee;
 
 (6) Dar previlégios de editor a um utilizador
-    Request  -> flag | s; type | privilege; user1 | username; user2; username;
-    Response -> flag | r; type | privilege; result | (y/n): user1 | username; user2; username;
+    Request  -> flag | s; type | privilege; user1 | username; user2 | username;
+    Response -> flag | r; type | privilege; result | (y/n): user1 | username; user2 | username;
 
 (7) Adicionar / alterar detalhes
     * P/ enquanto ainda só funciona c/ o param details de Album e Artist
@@ -45,15 +45,16 @@ Resposta aos clientes c/ notify de alteração em música
 
 
 (10) (12) [TCP Upload e download]
+
     [Upload]
-
-
-    Request  -> flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
+    Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
     Response -> flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
 
     [Download]
-    ServidorMulticast cria socket e fica à espera q/ RMIClient se ligue
-    cliente liga-se e assim que o servidor fizer o accept cria input stream e envia, Input stream do lado do servidor
     Request from RMIClient -> flag | s; type | requestTCPConnection; operation | download; email | eeee;
     Response               -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; port | pppp;
+
+(11) Partilhar musica
+    Request  -> flag | s; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
+    Response -> flag | r; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu;
 
