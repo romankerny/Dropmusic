@@ -1,5 +1,6 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.concurrent.ConcurrentHashMap;
 
 public interface RMIServerInterface extends Remote {
     public void    printOnServer(String s) throws RemoteException;
@@ -25,4 +26,11 @@ public interface RMIServerInterface extends Remote {
 
     // 12.
     public int downloadMusic(String title, String email) throws RemoteException;
+
+    // RMIBackup Test
+    public int sizeHashMap() throws RemoteException;
+    public ConcurrentHashMap<String, RMIClientInterface> getHashMap() throws RemoteException;
+
+
+    public RMIServer getServerObject() throws RemoteException;
 }
