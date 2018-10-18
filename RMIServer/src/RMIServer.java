@@ -7,6 +7,8 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,7 +23,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     private static final long serialVersionUID = 1L;
     private String MULTICAST_ADDRESS = "224.3.2.1";
     private int SEND_PORT = 5213, RCV_PORT = 5214;
-    static RMIServer h;
+    static RMIServer rmiServer;
 
     public RMIServer() throws RemoteException {
         super();
@@ -304,7 +306,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
     public RMIServer getServerObject() throws RemoteException {
-        return this.h;
+        return this.rmiServer;
     }
 
     // =========================================================
@@ -313,45 +315,50 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String msg;
 
 
-
-
         try {
             int sizeHashMap = 0, failCount = 0;
             boolean failedLastTime = false;
             boolean takeOver = false;
-            h = new RMIServer();
 
 
+            rmiServer = new RMIServer();
 
             try {
 
-                Naming.bind("rmiserver", h);
+                try {
+                    System.out.println("configuring....");
+                    sleep((long) (3000));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                Naming.bind("rmiserver", rmiServer);
                 System.out.println("Taking over as main");
 
+
             } catch (AlreadyBoundException e) {
-                RMIServerInterface mainServerInterface = (RMIServerInterface) Naming.lookup("rmiserver");
+               RMIServerInterface mainServerInterface; //= (RMIServerInterface) Naming.lookup("rmiserver");
                 System.out.println("Going as Backup");
 
                 while (!takeOver) {
                     try {
 
-                        sleep((long) (Math.random() * 7000));
 
                         try {
 
-                            mainServerInterface = (RMIServerInterface) Naming.lookup("rmiserver");
+                            mainServerInterface = (RMIServerInterface) Naming.lookup("rmi://localhost:6789/rmiserver");
                             int mainServerHashSize = mainServerInterface.sizeHashMap();
                             System.out.println("Pinging MainRMI");
                             if (mainServerHashSize != sizeHashMap) {
-                                h.clients = mainServerInterface.getHashMap(); // tem de ser actualizado p/ funcionar fixe
+                                rmiServer.clients = mainServerInterface.getHashMap(); // tem de ser actualizado p/ funcionar fixe
                                 sizeHashMap = mainServerHashSize;
                                 failedLastTime = false;
                                 failCount = 0;
                             }
 
                         } catch (RemoteException re) {
-                            Naming.rebind("rmiserver", h);
-                            Naming.unbind("rmiserver");
+                            Naming.rebind("rmi://localhost:6789/rmiserver", rmiServer);
+                            Naming.unbind("rmi://localhost:6789/rmiserver");
                             System.out.println("Failed to access MainRMI");
                             failCount++;
                             if (failCount == 5 && failedLastTime) {
@@ -361,8 +368,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                             failedLastTime = true;
 
                         } catch (NotBoundException ne) {
-                            Naming.rebind("rmiserver", h);
-                            Naming.unbind("rmiserver");
+                            Naming.rebind("rmi://localhost:6789/rmiserver", rmiServer);
+                            Naming.unbind("rmi://localhost:6789/rmiserver");
                             System.out.println("Failed to access MainRMI");
                             failCount++;
                             if (failCount == 5 && failedLastTime) {
@@ -373,6 +380,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                         }
 
+                        sleep((long) (3000));
 
                     } catch (InterruptedException Et) {
 
@@ -384,7 +392,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
 
-            Naming.rebind("rmiserver", h);
+            Naming.rebind("rmiserver", rmiServer);
 
             System.out.println("Taking over RMI PRINCIPAL");
             // fazer o bind
@@ -393,8 +401,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             while(true) {
                 // flag | r; type | notify; message | msg; user_count | n; user_x_email | email; [...]
-                msg = h.receiveUDPDatagram();
-                ArrayList<String[]> cleanMessage = h.cleanTokens(msg);
+                msg = rmiServer.receiveUDPDatagram();
+                ArrayList<String[]> cleanMessage = rmiServer.cleanTokens(msg);
 
                 if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("notify")) {
 
@@ -406,12 +414,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                         email = cleanMessage.get(4+i)[1];
 
                         try {
-                            h.clients.get(email).printOnClient(userMsg);
+                            rmiServer.clients.get(email).printOnClient(userMsg);
                         } catch (RemoteException re){
                             System.out.println("Exception: "+ re);
                             // To be tested!
                             String failure = "flag|s;type|notify;message|Failed to printOnClient;user_count|1;user_1_email|"+email+";";
-                            h.sendUDPDatagram(failure);
+                            rmiServer.sendUDPDatagram(failure);
 
                         }
                     }
