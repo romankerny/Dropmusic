@@ -318,7 +318,7 @@ public class MulticastServerResponse extends Thread {
     public void turnIntoEditor(String user1, String user2) {
 
         // flag | s; type | privilege; user1 | username; user2; username;
-        // flag | r; type | privilege; result | (y/n): user1 | username; user2 | username;
+        // flag | r; type | privilege; result | (y/n); user1 | username; user2 | username;
 
         Iterator iUsers1 = users.iterator();
         Iterator iUsers2 = users.iterator();
@@ -348,9 +348,6 @@ public class MulticastServerResponse extends Thread {
                     sendResponseMulticast("flag|r;type|notify;message|You got promoted to Editor;user_count|1;user_0_email|" + ed.email + ";");
             }
         }
-
-        for(User s : users)
-            System.out.println(s.toString());
 
         sendResponseMulticast(rsp);
     }

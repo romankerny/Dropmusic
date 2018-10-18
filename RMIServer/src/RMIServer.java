@@ -114,7 +114,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public String regularToEditor(String editor, String regular) throws RemoteException {
         // Request  -> flag | s; type | privilege; user1 | username; user2 | username;
-        // Response -> flag | r; type | privilege; result | (y/n): user1 | username; user2; username;
+        // Response -> flag | r; type | privilege; result | (y/n); user1 | username; user2 | username;
 
         String msg = "flag|s;type|privilege;user1|" + editor + ";user2|" + regular + ";";
         boolean exit = false;
@@ -125,14 +125,20 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         while(!exit) {
             String rsp = receiveUDPDatagram();
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+            System.out.println("recebi o datagrama crl");
+            System.out.println(rsp);
+            System.out.println(cleanMessage.toArray());
 
-            if(cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("privilege") && cleanMessage.get(3)[1].equals(editor)
-                && cleanMessage.get(4)[1].equals(regular) && cleanMessage.get(2)[1].equals("y")) {
+
+            if(cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("privilege") && cleanMessage.get(2)[1].equals("y") && cleanMessage.get(3)[1].equals(editor)
+                && cleanMessage.get(4)[1].equals(regular) ) {
+                System.out.println(regular);
                 rspToClient = regular + " casted to Editor with success";
                 exit = true;
 
             }
         }
+        System.out.println(rspToClient);
 
         return rspToClient;
     }
