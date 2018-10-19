@@ -40,6 +40,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, SEND_PORT);
             socket.send(packet);
 
+            socket.close();
+            socket.leaveGroup(group);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
