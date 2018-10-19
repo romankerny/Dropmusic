@@ -31,7 +31,7 @@ public interface RMIServerInterface extends Remote {
     public int sizeHashMap() throws RemoteException;
     public ConcurrentHashMap<String, RMIClientInterface> getHashMap() throws RemoteException;
     public void subscribe(String email, RMIClientInterface clientInterface) throws RemoteException;
-
+    public boolean isAlive() throws RemoteException;
 
     public RMIServer getServerObject() throws RemoteException;
 }

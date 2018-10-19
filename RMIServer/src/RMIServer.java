@@ -1,14 +1,12 @@
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.MulticastSocket;
+import java.net.*;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -330,6 +328,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         System.out.println("> " + s);
     }
 
+    public boolean isAlive() throws RemoteException {
+        return true;
+    }
+
     public int sizeHashMap() throws RemoteException {
         return clients.size();
     }
@@ -344,7 +346,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     // =========================================================
-    public static void main(String args[]) throws NotBoundException {
+    public static void main(String args[]) throws NotBoundException, AlreadyBoundException {
 
         String msg;
 
@@ -356,87 +358,64 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
             rmiServer = new RMIServer();
+            Registry r = null;
 
             try {
 
-                try {
-                    System.out.println("configuring....");
-                    sleep((long) (500));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                r = LocateRegistry.createRegistry(1099);
+                r.bind("rmiserver", rmiServer);
 
-                Naming.bind("rmiserver", rmiServer);
-                System.out.println("Taking over as main");
-
-
-            } catch (AlreadyBoundException e) {
-               RMIServerInterface mainServerInterface; //= (RMIServerInterface) Naming.lookup("rmiserver");
-                System.out.println("Going as Backup");
+            } catch (ExportException ree) {
+               RMIServerInterface mainServerInterface;
+                System.out.println("Starting RMIBackup");
 
                 while (!takeOver) {
                     try {
 
-
                         try {
 
-                            mainServerInterface = (RMIServerInterface) Naming.lookup("rmiserver");
-                            int mainServerHashSize = mainServerInterface.sizeHashMap();
+                            mainServerInterface = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmiserver");
                             System.out.println("Pinging MainRMI");
-                            if (mainServerHashSize != sizeHashMap) {
-                                rmiServer.clients = mainServerInterface.getHashMap(); // tem de ser actualizado p/ funcionar fixe
-                                sizeHashMap = mainServerHashSize;
+                            if (mainServerInterface.isAlive()) {
                                 failedLastTime = false;
+                            }
+
+                            if(!failedLastTime) {
                                 failCount = 0;
                             }
 
                         } catch (RemoteException re) {
-                            Naming.rebind("rmiserver", rmiServer);
-                            Naming.unbind("rmiserver");
                             System.out.println("Failed to access MainRMI");
+
                             failCount++;
+
                             if (failCount == 5 && failedLastTime) {
                                 failCount = 0;
                                 takeOver = true;
+                                r = LocateRegistry.createRegistry(1099);
                             }
                             failedLastTime = true;
-
-                        } catch (NotBoundException ne) {
-                            Naming.rebind("rmiserver", rmiServer);
-                            Naming.unbind("rmiserver");
-                            System.out.println("Failed to access MainRMI");
-                            failCount++;
-                            if (failCount == 5 && failedLastTime) {
-                                failCount = 0;
-                                takeOver = true;
-                            }
-                            failedLastTime = true;
-
                         }
 
-                        sleep((long) (500));
+                        sleep((long) (5000));
 
                     } catch (InterruptedException Et) {
-
                         System.out.println(Et);
                     }
+
                 }
             }
 
 
+            r.rebind("rmiserver", rmiServer);
+            System.out.println("Taking over RMIMain");
 
-
-            Naming.rebind("rmiserver", rmiServer);
-
-            System.out.println("Taking over RMI PRINCIPAL");
-            // fazer o bind
-
-            // Handle notifications
 
             while(true) {
                 // flag | r; type | notify; message | msg; user_count | n; user_x_email | email; [...]
                 msg = rmiServer.receiveUDPDatagram();
                 ArrayList<String[]> cleanMessage = rmiServer.cleanTokens(msg);
+                System.out.println(msg);
 
                 if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("notify")) {
 
@@ -465,8 +444,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         } catch (RemoteException re) {
             System.out.println("Exception in RMIServer.main: " + re);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         }
 
     }

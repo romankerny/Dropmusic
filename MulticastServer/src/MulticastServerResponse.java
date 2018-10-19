@@ -335,21 +335,21 @@ public class MulticastServerResponse extends Thread {
         }
 
         exit = false;
-
+        Editor ed = null;
         while (iUsers1.hasNext() & !exit) {
             User s = (User) iUsers1.next();
             if (s.email.equals(user1) && s.getType().equals("editor")) {
                     users.remove(regularUser);
-                    Editor ed = new Editor(regularUser.email, regularUser.password);
+                    ed = new Editor(regularUser.email, regularUser.password);
                     users.add(ed);
                     exit = true;
                     rsp = "flag|r;type|privilege;result|y;user1|" + user1 +";user2|" + user2 + ";";
-                    // flag | r; type | notify; user_count | n; user_x_email | email; [...] message | mmmmmmm;
-                    sendResponseMulticast("flag|r;type|notify;message|You got promoted to Editor;user_count|1;user_0_email|" + ed.email + ";");
+                    // flag | r; type | notify; user_count | n; user_x_email | email; [...] message | mmmmmmm
             }
         }
 
-        sendResponseMulticast(rsp);
+        sendResponseMulticast(rsp); // -> RMIServer
+        sendResponseMulticast("flag|r;type|notify;message|You got promoted to Editor;user_count|1;user_0_email|" + ed.email + ";");   // you got promoted -> RMIClient
     }
 
 
