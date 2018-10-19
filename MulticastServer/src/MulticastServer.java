@@ -4,6 +4,7 @@ import java.net.MulticastSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MulticastServer extends Thread {
@@ -20,7 +21,26 @@ public class MulticastServer extends Thread {
 
     public static void main(String[] args) {
         MulticastServer server = new MulticastServer();
+
         server.start();
+    }
+
+    public void sendResponseMulticast(String resp) {
+
+
+            // only the designated Multicast Server will respond to RMIServer
+            try {
+                MulticastSocket socket = new MulticastSocket();
+                byte[] buffer = resp.getBytes();
+                InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, 5214);
+                socket.send(packet);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
     }
 
 
@@ -29,11 +49,17 @@ public class MulticastServer extends Thread {
         // wait for packets
 
         try {
+
+            String code = UUID.randomUUID().toString().substring(24);
+
+            sendResponseMulticast("flag|s;type|ack;hash|"+code+";");
+
             socket = new MulticastSocket(RECV_PORT);  // create socket and bind it
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
 
-            System.out.println("Multicast server ready");
+            System.out.println("Multicast server ready - " + code);
+
 
             Editor admin = new Editor("admin", "admin");
             admin.notifications.add("es um cabron");
@@ -108,8 +134,7 @@ public class MulticastServer extends Thread {
                 byte[] buffer = new byte[65536];
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
-
-                MulticastServerResponse threadToResolvePacket = new MulticastServerResponse(packet, MULTICAST_ADDRESS, users, artists);
+                MulticastServerResponse threadToResolvePacket = new MulticastServerResponse(packet, MULTICAST_ADDRESS, users, artists, code);
                 threadToResolvePacket.start();
 
 

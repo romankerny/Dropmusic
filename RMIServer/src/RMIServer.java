@@ -40,9 +40,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, SEND_PORT);
             socket.send(packet);
 
-            socket.close();
-            socket.leaveGroup(group);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -424,13 +421,14 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         } catch (RemoteException re) {
             System.out.println("Exception in RMIServer.main: " + re);
         }
-
+        /*
         while(true) {
             // flag | r; type | notify; message | msg; user_count | n; user_x_email | email; [...]
             msg = rmiServer.receiveUDPDatagram();
             ArrayList<String[]> cleanMessage = rmiServer.cleanTokens(msg);
 
         }
+        */
 
     }
 }
