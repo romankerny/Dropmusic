@@ -58,3 +58,7 @@ Resposta aos clientes c/ notify de alteração em música
     Request  -> flag | s; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
     Response -> flag | r; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu;
 
+
+[Multicast-RMI]
+    Response -> flag | r; type | ack; hash | hhhh;
+
