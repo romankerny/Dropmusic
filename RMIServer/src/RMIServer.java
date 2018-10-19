@@ -55,7 +55,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             socket.joinGroup(group);
 
 
-            byte[] buffer = new byte[256];
+            byte[] buffer = new byte [65536];
+
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet);
 
@@ -397,7 +398,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                             failedLastTime = true;
                         }
 
-                        sleep((long) (5000));
+                        sleep((long) (500));
 
                     } catch (InterruptedException Et) {
                         System.out.println(Et);

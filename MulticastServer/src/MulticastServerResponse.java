@@ -370,7 +370,7 @@ public class MulticastServerResponse extends Thread {
         while (iArtists.hasNext() & !exit) {
             Artist a = (Artist) iArtists.next();
 
-            if(type.equals("art")) {
+            if(type.equals("art") || type.equals("alb")) {
                 if (a.name.equals(keyword)) {
                     response = a.toString();
                     exit = true;

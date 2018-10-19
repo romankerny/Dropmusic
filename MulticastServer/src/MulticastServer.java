@@ -96,7 +96,7 @@ public class MulticastServer extends Thread {
 
             while (true) {
 
-                byte[] buffer = new byte[256];
+                byte[] buffer = new byte[65536];
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
 

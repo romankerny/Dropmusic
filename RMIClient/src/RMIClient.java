@@ -44,7 +44,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        this.serverInterface = (RMIServerInterface) Naming.lookup("rmiserver");
+        this.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmiserver");
         this.serverInterface.subscribe(email, client);
     }
 
