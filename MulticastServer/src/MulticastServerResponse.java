@@ -13,6 +13,7 @@ import java.util.Iterator;
 public class MulticastServerResponse extends Thread {
 
     private DatagramPacket packet;
+    private String hashCode;
     private MulticastSocket sendSocket = null; // socket to respond to Multicast group
     private int SEND_PORT = 5214;
     private int TCPPort = 5252;
@@ -20,27 +21,32 @@ public class MulticastServerResponse extends Thread {
     private CopyOnWriteArrayList<User> users;
     private CopyOnWriteArrayList<Artist> artists;
 
-    MulticastServerResponse(DatagramPacket packet, String ip, CopyOnWriteArrayList<User> users, CopyOnWriteArrayList<Artist> artists) {
+
+    MulticastServerResponse(DatagramPacket packet, String ip, CopyOnWriteArrayList<User> users, CopyOnWriteArrayList<Artist> artists, String code) {
 
         this.packet = packet;
         MULTICAST_ADDRESS = ip;
         this.users = users;
         this.artists = artists;
+        this.hashCode = code;
     }
 
-    public void sendResponseMulticast(String resp) {
+    public void sendResponseMulticast(String resp, String code) {
 
-        try {
-            MulticastSocket socket = new MulticastSocket();
-            byte[] buffer = resp.getBytes();
-            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, SEND_PORT);
-            socket.send(packet);
+        if(this.hashCode.equals(code)) {
+            // only the designated Multicast Server will respond to RMIServer
+            try {
+                MulticastSocket socket = new MulticastSocket();
+                byte[] buffer = (resp+" "+hashCode).getBytes();
+                InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, SEND_PORT);
+                socket.send(packet);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
+          System.out.println(code);
     }
 
     ArrayList cleanTokens(String msg) {
@@ -61,13 +67,13 @@ public class MulticastServerResponse extends Thread {
     // -----------------------------------------------------------------------------------------------------------------
 
 
-    public void uploadMusic(String title, String email) throws IOException, ClassNotFoundException {
+    public void uploadMusic(String title, String email, String code) throws IOException, ClassNotFoundException {
         // flag | s; type | requestTCPConnection; operation | upload; email | eeee;
         // flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
 
-        sendResponseMulticast("flag|r;type|requestTCPConnection;operation|upload;email|"+email+";result|y;port|"+TCPPort+";");
+        sendResponseMulticast("flag|r;type|requestTCPConnection;operation|upload;email|"+email+";result|y;port|"+TCPPort+";", code);
         Iterator iArtists = artists.iterator();
-        System.out.println("A dar upload de musica "+title);
+        System.out.println("A dar upload de musica "+ title);
 
         ServerSocket serverSocker = new ServerSocket(TCPPort);
         Socket client = null;
@@ -110,11 +116,11 @@ public class MulticastServerResponse extends Thread {
         }
     }
 
-    public void downloadMusic(String title, String uploader, String email) throws IOException {
+    public void downloadMusic(String title, String uploader, String email, String code) throws IOException {
         // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee;
         // Response -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; port | pppp;
 
-        sendResponseMulticast("flag|r;type|requestTCPConnection;operation|download;email|"+email+";result|y;port|"+TCPPort+";");
+        sendResponseMulticast("flag|r;type|requestTCPConnection;operation|download;email|"+email+";result|y;port|"+TCPPort+";", code);
         Iterator iArtists = artists.iterator();
         System.out.println("A dar download de musica "+title);
 
@@ -151,7 +157,7 @@ public class MulticastServerResponse extends Thread {
         }
     }
 
-    public void share(String title, String shareTo, String uploader) {
+    public void share(String title, String shareTo, String uploader, String code) {
         // Request  -> flag | s; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
         // Response -> flag | r; type | share; result | (y/n); title | ttttt; shareTo | ssssss; uploader | uuuuu;
 
@@ -186,10 +192,10 @@ public class MulticastServerResponse extends Thread {
         } else {
             rsp = "flag|r;type|share;result|n;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";";
         }
-        sendResponseMulticast(rsp);
+        sendResponseMulticast(rsp, code);
     }
 
-    public void register(String email, String password) {
+    public void register(String email, String password, String code) {
 
 
         // Verificar se existe
@@ -215,10 +221,10 @@ public class MulticastServerResponse extends Thread {
             System.out.println("Gonna register " + email + " with password " + password);
             rsp = "flag|r;type|register;result|y;username|" + email + ";password|" + password + ";";
         }
-        sendResponseMulticast(rsp);
+        sendResponseMulticast(rsp, code);
     }
 
-    public void login(String email, String password) {
+    public void login(String email, String password, String code) {
         // Request  -> flag | s; type | login; email | eeee; password | pppp;
         // Response -> flag | r; type | login; resutl | (y/n); email | eeee; password | pppp; notification_count | n; notif | msg; [etc...]
 
@@ -246,10 +252,10 @@ public class MulticastServerResponse extends Thread {
                 System.out.println(email + " logged in");
             }
         }
-        sendResponseMulticast(rsp);
+        sendResponseMulticast(rsp, code);
     }
 
-    public void logout(String email) {
+    public void logout(String email, String code) {
         // Request  -> flag | s; type | logout; email | eeee;
         // Response -> flag | r; type | logout; result | (y/n); email | eeee;
 
@@ -264,10 +270,10 @@ public class MulticastServerResponse extends Thread {
             }
         }
 
-        sendResponseMulticast(rsp);
+        sendResponseMulticast(rsp, code);
     }
 
-    public void writeCritic(String albumName, String critic, String rate, String email) {
+    public void writeCritic(String albumName, String critic, String rate, String email, String code) {
 
         // flag | s; type | critic; album | name; critic | blabla; rate | n email | eeee;
         // flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n; email | eeee;
@@ -294,7 +300,7 @@ public class MulticastServerResponse extends Thread {
                         ts += "user_" + i + "_email|" + r.email + ";";
                         i++;
                     }
-                    sendResponseMulticast(ts);
+                    sendResponseMulticast(ts, code);
                     al.addCritic(critic, Integer.parseInt(rate), email);
                     rsp = "flag|r;type|critic;result|y;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";";
                     exit = true;
@@ -302,7 +308,7 @@ public class MulticastServerResponse extends Thread {
             }
         }
 
-        sendResponseMulticast(rsp);
+        sendResponseMulticast(rsp, code);
     }
 
     public void offUserNotified(String email, String message) {
@@ -316,7 +322,7 @@ public class MulticastServerResponse extends Thread {
         }
     }
 
-    public void turnIntoEditor(String user1, String user2) {
+    public void turnIntoEditor(String user1, String user2, String code) {
 
         // flag | s; type | privilege; user1 | username; user2; username;
         // flag | r; type | privilege; result | (y/n); user1 | username; user2 | username;
@@ -350,12 +356,12 @@ public class MulticastServerResponse extends Thread {
             }
         }
 
-        sendResponseMulticast(rsp); // -> RMIServer
+        sendResponseMulticast(rsp, code); // -> RMIServer
     }
 
 
 
-    public void getDetails(String type, String keyword) {
+    public void getDetails(String type, String keyword, String code) {
         // Request  -> flag | s; type | search; param | (art, gen, tit); keyword | kkkk;
         // Response -> flag | r; type | search; param | (art, gen, tit); keyword | kkkk; item_count | n; item_x_name | name; [...]
 
@@ -391,7 +397,7 @@ public class MulticastServerResponse extends Thread {
         }
 
         rsp = "flag|r;type|details;result|" +result+";param|"+type+";keyword|"+keyword+";item_count|1;item_x_name|"+response+";";
-        sendResponseMulticast(rsp);
+        sendResponseMulticast(rsp, code);
 
     }
 
@@ -445,6 +451,7 @@ public class MulticastServerResponse extends Thread {
     public void run() {
 
 
+
         String message = new String(packet.getData(), 0, packet.getLength());
         System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:" + message);
 
@@ -456,43 +463,45 @@ public class MulticastServerResponse extends Thread {
 
 
             if (cleanMessage.get(1)[1].equals("register")) { //register
-                register(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);    // (email, password)
+                register(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);    // (email, password)
 
             } else if (cleanMessage.get(1)[1].equals("login")) { // login
-                login(cleanMessage.get(2)[1], cleanMessage.get(3)[1]); // (email, password)
+                login(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (email, password)
 
             } else if (cleanMessage.get(1)[1].equals("logout")) { // logout
-                logout(cleanMessage.get(2)[1]);  // (email)
+                logout(cleanMessage.get(2)[1], cleanMessage.get(cleanMessage.size()-1)[1]);  // (email)
 
             } else if (cleanMessage.get(1)[1].equals("details")) { // search Artist, Album, Music
-                getDetails(cleanMessage.get(2)[1], cleanMessage.get(3)[1]); // (Artist or Album, keyword)
+                getDetails(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (Artist or Album, keyword)
 
             } else if(cleanMessage.get(1)[1].equals("critic")) {            // add critic to album
-                writeCritic(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]);// (album, critic, rate, email)
+                writeCritic(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]);// (album, critic, rate, email)
 
             } else if(cleanMessage.get(1)[1].equals("privilege")) {
                 System.out.println("para editor");
-                turnIntoEditor(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);       // (Editor, regularToEditor)
+                turnIntoEditor(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);       // (Editor, regularToEditor)
             } else if(cleanMessage.get(1)[1].equals("notify")) {
                 offUserNotified(cleanMessage.get(4)[1], cleanMessage.get(2)[1]);    // (email, message)
             } else if(cleanMessage.get(1)[1].equals("share")) {
-                share(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1]); // (title, shareTo, uploader)
+                share(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (title, shareTo, uploader)
             } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload")) {
                 // flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
 
                 try {
                     System.out.println("A chamar o metodo de upload");
-                    uploadMusic(cleanMessage.get(3)[1], cleanMessage.get(4)[1]); // (title, email)
+                    uploadMusic(cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (title, email)
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
+
+
             } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("download")) {
                // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
                 try {
                     System.out.println("A chamar o metodo de download");
-                    downloadMusic(cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]); // (title, uploader, email)
+                    downloadMusic(cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (title, uploader, email)
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

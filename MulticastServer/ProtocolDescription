@@ -59,6 +59,9 @@ Resposta aos clientes c/ notify de alteração em música
     Response -> flag | r; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu;
 
 
-[Multicast-RMI]
+[Comunicação Multicast-RMIServer]
+
+- Servidor qd se ligar manda ack
+
     Response -> flag | r; type | ack; hash | hhhh;
 
