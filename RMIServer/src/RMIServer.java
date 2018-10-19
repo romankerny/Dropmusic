@@ -27,12 +27,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         super();
     }
 
-
     public void sendUDPDatagram(String resp) {
 
         try {
 
             MulticastSocket socket = new MulticastSocket();
+            //System.out.println(socket);
+
             byte[] buffer = resp.getBytes();
 
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
@@ -45,7 +46,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     }
 
-    public String receiveUDPDatagram() {
+    synchronized public String receiveUDPDatagram() {
 
         String message = null;
 
@@ -405,6 +406,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             r.rebind("rmiserver", rmiServer);
             System.out.println("Taking over RMIMain");
+
 
 
 
