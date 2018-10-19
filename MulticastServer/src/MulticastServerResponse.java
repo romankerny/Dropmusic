@@ -220,7 +220,7 @@ public class MulticastServerResponse extends Thread {
 
     public void login(String email, String password) {
         // Request  -> flag | s; type | login; email | eeee; password | pppp;
-        // Response -> flag | r; type | login; resutl | (y/n); email | eeee; password | pppp;
+        // Response -> flag | r; type | login; resutl | (y/n); email | eeee; password | pppp; notification_count | n; notif | msg; [etc...]
 
         Iterator iUsers = users.iterator();
         String rsp = "flag|r;type|login;result|n;email|" + email + ";password|" + password + ";";
@@ -229,16 +229,20 @@ public class MulticastServerResponse extends Thread {
             User s = (User) iUsers.next();
             if (s.email.equals((email)) & s.password.equals(password)) {
                 s.login();
-                // enviar notificações
+                rsp = "flag|r;type|login;result|y;email|" + email + ";password|" + password + ";";
+
+                // Concatenate notifications to `rsp` if they exist
+
+                rsp += "notification_count|"+s.notifications.size()+";";
 
                 Iterator iMessages = s.notifications.iterator();
                 while(iMessages.hasNext()) {
-                    String notification = (String) iMessages.next();
-                    sendResponseMulticast("flag|r;type|notify;message|" + notification + ";user_count|1;user_0_email|" + email + ";");
+                    rsp += "notif|" + (String) iMessages.next() + ";";
+
                 }
 
 
-                rsp = "flag|r;type|login;result|y;email|" + email + ";password|" + password + ";";
+
                 System.out.println(email + " logged in");
             }
         }

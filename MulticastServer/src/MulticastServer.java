@@ -36,6 +36,7 @@ public class MulticastServer extends Thread {
             System.out.println("Multicast server ready");
 
             Editor admin = new Editor("admin", "admin");
+            admin.notifications.add("es um cabron");
             users.add(admin);
 
             Artist tool = new Artist("Tool", "Tool is an American rock band from Los Angeles, California.\n"+

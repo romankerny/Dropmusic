@@ -9,7 +9,7 @@ type | register; flag | r; username | name; password | pw; result y
     Response -> flag | r; type | register; result | (y/n); email | eeee; password | pppp;
 
     Request  -> flag | s; type | login; email | eeee; password | pppp;
-    Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp;
+    Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | msg; [etc...]
 
     Request  -> flag | s; type | logout; email | eeee;
     Response -> flag | r; type | logout; result | (y/n); email | eeee;

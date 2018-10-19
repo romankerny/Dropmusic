@@ -46,7 +46,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     }
 
-    synchronized public String receiveUDPDatagram() {
+    public String receiveUDPDatagram() {
 
         String message = null;
 
@@ -210,8 +210,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public String login(String email, String password, RMIClientInterface client) throws RemoteException {
 
-        //
-        // [PROTOCOL] flag | s; type | login; email | eeee; password | pppp;
+        // Request  -> flag | s; type | login; email | eeee; password | pppp;
+        // Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | msg; [etc...]
 
         String msg = "flag|s;type|login;email|"+email+";password|"+password+";";
         boolean exit = false;
@@ -226,9 +226,18 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("login")) {
                 if (cleanMessage.get(2)[1].equals("y")) {
                     if (cleanMessage.get(3)[1].equals(email) && cleanMessage.get(4)[1].equals(password)) {
-                        rspToClient = "Logado com sucesso " + email + " " + password;
 
+                        int numNotifications = Integer.parseInt(cleanMessage.get(5)[1]);
+
+                        rspToClient = "Logado com sucesso " + email + " " + password;
                         subscribe(email, client);
+
+                        if (numNotifications > 0) {
+                            rspToClient += "\nMissed notifications:\n";
+                            for (int i = 0; i < numNotifications; i++) {
+                                rspToClient += cleanMessage.get(6+i)[1] + "\n";
+                            }
+                        }
                         exit = true;
                     }
                 } else {
@@ -237,7 +246,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 }
             }
         }
-
         return rspToClient;
     }
 
