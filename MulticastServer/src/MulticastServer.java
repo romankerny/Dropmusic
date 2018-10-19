@@ -52,7 +52,7 @@ public class MulticastServer extends Thread {
 
             String code = UUID.randomUUID().toString().substring(24);
 
-            sendResponseMulticast("flag|s;type|ack;hash|"+code+";");
+            sendResponseMulticast("flag|r;type|ack;hash|"+code+";");
 
             socket = new MulticastSocket(RECV_PORT);  // create socket and bind it
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);

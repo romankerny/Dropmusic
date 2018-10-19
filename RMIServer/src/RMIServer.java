@@ -32,9 +32,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public void sendUDPDatagram(String resp) {
 
-        /*
+
         if (globalCounter == multicastHashes.size()) globalCounter = 0;
-        resp += "hash|"+multicastHashes.get(globalCounter++);*/
+        System.out.println(multicastHashes.size());
+        resp += "hash|"+multicastHashes.get(globalCounter++);
 
         try {
 
@@ -218,14 +219,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     public String login(String email, String password, RMIClientInterface client) throws RemoteException {
-        System.out.println("Hello");
         // Request  -> flag | s; type | login; email | eeee; password | pppp;
         // Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | msg; [etc...]
 
         String msg = "flag|s;type|login;email|"+email+";password|"+password+";";
         boolean exit = false;
         String rspToClient = "Failed to login";
-        System.out.println("TOu aqui boi");
         sendUDPDatagram(msg);
 
         while(!exit) {
@@ -432,12 +431,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             // Response -> flag | r; type | ack; hash | hhhh;
             msg = rmiServer.receiveUDPDatagram();
-            System.out.println(msg);
             ArrayList<String[]> cleanMessage = rmiServer.cleanTokens(msg);
 
             if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("ack"))
                 if (!multicastHashes.contains(cleanMessage.get(2)[1]))
                     multicastHashes.add(cleanMessage.get(2)[1]);
+
 
         }
 
