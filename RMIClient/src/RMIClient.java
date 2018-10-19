@@ -73,6 +73,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 		try {
 		    serverInterface = (RMIServerInterface) Naming.lookup("rmiserver");
             System.out.println(help);
+
+
             while(!exit) {
                 userInput = sc.nextLine();
                 tokens = userInput.split(" ");
@@ -116,16 +118,19 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
                 } else if (tokens[0].equals("logout")) {
                     try {
+
+                        System.out.println(email);
                         System.out.println(serverInterface.logout(email));
+                        email = "";
                     } catch (RemoteException e) {
                         client.waitForServer(serverInterface, client);
-                        System.out.println(serverInterface.login(tokens[1], tokens[2], client));
+                        System.out.println(serverInterface.logout(email));
                     }
 
 
 
 
-                } else if (tokens[0].equals("search")) {
+                } else if (tokens[0].equals("search") && !email.equals("")) {
                     if (tokens.length >= 3) {
                         String keyword = strCatSpaces(tokens, 2);
                         try {
@@ -142,7 +147,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
 
 
-                } else if (tokens[0].equals("rate")) {
+                } else if (tokens[0].equals("rate") && !email.equals("")) {
                     if (tokens.length >= 4) {
 
                         String albumName = "";
@@ -176,7 +181,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
 
 
-                } else if (tokens[0].equals("promote")) {
+                } else if (tokens[0].equals("promote") && !email.equals("")) {
                     if (tokens.length == 2) {
                         try {
                             System.out.println(serverInterface.regularToEditor(email, tokens[1]));
@@ -191,7 +196,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
 
 
-                } else if(tokens[0].equals("upload")) {
+                } else if(tokens[0].equals("upload") && !email.equals("")) {
 
                     if (tokens.length >= 3) {
                         int port;
@@ -227,7 +232,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                         System.out.println("Usage: upload [path] [music name]");
                     }
 
-                } else if (tokens[0].equals("download")) {
+                } else if (tokens[0].equals("download") && !email.equals("")) {
 
                     if (tokens.length >= 3) {
                         int port;
@@ -259,7 +264,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                         System.out.println("Usage: download [user] [music name]");
                     }
 
-                } else if (tokens[0].equals("share")) {
+                } else if (tokens[0].equals("share") && !email.equals("")) {
 
                     if (tokens.length >= 3) {
                         String musicName = strCatSpaces(tokens, 2);
