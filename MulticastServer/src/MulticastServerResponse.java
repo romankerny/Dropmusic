@@ -71,9 +71,6 @@ public class MulticastServerResponse extends Thread {
 
         ServerSocket serverSocker = new ServerSocket(TCPPort);
         Socket client = null;
-        System.out.println("antes do bind");
-        // serverSocker.bind(new InetSocketAddress(TCPPort));
-        System.out.println("depois do bind");
 
         while(iArtists.hasNext()) {
             Artist a = (Artist) iArtists.next();
@@ -344,12 +341,12 @@ public class MulticastServerResponse extends Thread {
                     users.add(ed);
                     exit = true;
                     rsp = "flag|r;type|privilege;result|y;user1|" + user1 +";user2|" + user2 + ";";
-                    // flag | r; type | notify; user_count | n; user_x_email | email; [...] message | mmmmmmm
+
+                // flag | r; type | notify; user_count | n; user_x_email | email; [...] message | mmmmmmm
             }
         }
 
         sendResponseMulticast(rsp); // -> RMIServer
-        sendResponseMulticast("flag|r;type|notify;message|You got promoted to Editor;user_count|1;user_0_email|" + ed.email + ";");   // you got promoted -> RMIClient
     }
 
 

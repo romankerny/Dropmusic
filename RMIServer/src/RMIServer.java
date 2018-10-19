@@ -124,21 +124,16 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         while(!exit) {
             String rsp = receiveUDPDatagram();
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
-            System.out.println("recebi o datagrama crl");
             System.out.println(rsp);
-            System.out.println(cleanMessage.toArray());
-
 
             if(cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("privilege") && cleanMessage.get(2)[1].equals("y") && cleanMessage.get(3)[1].equals(editor)
                 && cleanMessage.get(4)[1].equals(regular) ) {
-                System.out.println(regular);
                 rspToClient = regular + " casted to Editor with success";
+                clients.get(regular).printOnClient("You got promoted to Editor by "+editor);
                 exit = true;
 
             }
         }
-        System.out.println(rspToClient);
-
         return rspToClient;
     }
 
@@ -412,39 +407,16 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             System.out.println("Taking over RMIMain");
 
 
-            while(true) {
-                // flag | r; type | notify; message | msg; user_count | n; user_x_email | email; [...]
-                msg = rmiServer.receiveUDPDatagram();
-                ArrayList<String[]> cleanMessage = rmiServer.cleanTokens(msg);
-                System.out.println(msg);
-
-                if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("notify")) {
-
-                    String userMsg = cleanMessage.get(2)[1];
-                    int numUsers = Integer.parseInt(cleanMessage.get(3)[1]);
-
-                    String email;
-                    for (int i = 0; i < numUsers; i++) {
-                        email = cleanMessage.get(4+i)[1];
-
-                        try {
-                            rmiServer.clients.get(email).printOnClient(userMsg);
-                        } catch (RemoteException re){
-                            System.out.println("Exception: "+ re);
-                            // To be tested!
-                            String failure = "flag|s;type|notify;message|Failed to printOnClient;user_count|1;user_1_email|"+email+";";
-                            rmiServer.sendUDPDatagram(failure);
-
-                        }
-                    }
-
-                }
-
-            }
-
 
         } catch (RemoteException re) {
             System.out.println("Exception in RMIServer.main: " + re);
+        }
+
+        while(true) {
+            // flag | r; type | notify; message | msg; user_count | n; user_x_email | email; [...]
+            msg = rmiServer.receiveUDPDatagram();
+            ArrayList<String[]> cleanMessage = rmiServer.cleanTokens(msg);
+
         }
 
     }
