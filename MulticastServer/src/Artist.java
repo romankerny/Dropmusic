@@ -23,7 +23,9 @@ public class Artist {
         String discography = "";
 
         for (Album a : this.albums) {
-            discography += a.toString() +"\n";
+            discography += "Title: " +a.title+"\n"+
+                        "Genre: "+a.genre+"\n"+
+                        "Description: "+a.description+"\n";
         }
 
         return "Artist: "+name + "\n\t===== Albums =====\n"+discography;
