@@ -25,7 +25,7 @@ public class Artist {
         for (Album a : this.albums) {
             discography += "Title: " +a.title+"\n"+
                         "Genre: "+a.genre+"\n"+
-                        "Description: "+a.description+"\n";
+                        "Description: "+a.description+"\n\n";
         }
 
         return "Artist: "+name + "\n\t===== Albums =====\n"+discography;
