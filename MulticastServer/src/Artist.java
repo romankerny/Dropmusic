@@ -7,8 +7,9 @@ public class Artist {
     public String        details;
     public               CopyOnWriteArrayList<User> notifyIfEdited;
 
-    public Artist(String name) {
+    public Artist(String name, String details) {
         this.name = name;
+        this.details = details;
         this.albums = new CopyOnWriteArrayList<Album>();
         this.notifyIfEdited = new CopyOnWriteArrayList<User>();
     }
@@ -28,7 +29,7 @@ public class Artist {
                         "Description: "+a.description+"\n\n";
         }
 
-        return "Artist: "+name + "\n\t===== Albums =====\n"+discography;
+        return "Artist: "+name + "\nBio: "+details+"\n\t===== Albums =====\n"+discography;
     }
 
 }

@@ -38,7 +38,11 @@ public class MulticastServer extends Thread {
             Editor admin = new Editor("admin", "admin");
             users.add(admin);
 
-            Artist tool = new Artist("Tool");
+            Artist tool = new Artist("Tool", "Tool is an American rock band from Los Angeles, California.\n "+
+                    "Formed in 1990, the group's line-up includes drummer Danny Carey, guitarist Adam Jones, \n" +
+                    "and vocalist Maynard James Keenan. Justin Chancellor has been the band's bassist since 1995, \n" +
+                    "replacing their original bassist Paul D'Amour. Tool has won three Grammy Awards, \n" +
+                    "performed worldwide tours, and produced albums topping the charts in several countries");
             Album lateralus = new Album("Lateralus", "Released in 2001", "Progressive Metal");
             lateralus.tracks.add(new Music(1, "The Grudge"));
             lateralus.tracks.add(new Music(2, "Eon Blue Apocalypse"));
@@ -70,7 +74,11 @@ public class MulticastServer extends Thread {
             tool.albums.add(tenKdays);
             this.artists.add(tool);
 
-            Artist kendrick = new Artist("Kendrick Lamar");
+            Artist kendrick = new Artist("Kendrick Lamar", "Kendrick Lamar Duckworth (born June 17, 1987)\n " +
+                    "is an American rapper, songwriter, and record producer. Raised in Compton, California,\n " +
+                    "Lamar embarked on his musical career as a teenager under the stage name K-Dot,\n " +
+                    "releasing a mixtape that garnered local attention and led to his signing with indie record label T" +
+                    "op Dawg Entertainment (TDE).");
             Album butterfly = new Album("To Pimp a Butterfly", "Released in 2015", "Hip-hop");
             butterfly.tracks.add(new Music(1, "Wesley's Theory"));
             butterfly.tracks.add(new Music(2, "For Free? (Interlude)"));
