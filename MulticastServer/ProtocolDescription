@@ -67,3 +67,6 @@ Resposta aos clientes c/ notify de alteração em música
 - RMI quando se liga pede ACK
     Request  -> flag | s; type | connectionrequest;
 
+[NotifyFail]
+
+    Request  -> flag | s; type | notifyfail; email | eeee; message | mmmm;

@@ -478,9 +478,13 @@ public class MulticastServerResponse extends Thread {
 
             } else if(cleanMessage.get(1)[1].equals("privilege")) {
                 System.out.println("para editor");
-                turnIntoEditor(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);       // (Editor, regularToEditor)
-            } else if(cleanMessage.get(1)[1].equals("notify")) {
-                offUserNotified(cleanMessage.get(4)[1], cleanMessage.get(2)[1]);    // (email, message)
+                turnIntoEditor(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);// (Editor, regularToEditor)
+
+
+            } else if(cleanMessage.get(1)[1].equals("notifyfail")) {
+                offUserNotified(cleanMessage.get(2)[1], cleanMessage.get(3)[1]);    // (email, message)
+
+
             } else if(cleanMessage.get(1)[1].equals("share")) {
                 share(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (title, shareTo, uploader)
             } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload")) {

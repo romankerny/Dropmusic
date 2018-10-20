@@ -280,7 +280,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public String login(String email, String password, RMIClientInterface client) throws RemoteException {
         // Request  -> flag | s; type | login; email | eeee; password | pppp;
         // Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | msg; [etc...]
-
+        System.out.println("entrei n login");
         String msg = "flag|s;type|login;email|"+email+";password|"+password+";";
         boolean exit = false;
         String rspToClient = "Failed to login";
@@ -422,6 +422,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String msg;
         String q = null;
 
+
+
         try {
             int sizeHashMap = 0, failCount = 0;
             boolean failedLastTime = false;
@@ -446,6 +448,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                         try {
 
                             mainServerInterface = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmiserver");
+
                             System.out.println("Pinging MainRMI");
                             if (mainServerInterface.isAlive()) {
                                 failedLastTime = false;

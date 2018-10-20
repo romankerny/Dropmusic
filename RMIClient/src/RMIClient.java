@@ -45,7 +45,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        this.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmi://"+ip+":1099/rmiserver");
+        this.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip,1099).lookup("rmiserver");
         this.serverInterface.subscribe(email, client);
     }
 
@@ -72,10 +72,12 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "  \nEditor-specific:\n"+
                     "- promote [email]";
 
-		try {
 
-		    serverInterface = (RMIServerInterface) Naming.lookup("rmi://"+ip+":1099/rmiserver");
+        try {
+
+            serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, 1099).lookup("rmiserver");
             System.out.println(help);
+            System.out.println(ip);
 
 
             while(!exit) {
@@ -104,7 +106,9 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     if (tokens.length == 3) {
 
                         try {
+                            System.out.println("pp");
                             System.out.println(serverInterface.login(tokens[1], tokens[2], client));
+                            System.out.println("qq");
                             email = tokens[2];
                         } catch (RemoteException re) {
                             client.waitForServer(serverInterface, client);
