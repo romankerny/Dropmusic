@@ -16,6 +16,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
     private static String email = "";
     private static RMIServerInterface serverInterface;
+    private static String ip;
 
     public RMIClient() throws RemoteException {
         super();
@@ -44,7 +45,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        this.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmiserver");
+        this.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmi://"+ip+":1099/rmiserver");
         this.serverInterface.subscribe(email, client);
     }
 
@@ -58,6 +59,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         String[] tokens;
         RMIClient client = new RMIClient();
         boolean exit = false;
+        ip = args[0];
         String help = "Commands:\n"+
                     "- register [email] [password]\n"+
                     "- login [email] [password]\n"+
@@ -71,7 +73,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- promote [email]";
 
 		try {
-		    serverInterface = (RMIServerInterface) Naming.lookup("rmiserver");
+
+		    serverInterface = (RMIServerInterface) Naming.lookup("rmi://"+ip+":1099/rmiserver");
             System.out.println(help);
 
 
