@@ -10,6 +10,7 @@ import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
 import static java.lang.Thread.sleep;
@@ -34,15 +35,15 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
         if (globalCounter == multicastHashes.size()) globalCounter = 0;
-        System.out.println(multicastHashes.size());
-        resp += "hash|"+multicastHashes.get(globalCounter++);
+        if(multicastHashes.size() > 0)
+            resp += "hash|" + multicastHashes.get(globalCounter++);
+
 
         try {
 
             MulticastSocket socket = new MulticastSocket();
 
             byte[] buffer = resp.getBytes();
-
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, SEND_PORT);
             socket.send(packet);
@@ -56,6 +57,58 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     }
 
+    public void sendUDPDatagramGeneral(String resp) {
+
+        // only to send connection packets
+
+        try {
+
+            MulticastSocket socket = new MulticastSocket();
+
+            byte[] buffer = resp.getBytes();
+
+            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, SEND_PORT);
+            socket.send(packet);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public String receiveUDPDatagram(String rspToRetry) {
+
+        String message = null;
+        boolean exit = false;
+        while(!exit) {
+            try {
+                MulticastSocket socket = new MulticastSocket(RCV_PORT);  // create socket and bind it
+                InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
+                socket.joinGroup(group);
+
+                socket.setSoTimeout(5000);
+
+
+                byte[] buffer = new byte[65536];
+
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                socket.receive(packet);
+
+                message = new String(packet.getData(), 0, packet.getLength());
+                System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message: " + message);
+                exit = true;
+
+            } catch (SocketTimeoutException te) {
+                System.out.println("Server not responding retrying...");
+                sendUDPDatagram(rspToRetry);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return message;
+    }
+
     public String receiveUDPDatagram() {
 
         String message = null;
@@ -66,7 +119,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             socket.joinGroup(group);
 
 
-            byte[] buffer = new byte [65536];
+            byte[] buffer = new byte[65536];
 
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet);
@@ -74,10 +127,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             message = new String(packet.getData(), 0, packet.getLength());
             System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message: " + message);
 
+
+
         } catch (IOException e) {
             e.printStackTrace();
-        }
 
+        }
         return message;
     }
 
@@ -105,7 +160,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         sendUDPDatagram(msg);
 
         while(!exit) {
-            String rsp = receiveUDPDatagram();
+            String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("register")) {
@@ -133,7 +188,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         sendUDPDatagram(msg);
 
         while(!exit) {
-            String rsp = receiveUDPDatagram();
+            String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
             System.out.println(rsp);
 
@@ -151,11 +206,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public int uploadMusic(String title, String uploader) {
         // Request  -> flag | s; type | requestTCPConnection; operation | upload; title | tttt; email | eeee;
         // Response -> flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
-        sendUDPDatagram("flag|s;type|requestTCPConnection;operation|upload;title|"+title+";email|"+uploader+";");
+        String msg = "flag|s;type|requestTCPConnection;operation|upload;title|"+title+";email|"+uploader+";";
+        sendUDPDatagram(msg);
 
         boolean exit = false;
         while(!exit) {
-            String rsp = receiveUDPDatagram();
+            String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
             if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload") &&
             cleanMessage.get(3)[1].equals(uploader) && cleanMessage.get(4)[1].equals("y"))
@@ -171,11 +227,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public int downloadMusic(String title, String uploader, String email) throws RemoteException {
         // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
         // Response -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; port | pppp;
-        sendUDPDatagram("flag|s;type|requestTCPConnection;operation|download;title|"+title+";uploader|"+uploader+";email|"+email+";");
+        String msg = "flag|s;type|requestTCPConnection;operation|download;title|"+title+";uploader|"+uploader+";email|"+email+";";
+        sendUDPDatagram(msg);
 
         boolean exit = false;
         while(!exit) {
-            String rsp = receiveUDPDatagram();
+            String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("download") &&
@@ -188,15 +245,17 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return 0;
     }
 
+
     public String share(String title, String shareTo, String uploader) throws RemoteException {
         // Request  -> flag | s; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
         // Response -> flag | r; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu;
-        sendUDPDatagram("flag|s;type|share;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";");
+        String msg = "flag|s;type|share;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";";
+        sendUDPDatagram(msg);
 
         boolean exit = false;
         String rspToClient = "Packet didn't arrive";
         while (!exit) {
-            String rsp = receiveUDPDatagram();
+            String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(1)[1].equals("share") && cleanMessage.get(5)[1].equals(uploader)) {
@@ -228,7 +287,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         sendUDPDatagram(msg);
 
         while(!exit) {
-            String rsp = receiveUDPDatagram();
+            String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("login")) {
@@ -264,7 +323,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         sendUDPDatagram(msg);
 
         while(!exit) {
-            String rsp = receiveUDPDatagram();
+            String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("logout")) {
@@ -288,7 +347,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         sendUDPDatagram(msg);
 
         while(!exit) {
-            String rsp = receiveUDPDatagram();
+            String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("critic")) {
@@ -316,7 +375,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         sendUDPDatagram(msg);
 
         while(!exit) {
-            String rsp = receiveUDPDatagram();
+            String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if(cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("details")) {
@@ -361,6 +420,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public static void main(String args[]) throws NotBoundException, AlreadyBoundException {
 
         String msg;
+        String q = null;
 
         try {
             int sizeHashMap = 0, failCount = 0;
@@ -422,14 +482,25 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             System.out.println("Taking over RMIMain");
 
 
+            q = "flag|s;type|connectionrequest;";
+            rmiServer.sendUDPDatagramGeneral(q);
 
 
         } catch (RemoteException re) {
             System.out.println("Exception in RMIServer.main: " + re);
         }
         while(true) {
-
+            // waiting for MulticastServers to group up
             // Response -> flag | r; type | ack; hash | hhhh;
+
+            /*
+            try {
+                sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            */
+
             msg = rmiServer.receiveUDPDatagram();
             ArrayList<String[]> cleanMessage = rmiServer.cleanTokens(msg);
 

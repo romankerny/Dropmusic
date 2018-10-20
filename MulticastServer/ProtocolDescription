@@ -62,6 +62,8 @@ Resposta aos clientes c/ notify de alteração em música
 [Comunicação Multicast-RMIServer]
 
 - Servidor qd se ligar manda ack
-
     Response -> flag | r; type | ack; hash | hhhh;
+
+- RMI quando se liga pede ACK
+    Request  -> flag | s; type | connectionrequest;
 

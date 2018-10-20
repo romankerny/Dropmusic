@@ -37,7 +37,7 @@ public class MulticastServerResponse extends Thread {
             // only the designated Multicast Server will respond to RMIServer
             try {
                 MulticastSocket socket = new MulticastSocket();
-                byte[] buffer = (resp+" "+hashCode).getBytes();
+                byte[] buffer = (resp+"hash|" + hashCode + ";").getBytes();
                 InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, SEND_PORT);
                 socket.send(packet);
@@ -46,7 +46,6 @@ public class MulticastServerResponse extends Thread {
                 e.printStackTrace();
             }
         }
-          System.out.println(code);
     }
 
     ArrayList cleanTokens(String msg) {
@@ -498,13 +497,18 @@ public class MulticastServerResponse extends Thread {
 
 
             } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("download")) {
-               // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
+                // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
                 try {
                     System.out.println("A chamar o metodo de download");
-                    downloadMusic(cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (title, uploader, email)
+                    downloadMusic(cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, uploader, email)
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            } else if(cleanMessage.get(1)[1].equals("connectionrequest")) {
+                // Receive RMI packets asking Multicast to respond with their Hash codes
+                // Request  -> flag | s; type | connectionrequest;
+                sendResponseMulticast("flag|r;type|ack;", hashCode);
+
             } else {
                 System.out.println("Invalid protocol message");
             }
