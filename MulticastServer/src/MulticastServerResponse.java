@@ -288,18 +288,6 @@ public class MulticastServerResponse extends Thread {
             while(iAlbum.hasNext()) {
                 Album al = (Album) iAlbum.next();
                 if(al.title.equals(albumName)) {
-                    // flag | r; type | notify; message | mmmmmmm; user_count | n; user_x_email | email; [...]
-                    String ts = "flag|r;type|notify;message|" + albumName + " has a new review by " + email + ";";
-                    int n = al.nCritics;
-                    ts += "user_count|" + n + ";";
-                    Iterator iReview = al.reviews.iterator();
-                    int i = 0;
-                    while(iReview.hasNext()) {
-                        Review r = (Review) iReview.next();
-                        ts += "user_" + i + "_email|" + r.email + ";";
-                        i++;
-                    }
-                    sendResponseMulticast(ts, code);
                     al.addCritic(critic, Integer.parseInt(rate), email);
                     rsp = "flag|r;type|critic;result|y;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";";
                     exit = true;

@@ -190,12 +190,21 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         while(!exit) {
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
-            System.out.println(rsp);
 
             if(cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("privilege") && cleanMessage.get(2)[1].equals("y") && cleanMessage.get(3)[1].equals(editor)
                 && cleanMessage.get(4)[1].equals(regular) ) {
+                System.out.println("aqui");
                 rspToClient = regular + " casted to Editor with success";
-                clients.get(regular).printOnClient("You got promoted to Editor by "+editor);
+
+                try {
+                    clients.get(regular).printOnClient("You got promoted to Editor by " + editor);
+                } catch (RemoteException re) {
+                    System.out.println("Client is off");
+                    sendUDPDatagram("flag|s;type|notifyfail;email|"+regular+";message|"+"You got promoted to Editor by "+editor+";");
+                } catch (NullPointerException npe) {
+                    System.out.println("Client is off");
+                    sendUDPDatagram("flag|s;type|notifyfail;email|"+regular+";message|"+"You got promoted to Editor by "+editor+";");
+                }
                 exit = true;
 
             }
@@ -278,6 +287,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     public String login(String email, String password, RMIClientInterface client) throws RemoteException {
+        System.out.println("Entered login");
         // Request  -> flag | s; type | login; email | eeee; password | pppp;
         // Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | msg; [etc...]
 
@@ -422,6 +432,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String msg;
         String q = null;
 
+
+        /*System.setProperty("java.security.policy","policy.all");
+
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }*/
+
         try {
             int sizeHashMap = 0, failCount = 0;
             boolean failedLastTime = false;
@@ -480,7 +497,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             r.rebind("rmiserver", rmiServer);
             System.out.println("Taking over RMIMain");
-
 
             q = "flag|s;type|connectionrequest;";
             rmiServer.sendUDPDatagramGeneral(q);

@@ -45,7 +45,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        this.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmi://"+ip+":1099/rmiserver");
+        this.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip,1099).lookup("rmiserver");
         this.serverInterface.subscribe(email, client);
     }
 
@@ -73,12 +73,13 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- promote [email]";
 
 		try {
+            System.out.println(ip);
 
-		    serverInterface = (RMIServerInterface) Naming.lookup("rmi://"+ip+":1099/rmiserver");
+            serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, 1099).lookup("rmiserver");
             System.out.println(help);
 
 
-            while(!exit) {
+            while (!exit) {
                 userInput = sc.nextLine();
                 tokens = userInput.split(" ");
 
@@ -97,9 +98,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     }
 
 
-
-
-
                 } else if (tokens[0].equals("login")) {
                     if (tokens.length == 3) {
 
@@ -116,9 +114,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     }
 
 
-
-
-
                 } else if (tokens[0].equals("logout")) {
                     try {
 
@@ -129,8 +124,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                         client.waitForServer(serverInterface, client);
                         System.out.println(serverInterface.logout(email));
                     }
-
-
 
 
                 } else if (tokens[0].equals("search") && !email.equals("")) {
@@ -146,8 +139,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     } else {
                         System.out.println("Usage: search {art, alb} [keyword]");
                     }
-
-
 
 
                 } else if (tokens[0].equals("rate") && !email.equals("")) {
@@ -182,8 +173,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     }
 
 
-
-
                 } else if (tokens[0].equals("promote") && !email.equals("")) {
                     if (tokens.length == 2) {
                         try {
@@ -197,9 +186,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     }
 
 
-
-
-                } else if(tokens[0].equals("upload") && !email.equals("")) {
+                } else if (tokens[0].equals("upload") && !email.equals("")) {
 
                     if (tokens.length >= 3) {
                         int port;
@@ -283,7 +270,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     }
 
 
-
                 } else if (tokens[0].equals("help")) {
                     System.out.println(help);
                 } else {
@@ -291,7 +277,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                 }
             }
 
-
+        } catch (RemoteException re) {
+            System.out.println("Exception in RMIClient.java main(): ");
         } catch (Exception e) {
             System.out.println("Exception in RMIClient.java main(): "+ e);
         }
