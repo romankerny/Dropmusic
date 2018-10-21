@@ -59,7 +59,14 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         String[] tokens;
         RMIClient client = new RMIClient();
         boolean exit = false;
-        ip = args[0];
+
+        if (args.length != 1) {
+            System.out.println("Missing IP argument");
+            System.exit(0);
+        } else {
+            ip = args[0];
+        }
+
         String help = "Commands:\n"+
                     "- register [email] [password]\n"+
                     "- login [email] [password]\n"+
@@ -75,7 +82,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 		try {
             System.out.println(ip);
 
-            serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, 1099).lookup("rmiserver");
+            serverInterface = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
             System.out.println(help);
 
 
@@ -278,7 +285,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
             }
 
         } catch (RemoteException re) {
-            System.out.println("Exception in RMIClient.java main(): ");
+            System.out.println("RemoteException in RMIClient.java main(): "+re);
         } catch (Exception e) {
             System.out.println("Exception in RMIClient.java main(): "+ e);
         }

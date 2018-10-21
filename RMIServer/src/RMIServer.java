@@ -20,8 +20,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     private ConcurrentHashMap<String, RMIClientInterface> clients = new ConcurrentHashMap<String, RMIClientInterface>();
     private static final long serialVersionUID = 1L;
-    private String MULTICAST_ADDRESS = "224.3.2.1";
-    private int SEND_PORT = 5213, RCV_PORT = 5214;
+    private static String MULTICAST_ADDRESS = "224.3.2.1";
+    private static int SEND_PORT = 5213, RCV_PORT = 5214;
     static RMIServer rmiServer;
     public static ArrayList<String> multicastHashes = new ArrayList<>();
     public static int globalCounter = 0;
@@ -426,11 +426,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     // =========================================================
-    public static void main(String args[]) throws NotBoundException, AlreadyBoundException {
-
+    public static void main(String args[]) throws NotBoundException, AlreadyBoundException, IOException {
         String msg;
         String q = null;
 
+        MulticastSocket socket = new MulticastSocket(RCV_PORT);  // create socket and bind it
+        InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
+        socket.joinGroup(group);
 
         /*System.setProperty("java.security.policy","policy.all");
 
@@ -515,9 +517,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 e.printStackTrace();
             }
             */
-
-            msg = rmiServer.receiveUDPDatagram();
-            ArrayList<String[]> cleanMessage = rmiServer.cleanTokens(msg);
+            byte[] buffer = new byte[65536];
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+            socket.receive(packet);
+            String message = new String(packet.getData(), 0, packet.getLength());
+            System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message: " + message);
+            ArrayList<String[]> cleanMessage = rmiServer.cleanTokens(message);
 
             if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("ack"))
                 if (!multicastHashes.contains(cleanMessage.get(2)[1]))
