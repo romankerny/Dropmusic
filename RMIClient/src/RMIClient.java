@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.NoRouteToHostException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.*;
@@ -40,13 +41,22 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
     }
 
     void waitForServer(RMIServerInterface serverInterface, RMIClient client) throws RemoteException, MalformedURLException, NotBoundException {
-        try {
-            sleep((long) (2500));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+
+        boolean exit = false;
+        while(!exit) {
+            try {
+                sleep((long) (1000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            try {
+                this.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, 1099).lookup("rmiserver");
+                this.serverInterface.subscribe(email, client);
+                exit = true;
+            } catch (ConnectException e) {
+                System.out.println("RMI server down, retrying...");
+            }
         }
-        this.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip,1099).lookup("rmiserver");
-        this.serverInterface.subscribe(email, client);
     }
 
 
@@ -58,7 +68,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         String userInput;
         String[] tokens;
         RMIClient client = new RMIClient();
-        boolean exit = false;
+        boolean exit = false, rmiConnected = false;
 
         if (args.length != 1) {
             System.out.println("Missing IP argument");
@@ -80,9 +90,21 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- promote [email]";
 
 		try {
-            System.out.println(ip);
 
-            serverInterface = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
+            System.out.println("Connecting to: " + ip);
+            while (!rmiConnected)
+                try {
+                    serverInterface = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
+                    rmiConnected = true;
+                } catch (ConnectException e) {
+                    System.out.println("Connecting to " + ip + " failed, retrying ...");
+                    try {
+                        sleep((long) (1000));
+                    } catch (InterruptedException re) {
+                        e.printStackTrace();
+                    }
+                }
+
             System.out.println(help);
 
 
@@ -115,7 +137,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                             client.waitForServer(serverInterface, client);
                             System.out.println(serverInterface.login(tokens[1], tokens[2], client));
                         }
-
                     } else {
                         System.out.println("Usage: login [email] [password]");
                     }
@@ -136,6 +157,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                 } else if (tokens[0].equals("search") && !email.equals("")) {
                     if (tokens.length >= 3) {
                         String keyword = strCatSpaces(tokens, 2);
+
+
                         try {
                             System.out.println(serverInterface.search(tokens[1], keyword));
                         } catch (RemoteException re) {
@@ -143,6 +166,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                             client.waitForServer(serverInterface, client);
                             System.out.println(serverInterface.search(tokens[1], keyword));
                         }
+
                     } else {
                         System.out.println("Usage: search {art, alb} [keyword]");
                     }
