@@ -91,172 +91,172 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "  \nEditor-specific:\n"+
                     "- promote [email]";
 
-		// try {
 
-            System.out.println("Connecting to: " + ip);
-            while (!rmiConnected)
+        System.out.println("Connecting to: " + ip);
+
+        while (!rmiConnected)
+            try {
+                client.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
+                rmiConnected = true;
+            } catch (ConnectException e) {
+                System.out.println("Connecting to " + ip + " failed, retrying ...");
                 try {
-                    client.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
-                    rmiConnected = true;
-                } catch (ConnectException e) {
-                    System.out.println("Connecting to " + ip + " failed, retrying ...");
-                    try {
-                        sleep((long) (1000));
-                    } catch (InterruptedException re) {
-                        e.printStackTrace();
-                    }
+                    sleep((long) (1000));
+                } catch (InterruptedException re) {
+                    e.printStackTrace();
+                }
+            }
+
+        System.out.println(help);
+        boolean askInput = true;
+
+
+        while (!exit) {
+            try {
+
+                if(askInput) {
+                    userInput = sc.nextLine();
+                    tokens = userInput.split(" ");
                 }
 
-            System.out.println(help);
-            boolean askInput = true;
-
-
-            while (!exit) {
-                try {
-
-                    if(askInput) {
-                        userInput = sc.nextLine();
-                        tokens = userInput.split(" ");
-                    }
-
-                    if (tokens[0].equals("register")) {
-                        if (tokens.length == 3) {
-                            System.out.println(client.serverInterface.register(tokens[1], tokens[2]));
-                        } else {
-                            System.out.println("Usage: register [email] [password]");
-                        }
-
-
-                    } else if (tokens[0].equals("login")) {
-
-                        if (tokens.length == 3) {
-                            System.out.println(client.serverInterface.login(tokens[1], tokens[2], client));
-                            email = tokens[2];
-                        } else {
-                            System.out.println("Usage: login [email] [password]");
-                        }
-
-
-                    } else if (tokens[0].equals("logout")) {
-
-                        System.out.println(client.serverInterface.logout(email));
-                        email = "";
-
-                    } else if (tokens[0].equals("search") && !email.equals("")) {
-
-                        if (tokens.length >= 3) {
-                            String keyword = strCatSpaces(tokens, 2);
-                            System.out.println(client.serverInterface.search(tokens[1], keyword));
-                        } else {
-                            System.out.println("Usage: search {art, alb} [keyword]");
-                        }
-
-
-                    } else if (tokens[0].equals("rate") && !email.equals("")) {
-
-                        if (tokens.length >= 4) {
-                            String albumName = "";
-                            int stars;
-                            String review = "";
-                            scanner = new Scanner(userInput);
-                            scanner.next(); // Skip "rate"
-                            while (!scanner.hasNextInt())
-                                albumName = albumName + scanner.next() + " ";
-                            albumName = albumName.replaceFirst(".$", "");
-                            stars = scanner.nextInt();
-                            while (scanner.hasNext())
-                                review = review + scanner.next() + " ";
-                            review = review.replaceFirst(".$", "");
-                            System.out.println(client.serverInterface.rateAlbum(stars, albumName, review, email));
-
-                        } else {
-                            System.out.println("Usage: rate [album name] [1-5] [review] (max 300 chars)");
-                        }
-
-                    } else if (tokens[0].equals("promote") && !email.equals("")) {
-
-                        if (tokens.length == 2) {
-                            System.out.println(client.serverInterface.regularToEditor(email, tokens[1]));
-                        } else {
-                            System.out.println("Usage: promote [user]");
-                        }
-
-                    } else if (tokens[0].equals("upload") && !email.equals("")) {
-
-                        if (tokens.length >= 3) {
-                            int port;
-                            String musicName = strCatSpaces(tokens, 2);
-                            File musicFile = new File(tokens[1]);
-                            FileInputStream fis = new FileInputStream(musicFile);
-                            port = client.serverInterface.uploadMusic(musicName, email);
-                            // criar socket e mandar pa la o nosso file
-                            Socket s = new Socket("localhost", port);
-                            if (s.isConnected()) {
-                                DataOutputStream out = new DataOutputStream(s.getOutputStream());
-                                // Send filename and size before actual bytes
-                                out.writeUTF(musicFile.getName());
-                                out.writeLong(musicFile.length());
-                                byte buffer[] = new byte[4096];
-                                int count;
-                                while ((count = fis.read(buffer)) != -1)
-                                    out.write(buffer, 0, count);
-                                out.close();
-                            }
-                            s.close();
-                        } else {
-                            System.out.println("Usage: upload [path] [music name]");
-                        }
-
-                    } else if (tokens[0].equals("download") && !email.equals("")) {
-
-                        if (tokens.length >= 3) {
-                            int port;
-                            String musicName = strCatSpaces(tokens, 2);
-                            port = client.serverInterface.downloadMusic(musicName, tokens[1], email);
-                            // Criar socket e receber o File
-                            Socket s = new Socket("localhost", port);
-                            if (s.isConnected()) {
-                                DataInputStream in = new DataInputStream(s.getInputStream());
-                                String filename = in.readUTF();
-                                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream((new File(filename))));
-                                byte buffer[] = new byte[4096];
-                                int count;
-                                while ((count = in.read(buffer)) != -1)
-                                    bos.write(buffer, 0, count);
-                                bos.flush();
-                                bos.close();
-                                in.close();
-
-                            }
-                            s.close();
-                        } else {
-                            System.out.println("Usage: download [user] [music name]");
-                        }
-
-                    } else if (tokens[0].equals("share") && !email.equals("")) {
-
-                        if (tokens.length >= 3) {
-                            String musicName = strCatSpaces(tokens, 2);
-                            System.out.println(client.serverInterface.share(musicName, tokens[1], email));
-                        } else {
-                            System.out.println("Usage: share [user] [music name]");
-                        }
-
-                    } else if (tokens[0].equals("help")) {
-                        System.out.println(help);
+                if (tokens[0].equals("register")) {
+                    if (tokens.length == 3) {
+                        System.out.println(client.serverInterface.register(tokens[1], tokens[2]));
                     } else {
-                        System.out.println("Invalid command. Type 'help' for more info");
+                        System.out.println("Usage: register [email] [password]");
                     }
 
-                    askInput = true;
 
-                } catch (RemoteException b) {
-                    System.out.println("Throw do login");
-                    client.waitForServer(client);
-                    askInput = false;
+                } else if (tokens[0].equals("login")) {
+
+                    if (tokens.length == 3) {
+                        System.out.println(client.serverInterface.login(tokens[1], tokens[2], client));
+                        email = tokens[2];
+                    } else {
+                        System.out.println("Usage: login [email] [password]");
+                    }
+
+
+                } else if (tokens[0].equals("logout")) {
+
+                    System.out.println(client.serverInterface.logout(email));
+                    email = "";
+
+                } else if (tokens[0].equals("search") && !email.equals("")) {
+
+                    if (tokens.length >= 3) {
+                        String keyword = strCatSpaces(tokens, 2);
+                        System.out.println(client.serverInterface.search(tokens[1], keyword));
+                    } else {
+                        System.out.println("Usage: search {art, alb} [keyword]");
+                    }
+
+
+                } else if (tokens[0].equals("rate") && !email.equals("")) {
+
+                    if (tokens.length >= 4) {
+                        String albumName = "";
+                        int stars;
+                        String review = "";
+                        scanner = new Scanner(userInput);
+                        scanner.next(); // Skip "rate"
+                        while (!scanner.hasNextInt())
+                            albumName = albumName + scanner.next() + " ";
+                        albumName = albumName.replaceFirst(".$", "");
+                        stars = scanner.nextInt();
+                        while (scanner.hasNext())
+                            review = review + scanner.next() + " ";
+                        review = review.replaceFirst(".$", "");
+                        System.out.println(client.serverInterface.rateAlbum(stars, albumName, review, email));
+
+                    } else {
+                        System.out.println("Usage: rate [album name] [1-5] [review] (max 300 chars)");
+                    }
+
+                } else if (tokens[0].equals("promote") && !email.equals("")) {
+
+                    if (tokens.length == 2) {
+                        System.out.println(client.serverInterface.regularToEditor(email, tokens[1]));
+                    } else {
+                        System.out.println("Usage: promote [user]");
+                    }
+
+                } else if (tokens[0].equals("upload") && !email.equals("")) {
+
+                    if (tokens.length >= 3) {
+                        int port;
+                        String musicName = strCatSpaces(tokens, 2);
+                        File musicFile = new File(tokens[1]);
+                        FileInputStream fis = new FileInputStream(musicFile);
+                        port = client.serverInterface.uploadMusic(musicName, email);
+                        // criar socket e mandar pa la o nosso file
+                        Socket s = new Socket("localhost", port);
+                        if (s.isConnected()) {
+                            DataOutputStream out = new DataOutputStream(s.getOutputStream());
+                            // Send filename and size before actual bytes
+                            out.writeUTF(musicFile.getName());
+                            out.writeLong(musicFile.length());
+                            byte buffer[] = new byte[4096];
+                            int count;
+                            while ((count = fis.read(buffer)) != -1)
+                                out.write(buffer, 0, count);
+                            out.close();
+                        }
+                        s.close();
+                    } else {
+                        System.out.println("Usage: upload [path] [music name]");
+                    }
+
+                } else if (tokens[0].equals("download") && !email.equals("")) {
+
+                    if (tokens.length >= 3) {
+                        int port;
+                        String musicName = strCatSpaces(tokens, 2);
+                        port = client.serverInterface.downloadMusic(musicName, tokens[1], email);
+                        // Criar socket e receber o File
+                        Socket s = new Socket("localhost", port);
+                        if (s.isConnected()) {
+                            DataInputStream in = new DataInputStream(s.getInputStream());
+                            String filename = in.readUTF();
+                            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream((new File(filename))));
+                            byte buffer[] = new byte[4096];
+                            int count;
+                            while ((count = in.read(buffer)) != -1)
+                                bos.write(buffer, 0, count);
+                            bos.flush();
+                            bos.close();
+                            in.close();
+
+                        }
+                        s.close();
+                    } else {
+                        System.out.println("Usage: download [user] [music name]");
+                    }
+
+                } else if (tokens[0].equals("share") && !email.equals("")) {
+
+                    if (tokens.length >= 3) {
+                        String musicName = strCatSpaces(tokens, 2);
+                        System.out.println(client.serverInterface.share(musicName, tokens[1], email));
+                    } else {
+                        System.out.println("Usage: share [user] [music name]");
+                    }
+
+                } else if (tokens[0].equals("help")) {
+                    System.out.println(help);
+                } else {
+                    System.out.println("Invalid command. Type 'help' for more info");
                 }
 
-            } // while
+                askInput = true;
+
+            } catch (RemoteException b) {
+                System.out.println("Throw do login");
+                client.waitForServer(client);
+                askInput = false;
+            }
+
+        } // while
 
 
     }
