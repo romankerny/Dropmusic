@@ -418,10 +418,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
 
-    public RMIServer getServerObject() throws RemoteException {
-        return this.rmiServer;
-    }
-
     // =========================================================
     public static void main(String args[]) throws NotBoundException, AlreadyBoundException, IOException {
         String msg;
