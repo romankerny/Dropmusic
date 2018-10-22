@@ -452,7 +452,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 r.bind("rmiserver", rmiServer);
 
             } catch (ExportException ree) {
-               RMIServerInterface mainServerInterface;
+                RMIServerInterface mainServerInterface;
                 System.out.println("Starting RMIBackup");
 
                 while (!takeOver) {

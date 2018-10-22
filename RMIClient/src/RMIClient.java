@@ -251,7 +251,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                 askInput = true;
 
             } catch (RemoteException b) {
-                System.out.println("Throw do login");
                 client.waitForServer(client);
                 askInput = false;
             }
