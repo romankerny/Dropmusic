@@ -33,5 +33,4 @@ public interface RMIServerInterface extends Remote {
     public void subscribe(String email, RMIClientInterface clientInterface) throws RemoteException;
     public boolean isAlive() throws RemoteException;
 
-    public RMIServer getServerObject() throws RemoteException;
 }
