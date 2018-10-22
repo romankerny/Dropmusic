@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="RMIClient:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/RMIClient_jar</output-path>
+    <root id="archive" name="RMIClient.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/RMIClient/resources/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="RMIClient" />
+      <element id="module-output" name="RMIServer" />
+    </root>
+  </artifact>
+</component>
