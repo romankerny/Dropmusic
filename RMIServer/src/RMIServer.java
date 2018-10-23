@@ -196,6 +196,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 try {
                     clients.get(regular).printOnClient("You got promoted to Editor by " + editor);
                 } catch (RemoteException re) {
+                    clients.remove(regular);
                     System.out.println("Client is off");
                     sendUDPDatagram("flag|s;type|notifyfail;email|" + regular + ";message|" + "You got promoted to Editor by " + editor + ";");
                 } catch (NullPointerException npe) {
@@ -321,25 +322,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     public String logout(String email) throws RemoteException {
-        String msg = "flag|s;type|logout;email|" + email + ";";
-        boolean exit = false;
-        String rspToClient = "Failed to logout";
 
-        sendUDPDatagram(msg);
-
-        while (!exit) {
-            String rsp = receiveUDPDatagram(msg);
-            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
-
-            if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("logout")) {
-                if (cleanMessage.get(2)[1].equals("y") && cleanMessage.get(3)[1].equals(email)) {
-                    rspToClient = "Logged out successfully";
-                    exit = true;
-                }
-
-            }
-        }
-        return rspToClient;
+        clients.remove(email);
+        return "Logged out";
     }
 
     public String rateAlbum(int stars, String albumName, String review, String email) throws RemoteException {
@@ -397,7 +382,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-    // métodos de adicionar cenas
 
     public String addArtist(String artist, String details, String email) {
         // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
@@ -471,7 +455,17 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
+    /*
+    public changeAlbumDetail(String albumTitle, String email) {
+        // Request  -> flag | s; param | type | changedetail; album | aaaa; email | eeee;
+        // Response -> flag | r; type | changedetail; album | aaaa; email | eeee; result | (y/n);
 
+        String msg = "flag|s;type|changedetail;album"
+
+
+
+    }
+    */
 
     public void printOnServer(String s) throws RemoteException {
         System.out.println("> " + s);

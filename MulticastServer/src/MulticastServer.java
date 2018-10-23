@@ -20,12 +20,10 @@ public class MulticastServer extends Thread {
 
     public static void main(String[] args) {
         MulticastServer server = new MulticastServer();
-
         server.start();
     }
 
     public void sendResponseMulticast(String resp) {
-
 
             // only the designated Multicast Server will respond to RMIServer
             try {

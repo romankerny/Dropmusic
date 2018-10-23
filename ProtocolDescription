@@ -82,3 +82,6 @@ Adicionar música artista ou album
         Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n);
 
 
+Editar detalhe de um album
+        Request  -> flag | s; type | changedetail; album | aaaa; email | eeee;
+        Response -> flag | r; type | changedetail; album | aaaa; email | eeee; result | (y/n);
