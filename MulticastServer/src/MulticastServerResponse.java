@@ -77,6 +77,7 @@ public class MulticastServerResponse extends Thread {
             TCPPort = r.nextInt(1000) + 5000; // ports 5000-6000
             try {
                 serverSocket = new ServerSocket(TCPPort);
+                exit = true;
             } catch (IOException v) {
             }
         }
