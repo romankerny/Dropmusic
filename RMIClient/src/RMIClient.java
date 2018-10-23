@@ -96,7 +96,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
         while (!rmiConnected)
             try {
-                client.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
+                client.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, 1099).lookup("rmiserver");
                 rmiConnected = true;
             } catch (ConnectException e) {
                 System.out.println("Connecting to " + ip + " failed, retrying ...");
