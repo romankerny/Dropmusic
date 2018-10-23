@@ -66,3 +66,19 @@ Resposta aos clientes c/ notify de alteração em música
 - RMI quando se liga pede ACK
     Request  -> flag | s; type | connectionrequest;
 
+
+Adicionar música artista ou album
+
+    Artista:
+        Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
+        Response -> flag | r; type | addart; email | dddd; result | (y/n);
+
+    Album:
+        Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
+        Response -> flag | r; type | addalb; email | ddd; result |(y/n);
+
+    Música;
+        Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
+        Response -> flag | r; type | addmusic; title | tttt; email | dddd;
+
+

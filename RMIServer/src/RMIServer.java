@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.*;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
@@ -375,9 +376,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         // Request  -> flag | s; type | search; param | (art, gen, tit); keyword | kkkk;
         // Response -> flag | r; type | search; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...
 
-        String msg = "flag|s;type|details;param|"+param+";keyword|"+keyword+";";
+        String msg = "flag|s;type|details;param|"+param+";keyword|"+keyword+";", rspToClient = "";
         boolean exit = false;
-        String rspToClient = "";
 
         sendUDPDatagram(msg);
 
@@ -399,6 +399,61 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
         return rspToClient;
     }
+
+    // métodos de adicionar cenas
+
+    public String addArtist(String artist, String details, String email) {
+        // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
+        // Response -> flag | r; type | addart; email | dddd; result | (y/n);
+        String msg = "flag|s;type|addart;name|" + artist + ";details|" + details + ";email|" + email + ";", rspToClient = "";
+        sendUDPDatagram(msg);
+        boolean exit = false;
+
+        while (!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("addart") && cleanMessage.get(2)[1].equals(email)) {
+                if (cleanMessage.get(3)[1].equals("y")) {
+                    rspToClient = "Artist added with success!";
+                } else if (cleanMessage.get(3)[1].equals("n")) {
+                    rspToClient = "Something went wrong adding " + artist + " to Data Base";
+                }
+                exit = true;
+            }
+        }
+        return rspToClient;
+    }
+
+    public String addAlbum(String artist, String albumTitle, String description, String genre, String email) {
+        // Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
+        // Response -> flag | r; type | addalb; email | ddd; result |(y/n);
+        String msg = "flag|s;type|addalb;art|"+ artist+";alb|"+albumTitle+";description|" + description+";genre|"+genre+";email|"+email+";", rspToClient = "";
+        sendUDPDatagram(msg);
+        boolean exit = false;
+
+        while(!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if(cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("addlab") && cleanMessage.get(2)[1].equals(email)) {
+                if (cleanMessage.get(3)[1].equals("y")) {
+                    rspToClient = "Album added with success!";
+                } else if (cleanMessage.get(3)[1].equals("n")) {
+                    rspToClient = "Something went wrong adding " + albumTitle + " to Data Base";
+                }
+                exit = true;
+            }
+
+        }
+        return rspToClient;
+    }
+
+    public String addMusic(String artist, )
+    // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
+    // Response -> flag | r; type | addmusic; title | tttt; email | dddd;
+
+
 
 
     public void printOnServer(String s) throws RemoteException {
