@@ -3,6 +3,7 @@ import java.lang.reflect.Array;
 import java.net.*;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -498,6 +499,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }*/
+
+        System.getProperties().put("java.security.policy", "policy.all");
+        System.setSecurityManager(new RMISecurityManager());
 
         try {
             int sizeHashMap = 0, failCount = 0;

@@ -65,6 +65,15 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
     public static void main(String args[]) throws IOException, NotBoundException {
 
+        if (args.length != 1) {
+            System.out.println("Missing IP argument");
+            System.exit(0);
+        } else {
+            ip = args[0];
+        }
+
+        System.setProperty("java.rmi.server.hostname", ip);
+
         Scanner sc = new Scanner(System.in);
         Scanner scanner;
         String userInput = "";
@@ -72,12 +81,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         RMIClient client = new RMIClient();
         boolean exit = false, rmiConnected = false;
 
-        if (args.length != 1) {
-            System.out.println("Missing IP argument");
-            System.exit(0);
-        } else {
-            ip = args[0];
-        }
 
         String help = "Commands:\n"+
                     "- register [email] [password]\n"+
