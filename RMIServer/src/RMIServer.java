@@ -500,9 +500,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             System.setSecurityManager(new SecurityManager());
         }*/
 
-        System.getProperties().put("java.security.policy", "policy.all");
-        System.setSecurityManager(new RMISecurityManager());
-
         try {
             int sizeHashMap = 0, failCount = 0;
             boolean failedLastTime = false;
