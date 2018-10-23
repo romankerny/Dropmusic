@@ -233,7 +233,6 @@ public class MulticastServerResponse extends Thread {
         while (iUsers.hasNext()) {
             User s = (User) iUsers.next();
             if (s.email.equals((email)) & s.password.equals(password)) {
-                s.login();
                 rsp = "flag|r;type|login;result|y;email|" + email + ";password|" + password + ";";
 
                 // Concatenate notifications to `rsp` if they exist
@@ -251,24 +250,6 @@ public class MulticastServerResponse extends Thread {
                 System.out.println(email + " logged in");
             }
         }
-        sendResponseMulticast(rsp, code);
-    }
-
-    public void logout(String email, String code) {
-        // Request  -> flag | s; type | logout; email | eeee;
-        // Response -> flag | r; type | logout; result | (y/n); email | eeee;
-
-        Iterator iUsers = users.iterator();
-        String rsp = "flag|r;type|logout;result|n;email| " + email + ";";
-
-        while (iUsers.hasNext()) {
-            User s = (User) iUsers.next();
-            if(s.email.equals(email)){
-                s.logout();
-                rsp = "flag|r;type|logout;result|y;email| " + email + ";";
-            }
-        }
-
         sendResponseMulticast(rsp, code);
     }
 
@@ -303,9 +284,11 @@ public class MulticastServerResponse extends Thread {
 
         while (iUsers.hasNext()) {
             User offUser = (User) iUsers.next();
-            offUser.logout();
-            offUser.addNotification(message);
-            System.out.println("Set user: " + email + " off");
+
+            if (offUser.email.equals(email)) {
+                offUser.addNotification(message);
+                System.out.println("Set user: " + email + " off");
+            }
         }
     }
 
@@ -321,21 +304,22 @@ public class MulticastServerResponse extends Thread {
 
         boolean exit = false;
 
-        while(iUsers2.hasNext() & !exit) {
-            regularUser = (User) iUsers2.next();
-            if(regularUser.email.equals(user2) & regularUser.getType().equals("regular")) {
+        while (iUsers2.hasNext() & !exit) {
+            User s = (User) iUsers2.next();
+            if (s.email.equals(user2)) {
+                regularUser =s;
                 exit = true;
+                rsp = "flag|r;type|privilege;result|y;user1|" + user1 +";user2|" + user2 + ";";
+
+                // flag | r; type | notify; user_count | n; user_x_email | email; [...] message | mmmmmmm
             }
         }
 
         exit = false;
-        Editor ed = null;
         while (iUsers1.hasNext() & !exit) {
             User s = (User) iUsers1.next();
-            if (s.email.equals(user1) && s.getType().equals("editor")) {
-                    users.remove(regularUser);
-                    ed = new Editor(regularUser.email, regularUser.password);
-                    users.add(ed);
+            if (s.email.equals(user1) && s.isEditor()) {
+                    regularUser.becomeEditor();
                     exit = true;
                     rsp = "flag|r;type|privilege;result|y;user1|" + user1 +";user2|" + user2 + ";";
 
@@ -397,7 +381,7 @@ public class MulticastServerResponse extends Thread {
 
         while (iUsers.hasNext()) {
             User s = (User) iUsers.next();
-            if (s.email.equals((email))) {
+            if (s.email.equals(email) && s.isEditor()) {
                 editor = s;
             }
         }
@@ -433,6 +417,24 @@ public class MulticastServerResponse extends Thread {
 
     }
 
+    public void addArtist(String name, String details, String email, String code) {
+        // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
+        // Response -> flag | r; type | addart; email | dddd; result | (y/n);
+
+        String rsp = "flag|r;type|addart;email|"+email+"";
+
+        boolean exit = false;
+        Iterator iUsers = users.iterator();
+
+        while (iUsers.hasNext()) {
+            User u = (User) iUsers.next();
+            if (u.isEditor()) {
+
+            }
+        }
+        sendResponseMulticast(rsp, code);
+    }
+
 
 
     public void run() {
@@ -454,10 +456,6 @@ public class MulticastServerResponse extends Thread {
 
             } else if (cleanMessage.get(1)[1].equals("login")) { // login
                 login(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (email, password)
-
-            } else if (cleanMessage.get(1)[1].equals("logout")) { // logout
-                logout(cleanMessage.get(2)[1], cleanMessage.get(cleanMessage.size()-1)[1]);  // (email)
-
             } else if (cleanMessage.get(1)[1].equals("details")) { // search Artist, Album, Music
                 getDetails(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (Artist or Album, keyword)
 
@@ -470,7 +468,9 @@ public class MulticastServerResponse extends Thread {
             } else if(cleanMessage.get(1)[1].equals("notify")) {
                 offUserNotified(cleanMessage.get(4)[1], cleanMessage.get(2)[1]);    // (email, message)
             } else if(cleanMessage.get(1)[1].equals("share")) {
-                share(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (title, shareTo, uploader)
+                share(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, shareTo, uploader)
+            } else if (cleanMessage.get(1)[1].equals("addart")) {
+                addArtist(cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1] ,cleanMessage.get(cleanMessage.size()-1)[1]);
             } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload")) {
                 // flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
 
