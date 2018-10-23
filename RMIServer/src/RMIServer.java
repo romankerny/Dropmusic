@@ -237,6 +237,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
+            System.out.println(cleanMessage.get(1)[1]);
+            System.out.println(cleanMessage.get(2)[1]);
+            System.out.println(cleanMessage.get(3)[1]);
+            System.out.println(cleanMessage.get(4)[1]);
+            System.out.println(cleanMessage.get(5)[1]);
+            System.out.println(cleanMessage.get(6)[1]);
+
             if (cleanMessage.get(1)[1].equals("share") && cleanMessage.get(5)[1].equals(uploader)) {
                 if (cleanMessage.get(2)[1].equals("y")) {
                     rspToClient = "Successfully shared +" + title + " with " + shareTo;

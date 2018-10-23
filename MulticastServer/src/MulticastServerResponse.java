@@ -140,15 +140,17 @@ public class MulticastServerResponse extends Thread {
 
     public void downloadMusic(String title, String uploader, String email, String code) throws IOException {
         // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee;
-        // Response -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; port | pppp;
+        // Response -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; ip | ip; port | pppp;
 
         Iterator iArtists = artists.iterator();
         System.out.println("A dar download de musica "+title);
 
         ServerSocket serverSocket = getSocket();
+        String ip = InetAddress.getLocalHost().getHostAddress();
+        int port = serverSocket.getLocalPort();
         Socket client = null;
 
-        sendResponseMulticast("flag|r;type|requestTCPConnection;operation|download;email|"+email+";result|y;port|"+serverSocket.getLocalPort()+";", code);
+        sendResponseMulticast("flag|r;type|requestTCPConnection;operation|download;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
 
         while(iArtists.hasNext()) {
             Artist a = (Artist) iArtists.next();
@@ -161,6 +163,10 @@ public class MulticastServerResponse extends Thread {
                 while(iMusic.hasNext()) {
                     Music m = (Music) iMusic.next();
                     if(m.title.equals(title)) {
+
+                        for (String s : m.musicFiles.get(uploader).emails)
+                            System.out.println("Pode fazer download: "+s);
+
                         if (m.musicFiles.get(uploader).emails.contains(email)) {
                             client = serverSocket.accept();
                             DataOutputStream out = new DataOutputStream(client.getOutputStream());
@@ -203,6 +209,7 @@ public class MulticastServerResponse extends Thread {
                         if(m.musicFiles.containsKey(uploader)) {
                             found = true;
                             m.musicFiles.get(uploader).shareWith(shareTo);
+                            //System.out.println(m.musicFiles.get(uploader).emails.size());
                         }
 
                     }
