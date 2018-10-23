@@ -445,12 +445,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
         return rspToClient;
     }
-/*
-    public String addMusic(String musicTitle, int track, String albumTitle , String email) {
+
+    public String addMusic(String musicTitle, String track, String albumTitle , String email) {
     // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
     // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n);
 
-        String msg = "flag|s;type|addalb;art|" + artist + ";alb|" + albumTitle + ";description|" + description + ";genre|" + genre + ";email|" + email + ";", rspToClient = "";
+        String msg =  "flag|s;type|addmusic;alb|"+albumTitle+";title|"+musicTitle+";track|"+track+";email|"+email+";"  ,rspToClient = "";
         sendUDPDatagram(msg);
         boolean exit = false;
 
@@ -462,16 +462,15 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 if(cleanMessage.get(4)[1].equals("y")) {
                     rspToClient = "Music " + musicTitle + " added with sucess";
                 } else {
-                    rspToClient = ""
+                    rspToClient = "Something went wrong adding " + musicTitle + " to album " + albumTitle;
                 }
-
+                exit = true;
             }
 
-
-
         }
+        return rspToClient;
     }
-*/
+
 
 
     public void printOnServer(String s) throws RemoteException {
