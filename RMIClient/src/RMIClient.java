@@ -72,7 +72,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
             ip = args[0];
         }
 
-        //System.setProperty("java.rmi.server.hostname", ip);
+        // System.setProperty("java.rmi.server.hostname", ip);
 
         Scanner sc = new Scanner(System.in);
         Scanner scanner;
@@ -128,7 +128,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     } else {
                         System.out.println("Usage: register [email] [password]");
                     }
-
 
                 } else if (tokens[0].equals("login")) {
 
@@ -259,7 +258,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
             }
 
         } // while
-
 
     }
 }

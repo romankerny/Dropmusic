@@ -24,7 +24,7 @@ class MusicFile {
 
     public String filename;
     public byte[] rawData;
-    ArrayList<String> emails;
+    public ArrayList<String> emails;
 
     MusicFile(String filename, byte[] rawData) {
         this.filename = filename;

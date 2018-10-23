@@ -108,32 +108,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return message;
     }
 
-    public String receiveUDPDatagram() {
-
-        String message = null;
-
-        try {
-            MulticastSocket socket = new MulticastSocket(RCV_PORT);  // create socket and bind it
-            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-            socket.joinGroup(group);
-
-
-            byte[] buffer = new byte[65536];
-
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-            socket.receive(packet);
-
-            message = new String(packet.getData(), 0, packet.getLength());
-            System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message: " + message);
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        }
-        return message;
-    }
-
     ArrayList<String[]> cleanTokens(String msg) {
 
         String[] tokens = msg.split(";");
@@ -250,7 +224,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
         return 0;
     }
-
 
     public String share(String title, String shareTo, String uploader) throws RemoteException {
         // Request  -> flag | s; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
@@ -383,7 +356,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-
     public String addArtist(String artist, String details, String email) {
         // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
         // Response -> flag | r; type | addart; email | dddd; result | (y/n);
@@ -456,60 +428,54 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-    /*
-    public changeAlbumDetail(String albumTitle, String email) {
-        // Request  -> flag | s; param | type | changedetail; album | aaaa; email | eeee;
+    public String changeAlbumDetail(String albumTitle, String email) throws RemoteException {
+        // Request  -> flag | s; type | changedetail; album | aaaa; email | eeee;
         // Response -> flag | r; type | changedetail; album | aaaa; email | eeee; result | (y/n);
 
-        String msg = "flag|s;type|changedetail;album"
+        String msg = "flag|s;type|changedetail;album|"+albumTitle+";email|"+email+";", rspToClient = "";
+        sendUDPDatagram(msg);
+        boolean exit = false;
 
-
-
-    }
-    */
-
-    public void printOnServer(String s) throws RemoteException {
-        System.out.println("> " + s);
+        while(!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+            if(cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("changedetail") && cleanMessage.get(2)[1].equals(albumTitle) && cleanMessage.get(3)[1].equals(email)) {
+                if(cleanMessage.get(4)[1].equals("y")) {
+                    rspToClient = "Success changing details of album " + albumTitle;
+                } else if(cleanMessage.get(4)[1].equals("y")) {
+                    rspToClient = "Something went wrong changing details of album " + albumTitle;
+                }
+                exit = true;
+            }
+        }
+        return rspToClient;
     }
 
     public boolean isAlive() throws RemoteException {
         return true;
     }
 
-    public int sizeHashMap() throws RemoteException {
-        return clients.size();
-    }
-
-    public ConcurrentHashMap<String, RMIClientInterface> getHashMap() throws RemoteException {
-        return this.clients;
-    }
 
 
-    // =========================================================
     public static void main(String args[]) throws NotBoundException, AlreadyBoundException, IOException {
 
         System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
         String msg;
         String q = null;
 
+       System.setProperty("java.rmi.server.hostname", Inet4Address.getLocalHost().getHostAddress());
+
         MulticastSocket socket = new MulticastSocket(RCV_PORT);  // create socket and bind it
         InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
         socket.joinGroup(group);
 
-        /*System.setProperty("java.security.policy","policy.all");
-
-        if (System.getSecurityManager() == null) {
-            System.setSecurityManager(new SecurityManager());
-        }*/
 
         try {
-            int sizeHashMap = 0, failCount = 0;
-            boolean failedLastTime = false;
-            boolean takeOver = false;
-
-
-            rmiServer = new RMIServer();
+            int failCount = 0;
+            boolean failedLastTime = false, takeOver = false;
             Registry r = null;
+            rmiServer = new RMIServer();
+
 
             try {
 
@@ -572,13 +538,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             // waiting for MulticastServers to group up
             // Response -> flag | r; type | ack; hash | hhhh;
 
-            /*
-            try {
-                sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            */
+
             byte[] buffer = new byte[65536];
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet);
