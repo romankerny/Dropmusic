@@ -456,17 +456,30 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-    /*
-    public changeAlbumDetail(String albumTitle, String email) {
-        // Request  -> flag | s; param | type | changedetail; album | aaaa; email | eeee;
+
+    public String changeAlbumDetail(String albumTitle, String email) throws RemoteException {
+        // Request  -> flag | s; type | changedetail; album | aaaa; email | eeee;
         // Response -> flag | r; type | changedetail; album | aaaa; email | eeee; result | (y/n);
 
-        String msg = "flag|s;type|changedetail;album"
+        String msg = "flag|s;type|changedetail;album|"+albumTitle+";email|"+email+";", rspToClient = "";
+        sendUDPDatagram(msg);
+        boolean exit = false;
 
-
-
+        while(!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+            if(cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("changedetail") && cleanMessage.get(2)[1].equals(albumTitle) && cleanMessage.get(3)[1].equals(email)) {
+                if(cleanMessage.get(4)[1].equals("y")) {
+                    rspToClient = "Success changing details of album " + albumTitle;
+                } else if(cleanMessage.get(4)[1].equals("y")) {
+                    rspToClient = "Something went wrong changing details of album " + albumTitle;
+                }
+                exit = true;
+            }
+        }
+        return rspToClient;
     }
-    */
+
 
     public void printOnServer(String s) throws RemoteException {
         System.out.println("> " + s);
@@ -490,24 +503,19 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String msg;
         String q = null;
 
+       // System.setProperty("java.rmi.server.hostname", Inet4Address.getLocalHost().getHostAddress());
+
         MulticastSocket socket = new MulticastSocket(RCV_PORT);  // create socket and bind it
         InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
         socket.joinGroup(group);
 
-        /*System.setProperty("java.security.policy","policy.all");
-
-        if (System.getSecurityManager() == null) {
-            System.setSecurityManager(new SecurityManager());
-        }*/
 
         try {
-            int sizeHashMap = 0, failCount = 0;
-            boolean failedLastTime = false;
-            boolean takeOver = false;
-
-
-            rmiServer = new RMIServer();
+            int failCount = 0;
+            boolean failedLastTime = false, takeOver = false;
             Registry r = null;
+            rmiServer = new RMIServer();
+
 
             try {
 

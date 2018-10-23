@@ -15,6 +15,7 @@ public interface RMIServerInterface extends Remote {
 
     // 5.
     public String rateAlbum(int stars, String albumName, String review, String email) throws RemoteException;
+    public String changeAlbumDetail(String albumTitle, String email) throws RemoteException;
 
     // 6.
     public String regularToEditor(String editor, String regular) throws RemoteException;
@@ -28,7 +29,7 @@ public interface RMIServerInterface extends Remote {
     public int downloadMusic(String title, String uploader, String email) throws RemoteException;
 
     // RMIBackup Test
-    public int sizeHashMap() throws RemoteException;
+
     public ConcurrentHashMap<String, RMIClientInterface> getHashMap() throws RemoteException;
     public void subscribe(String email, RMIClientInterface clientInterface) throws RemoteException;
     public boolean isAlive() throws RemoteException;
