@@ -487,6 +487,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     // =========================================================
     public static void main(String args[]) throws NotBoundException, AlreadyBoundException, IOException {
+
+        System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
         String msg;
         String q = null;
 

@@ -421,18 +421,49 @@ public class MulticastServerResponse extends Thread {
         // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
         // Response -> flag | r; type | addart; email | dddd; result | (y/n);
 
-        String rsp = "flag|r;type|addart;email|"+email+"";
+        String rsp = "flag|r;type|addart;email|"+email+";result|n";
 
-        boolean exit = false;
         Iterator iUsers = users.iterator();
 
         while (iUsers.hasNext()) {
             User u = (User) iUsers.next();
-            if (u.isEditor()) {
-
+            if (u.email.equals(email) && u.isEditor()) {
+                this.artists.add(new Artist(name, details));
+                rsp =" flag|r;type|addart;email|"+email+";result|y";
             }
         }
         sendResponseMulticast(rsp, code);
+    }
+
+    public void addAlbum(String artName, String albName, String description, String genre, String email, String code) {
+        // Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
+        // Response -> flag | r; type | addalb; email | ddd; result |(y/n); |
+
+        String rsp = "flag|r;type|addalb;email|"+email+";result|n;";
+
+        Iterator iUsers = users.iterator();
+
+        while (iUsers.hasNext()) {
+            User u = (User) iUsers.next();
+            if (u.email.equals(email) && u.isEditor()) {
+
+                Iterator iArtists = artists.iterator();
+
+                while (iArtists.hasNext()) {
+                    Artist a = (Artist) iArtists.next();
+                    if (a.name.equals(artName)) {
+                        a.albums.add(new Album(albName, description, genre));
+                        rsp = "flag|r;type|addalb;email|"+email+";result|y;";
+                    }
+                }
+            }
+        }
+        sendResponseMulticast(rsp, code);
+    }
+
+    public void addMusic(String albName, String title, String track) {
+        // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
+        // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n);
     }
 
 
