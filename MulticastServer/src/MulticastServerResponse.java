@@ -19,7 +19,6 @@ public class MulticastServerResponse extends Thread {
     private String hashCode;
     private MulticastSocket sendSocket = null; // socket to respond to Multicast group
     private int SEND_PORT = 5214;
-    private int TCPPort = 5252;
     private String MULTICAST_ADDRESS;
     private CopyOnWriteArrayList<User> users;
     private CopyOnWriteArrayList<Artist> artists;
@@ -71,10 +70,10 @@ public class MulticastServerResponse extends Thread {
         boolean exit = false;
         ServerSocket serverSocket= null;
         int TCPPort;
-        Random r = new Random();
 
         while(!exit) {
-            TCPPort = r.nextInt(1000) + 5000; // ports 5000-6000
+            TCPPort = ((int)(Math.random()*1000)) + 5000;
+            System.out.println("New port: "+TCPPort);
             try {
                 serverSocket = new ServerSocket(TCPPort);
                 exit = true;
@@ -89,13 +88,17 @@ public class MulticastServerResponse extends Thread {
 
     public void uploadMusic(String title, String email, String code) throws IOException, ClassNotFoundException {
         // flag | s; type | requestTCPConnection; operation | upload; email | eeee;
-        // flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
+        // flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; ip | ip; port | pppp;
 
-        sendResponseMulticast("flag|r;type|requestTCPConnection;operation|upload;email|"+email+";result|y;port|"+TCPPort+";", code);
         Iterator iArtists = artists.iterator();
         System.out.println("A dar upload de musica "+ title);
         ServerSocket serverSocket = getSocket();
         Socket client = null;
+
+        String ip = InetAddress.getLocalHost().getHostAddress();
+        int port = serverSocket.getLocalPort();
+
+        sendResponseMulticast("flag|r;type|requestTCPConnection;operation|upload;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
 
 
         while(iArtists.hasNext()) {
@@ -142,12 +145,13 @@ public class MulticastServerResponse extends Thread {
         // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee;
         // Response -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; port | pppp;
 
-        sendResponseMulticast("flag|r;type|requestTCPConnection;operation|download;email|"+email+";result|y;port|"+TCPPort+";", code);
         Iterator iArtists = artists.iterator();
         System.out.println("A dar download de musica "+title);
 
         ServerSocket serverSocket = getSocket();
         Socket client = null;
+
+        sendResponseMulticast("flag|r;type|requestTCPConnection;operation|download;email|"+email+";result|y;port|"+serverSocket.getLocalPort()+";", code);
 
         while(iArtists.hasNext()) {
             Artist a = (Artist) iArtists.next();

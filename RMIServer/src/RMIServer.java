@@ -463,8 +463,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String msg;
         String q = null;
 
-       System.setProperty("java.rmi.server.hostname", Inet4Address.getLocalHost().getHostAddress());
-
         MulticastSocket socket = new MulticastSocket(RCV_PORT);  // create socket and bind it
         InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
         socket.joinGroup(group);
