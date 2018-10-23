@@ -3,7 +3,6 @@ import java.rmi.RemoteException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public interface RMIServerInterface extends Remote {
-    public void    printOnServer(String s) throws RemoteException;
 
     // 1.
     public String register(String name, String password) throws RemoteException;
@@ -30,7 +29,6 @@ public interface RMIServerInterface extends Remote {
 
     // RMIBackup Test
 
-    public ConcurrentHashMap<String, RMIClientInterface> getHashMap() throws RemoteException;
     public void subscribe(String email, RMIClientInterface clientInterface) throws RemoteException;
     public boolean isAlive() throws RemoteException;
 

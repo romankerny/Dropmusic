@@ -1,3 +1,5 @@
+import com.mysql.fabric.Server;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -6,6 +8,7 @@ import java.io.*;
 import java.net.*;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.Iterator;
@@ -63,6 +66,23 @@ public class MulticastServerResponse extends Thread {
         return rtArray;
     }
 
+    public ServerSocket getSocket() {
+
+        boolean exit = false;
+        ServerSocket serverSocket= null;
+        int TCPPort;
+        Random r = new Random();
+
+        while(!exit) {
+            TCPPort = r.nextInt(1000) + 5000; // ports 5000-6000
+            try {
+                serverSocket = new ServerSocket(TCPPort);
+            } catch (IOException v) {
+            }
+        }
+        return serverSocket;
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
 
 
@@ -73,9 +93,9 @@ public class MulticastServerResponse extends Thread {
         sendResponseMulticast("flag|r;type|requestTCPConnection;operation|upload;email|"+email+";result|y;port|"+TCPPort+";", code);
         Iterator iArtists = artists.iterator();
         System.out.println("A dar upload de musica "+ title);
-
-        ServerSocket serverSocker = new ServerSocket(TCPPort);
+        ServerSocket serverSocket = getSocket();
         Socket client = null;
+
 
         while(iArtists.hasNext()) {
             Artist a = (Artist) iArtists.next();
@@ -90,7 +110,7 @@ public class MulticastServerResponse extends Thread {
                     if(m.title.equals(title)) {
 
                         System.out.println("socket is bound");
-                        client = serverSocker.accept();
+                        client = serverSocket.accept();
 
                         DataInputStream in = new DataInputStream(client.getInputStream());
 
@@ -105,14 +125,16 @@ public class MulticastServerResponse extends Thread {
                         while((count = in.read(buffer)) != -1);
 
                         m.musicFiles.put(email, new MusicFile(filename, buffer));
+                        m.musicFiles.get(email).emails.add(email);
 
                         in.close();
-                        serverSocker.close();
+                        serverSocket.close();
 
                     }
                 }
             }
         }
+        System.out.println("Upload of " + title+ " done" );
     }
 
     public void downloadMusic(String title, String uploader, String email, String code) throws IOException {
@@ -123,7 +145,7 @@ public class MulticastServerResponse extends Thread {
         Iterator iArtists = artists.iterator();
         System.out.println("A dar download de musica "+title);
 
-        ServerSocket serverSocket = new ServerSocket(TCPPort);
+        ServerSocket serverSocket = getSocket();
         Socket client = null;
 
         while(iArtists.hasNext()) {
