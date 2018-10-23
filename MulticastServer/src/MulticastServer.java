@@ -1,9 +1,8 @@
-import java.io.File;
-import java.io.FileInputStream;
 import java.net.MulticastSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.io.IOException;
+import java.sql.*;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -129,6 +128,19 @@ public class MulticastServer extends Thread {
             // System.out.println(tool);
             // System.out.println(kendrick);
 
+            /*
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/dropmusic?useSSL=false", "root", "root");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * from music");
+            System.out.println(rs);
+
+            while (rs.next()) {
+                System.out.println(rs.getString("title"));
+                System.out.println(rs.getInt("track"));
+            }*/
+
+
             while (true) {
 
                 byte[] buffer = new byte[65536];
@@ -141,6 +153,14 @@ public class MulticastServer extends Thread {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        /*} catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();*/
         } finally {
             socket.close();
         }
