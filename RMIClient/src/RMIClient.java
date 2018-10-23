@@ -133,7 +133,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
                     if (tokens.length == 3) {
                         System.out.println(client.serverInterface.login(tokens[1], tokens[2], client));
-                        email = tokens[2];
+                        email = tokens[1];
                     } else {
                         System.out.println("Usage: login [email] [password]");
                     }
