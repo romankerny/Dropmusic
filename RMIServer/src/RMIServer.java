@@ -445,12 +445,32 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
         return rspToClient;
     }
-    /*
-    public String addMusic(String artist,) {
+/*
+    public String addMusic(String musicTitle, int track, String albumTitle , String email) {
     // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
-    // Response -> flag | r; type | addmusic; title | tttt; email | dddd;
+    // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n);
 
-}
+        String msg = "flag|s;type|addalb;art|" + artist + ";alb|" + albumTitle + ";description|" + description + ";genre|" + genre + ";email|" + email + ";", rspToClient = "";
+        sendUDPDatagram(msg);
+        boolean exit = false;
+
+        while(!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if(cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("addlab") && cleanMessage.get(2)[1].equals(albumTitle) && cleanMessage.get(3)[1].equals(email)) {
+                if(cleanMessage.get(4)[1].equals("y")) {
+                    rspToClient = "Music " + musicTitle + " added with sucess";
+                } else {
+                    rspToClient = ""
+                }
+
+            }
+
+
+
+        }
+    }
 */
 
 

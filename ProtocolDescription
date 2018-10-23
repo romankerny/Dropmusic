@@ -79,6 +79,6 @@ Adicionar música artista ou album
 
     Música;
         Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
-        Response -> flag | r; type | addmusic; title | tttt; email | dddd;
+        Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n);
 
 
