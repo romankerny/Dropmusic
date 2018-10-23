@@ -95,9 +95,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- promote [email]";
 
 
-       // System.getProperties().put("java.security.policy", "policy.all");
-        //System.setSecurityManager(new RMISecurityManager());
-
         System.out.println("Connecting to: " + ip);
 
         while (!rmiConnected)
