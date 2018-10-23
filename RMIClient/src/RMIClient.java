@@ -190,9 +190,11 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                         String musicName = strCatSpaces(tokens, 2);
                         File musicFile = new File(tokens[1]);
                         FileInputStream fis = new FileInputStream(musicFile);
-                        port = client.serverInterface.uploadMusic(musicName, email);
-                        // criar socket e mandar pa la o nosso file
-                        Socket s = new Socket("localhost", port);
+                        String ipport = client.serverInterface.uploadMusic(musicName, email);
+                        String [] ipPort = ipport.split(" ");
+
+                        // Criar socket e receber o File
+                        Socket s = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
                         if (s.isConnected()) {
                             DataOutputStream out = new DataOutputStream(s.getOutputStream());
                             // Send filename and size before actual bytes
@@ -214,9 +216,11 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     if (tokens.length >= 3) {
                         int port;
                         String musicName = strCatSpaces(tokens, 2);
-                        port = client.serverInterface.downloadMusic(musicName, tokens[1], email);
+                        String ipport = client.serverInterface.downloadMusic(musicName, tokens[1], email);
+                        String [] ipPort = ipport.split(" ");
+
                         // Criar socket e receber o File
-                        Socket s = new Socket("localhost", port);
+                        Socket s = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
                         if (s.isConnected()) {
                             DataInputStream in = new DataInputStream(s.getInputStream());
                             String filename = in.readUTF();
