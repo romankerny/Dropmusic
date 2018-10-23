@@ -185,9 +185,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-    public int uploadMusic(String title, String uploader) {
+    public String uploadMusic(String title, String uploader) {
         // Request  -> flag | s; type | requestTCPConnection; operation | upload; title | tttt; email | eeee;
-        // Response -> flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
+        // Response -> flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; ip | iiii; port | pppp;
         String msg = "flag|s;type|requestTCPConnection;operation|upload;title|" + title + ";email|" + uploader + ";";
         sendUDPDatagram(msg);
 
@@ -196,18 +196,18 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
             if (cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload") &&
-                    cleanMessage.get(3)[1].equals(uploader) && cleanMessage.get(4)[1].equals("y")) {
+                cleanMessage.get(3)[1].equals(uploader) && cleanMessage.get(4)[1].equals("y")) {
                 System.out.println("Recebi datagram no uploadMusic vou retornar a porta");
-                return Integer.parseInt(cleanMessage.get(5)[1]);
+                return cleanMessage.get(5)[1] + " " + cleanMessage.get(6)[1];
             }
         }
-        return 0;
+        return "";
 
     }
 
-    public int downloadMusic(String title, String uploader, String email) throws RemoteException {
+    public String downloadMusic(String title, String uploader, String email) throws RemoteException {
         // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
-        // Response -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; port | pppp;
+        // Response -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; ip | iiii; port | pppp;
         String msg = "flag|s;type|requestTCPConnection;operation|download;title|" + title + ";uploader|" + uploader + ";email|" + email + ";";
         sendUDPDatagram(msg);
 
@@ -219,10 +219,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if (cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("download") &&
                     cleanMessage.get(3)[1].equals(email) && cleanMessage.get(4)[1].equals("y")) {
                 System.out.println("Recebi datagram no uploadMusic vou retornar a porta");
-                return Integer.parseInt(cleanMessage.get(5)[1]);
+                return cleanMessage.get(5)[1] + " " + cleanMessage.get(6)[1];
             }
         }
-        return 0;
+        return "";
     }
 
     public String share(String title, String shareTo, String uploader) throws RemoteException {

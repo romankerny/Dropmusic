@@ -84,9 +84,6 @@ public class MulticastServerResponse extends Thread {
         return serverSocket;
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-
-
     public void uploadMusic(String title, String email, String code) throws IOException, ClassNotFoundException {
         // flag | s; type | requestTCPConnection; operation | upload; email | eeee;
         // flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
