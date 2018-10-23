@@ -1,23 +1,18 @@
 import java.io.Serializable;
-import java.io.SerializablePermission;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-enum Status {
-    ON, OFF;
-}
 
 public class User implements Serializable {
 
     public String email;
     public String password;
-    public Status status;
+    public boolean editor;
     public CopyOnWriteArrayList<String> notifications;
 
 
     public User(String email, String password) {
         this.email = email;
         this.password = password;
-        this.status = Status.OFF;
+        this.editor = false;
         this.notifications = new CopyOnWriteArrayList<String>();
     }
 
@@ -29,11 +24,9 @@ public class User implements Serializable {
         this.notifications.remove(notification);
     }
 
-    public void login() {
-        this.status = Status.ON;
-    }
+    public boolean isEditor() {return this.editor;}
 
-    public void logout() { this.status = Status.OFF;}
+    public void becomeEditor() { this.editor = true;}
 
     public String getType() {
         return "user";
