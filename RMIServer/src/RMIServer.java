@@ -246,7 +246,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             if (cleanMessage.get(1)[1].equals("share") && cleanMessage.get(5)[1].equals(uploader)) {
                 if (cleanMessage.get(2)[1].equals("y")) {
-                    rspToClient = "Successfully shared +" + title + " with " + shareTo;
+                    rspToClient = "Successfully shared " + title + " with " + shareTo;
                     exit = true;
                 } else {
                     rspToClient = "Failed to share";
