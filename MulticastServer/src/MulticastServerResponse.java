@@ -86,51 +86,52 @@ public class MulticastServerResponse extends Thread {
     public void uploadMusic(String title, String email, String code) throws IOException, ClassNotFoundException {
         // flag | s; type | requestTCPConnection; operation | upload; email | eeee;
         // flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; ip | ip; port | pppp;
+        if(this.hashCode.equals(code)) {
+            Iterator iArtists = artists.iterator();
+            System.out.println("A dar upload de musica " + title);
+            ServerSocket serverSocket = getSocket();
+            Socket client = null;
 
-        Iterator iArtists = artists.iterator();
-        System.out.println("A dar upload de musica "+ title);
-        ServerSocket serverSocket = getSocket();
-        Socket client = null;
+            String ip = InetAddress.getLocalHost().getHostAddress();
+            int port = serverSocket.getLocalPort();
 
-        String ip = InetAddress.getLocalHost().getHostAddress();
-        int port = serverSocket.getLocalPort();
-
-        sendResponseMulticast("flag|r;type|requestTCPConnection;operation|upload;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
+            sendResponseMulticast("flag|r;type|requestTCPConnection;operation|upload;email|" + email + ";result|y;ip|" + ip + ";port|" + port + ";", code);
 
 
-        while(iArtists.hasNext()) {
-            Artist a = (Artist) iArtists.next();
-            Iterator iAlbum = a.albums.iterator();
+            while (iArtists.hasNext()) {
+                Artist a = (Artist) iArtists.next();
+                Iterator iAlbum = a.albums.iterator();
 
-            while(iAlbum.hasNext()) {
-                Album alb = (Album) iAlbum.next();
-                Iterator iMusic = alb.tracks.iterator();
+                while (iAlbum.hasNext()) {
+                    Album alb = (Album) iAlbum.next();
+                    Iterator iMusic = alb.tracks.iterator();
 
-                while(iMusic.hasNext()) {
-                    Music m = (Music) iMusic.next();
-                    if(m.title.equals(title)) {
+                    while (iMusic.hasNext()) {
+                        Music m = (Music) iMusic.next();
+                        if (m.title.equals(title)) {
 
-                        System.out.println("socket is bound");
-                        client = serverSocket.accept();
+                            System.out.println("socket is bound");
+                            client = serverSocket.accept();
 
-                        DataInputStream in = new DataInputStream(client.getInputStream());
+                            DataInputStream in = new DataInputStream(client.getInputStream());
 
-                        // Filename and size first
-                        String filename = in.readUTF();
-                        long size = in.readLong();
+                            // Filename and size first
+                            String filename = in.readUTF();
+                            long size = in.readLong();
 
-                        byte[] buffer = new byte[(int)size];
-                        int count;
+                            byte[] buffer = new byte[(int) size];
+                            int count;
 
-                        // Ler todos os bytes
-                        while((count = in.read(buffer)) != -1);
+                            // Ler todos os bytes
+                            while ((count = in.read(buffer)) != -1) ;
 
-                        m.musicFiles.put(email, new MusicFile(filename, buffer));
-                        m.musicFiles.get(email).emails.add(email);
+                            m.musicFiles.put(email, new MusicFile(filename, buffer));
+                            m.musicFiles.get(email).emails.add(email);
 
-                        in.close();
-                        serverSocket.close();
+                            in.close();
+                            serverSocket.close();
 
+                        }
                     }
                 }
             }
@@ -141,6 +142,7 @@ public class MulticastServerResponse extends Thread {
     public void downloadMusic(String title, String uploader, String email, String code) throws IOException {
         // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee;
         // Response -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; ip | ip; port | pppp;
+        // alterar p so responder quem encontrar musica
 
         Iterator iArtists = artists.iterator();
         System.out.println("A dar download de musica "+title);
@@ -149,7 +151,6 @@ public class MulticastServerResponse extends Thread {
         String ip = InetAddress.getLocalHost().getHostAddress();
         int port = serverSocket.getLocalPort();
         Socket client = null;
-
         sendResponseMulticast("flag|r;type|requestTCPConnection;operation|download;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
 
         while(iArtists.hasNext()) {

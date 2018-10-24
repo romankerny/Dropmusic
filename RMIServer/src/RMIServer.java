@@ -210,6 +210,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         // Response -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; ip | iiii; port | pppp;
         String msg = "flag|s;type|requestTCPConnection;operation|download;title|" + title + ";uploader|" + uploader + ";email|" + email + ";";
         sendUDPDatagram(msg);
+        // sendUDPDatagramGeneral(msg);
 
         boolean exit = false;
         while (!exit) {
