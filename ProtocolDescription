@@ -6,11 +6,10 @@ type | register; flag | r; username | name; password | pw; result y
 
 (1) Register & Login & logout
     Request  -> flag | s; type | register; email | eeee; password | pppp;
-    Response -> flag | r; type | register; result | (y/n); email | eeee; password | pppp;
+    Response -> flag | r; type | register; result | (y/n); email | eeee; password | pppp; msg | mmmmmm;
 
     Request  -> flag | s; type | login; email | eeee; password | pppp;
-    Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | msg; [etc...]
-
+    Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | notif; msg | mmmmmm;
     Request  -> flag | s; type | logout; email | eeee;
     Response -> flag | r; type | logout; result | (y/n); email | eeee;
 
@@ -34,7 +33,7 @@ Resposta aos clientes c/ notify de alteração em música
 
 (6) Dar previlégios de editor a um utilizador
     Request  -> flag | s; type | privilege; user1 | username; user2 | username;
-    Response -> flag | r; type | privilege; result | (y/n): user1 | username; user2 | username;
+    Response -> flag | r; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
 
 (7) Adicionar / alterar detalhes
     * P/ enquanto ainda só funciona c/ o param details de Album e Artist

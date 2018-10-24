@@ -72,7 +72,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
             ip = args[0];
         }
 
-        // System.setProperty("java.rmi.server.hostname", ip);
+        System.setProperty("java.rmi.server.hostname", ip);
 
         Scanner sc = new Scanner(System.in);
         Scanner scanner;

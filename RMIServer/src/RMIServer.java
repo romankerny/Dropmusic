@@ -10,6 +10,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import static java.lang.Thread.sleep;
@@ -125,9 +126,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public String register(String name, String password) throws RemoteException {
 
-        String msg = "flag|s;type|register;username|" + name + ";password|" + password + ";"; // protocol to register
+        // Request  -> flag | s; type | register; email | eeee; password | pppp;
+        // Response -> flag | r; type | register; result | (y/n); email | eeee; password | pppp; msg | mmmmmmmm;
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+        String msg = "flag|"+id+";type|register;username|" + name + ";password|" + password + ";"; // protocol to register
         boolean exit = false;
-        String rspToClient = null;
+        String rspToClient = "Failed to register";
 
         sendUDPDatagram(msg);
 
@@ -135,25 +140,77 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
-            if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("register")) {
-                if (cleanMessage.get(2)[1].equals("y") && cleanMessage.get(3)[1].equals(name) && cleanMessage.get(4)[1].equals(password)) {
+            if (cleanMessage.get(0)[1].equals(id)) {
+                if (cleanMessage.get(2)[1].equals("y")) {
                     rspToClient = "User " + name + " registered successfully";
 
                 } else {
-                    rspToClient = "Failed to register";
+                    rspToClient = cleanMessage.get(5)[1]; // result n, get error message
                 }
                 exit = true;
             }
         }
+        return rspToClient;
+    }
 
+    public void subscribe(String email, RMIClientInterface clientInterface) throws RemoteException {
+        this.clients.put(email, clientInterface);
+    }
+
+    public String logout(String email) throws RemoteException {
+
+        clients.remove(email);
+        return "Logged out";
+    }
+
+    public String login(String email, String password, RMIClientInterface client) throws RemoteException {
+        // Request  -> flag | s; type | login; email | eeee; password | pppp;
+        // Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | notif; msg | mmmmmm;
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|login;email|" + email + ";password|" + password + ";";
+        boolean exit = false;
+        String rspToClient = "Failed to login";
+        sendUDPDatagram(msg);
+
+        while (!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals(id)) {
+                if (cleanMessage.get(2)[1].equals("y")) {
+                    int numNotifications = Integer.parseInt(cleanMessage.get(5)[1]);
+
+                    rspToClient = "Logged in successfully " + email;
+                    subscribe(email, client);
+
+                    if (numNotifications > 0) {
+                        rspToClient += "\nMissed notifications:\n";
+                        for (int i = 0; i < numNotifications; i++) {
+                            rspToClient += cleanMessage.get(6 + i)[1] + "\n";
+                        }
+                    }
+                } else {
+                    // result | n
+                    rspToClient = cleanMessage.get(cleanMessage.size()-2)[1]; // Error message comes penultima
+                }
+                exit = true;
+            }
+        }
         return rspToClient;
     }
 
     public String regularToEditor(String editor, String regular) throws RemoteException {
         // Request  -> flag | s; type | privilege; user1 | username; user2 | username;
         // Response -> flag | r; type | privilege; result | (y/n); user1 | username; user2 | username;
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
-        String msg = "flag|s;type|privilege;user1|" + editor + ";user2|" + regular + ";";
+        String uuidNotify = UUID.randomUUID().toString();
+        String idNotify = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|privilege;user1|" + editor + ";user2|" + regular + ";";
         boolean exit = false;
         String rspToClient = "Failed to cast " + regular + " to editor";
 
@@ -163,40 +220,47 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
-            if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("privilege") && cleanMessage.get(2)[1].equals("y") && cleanMessage.get(3)[1].equals(editor)
-                    && cleanMessage.get(4)[1].equals(regular)) {
-                System.out.println("aqui");
-                rspToClient = regular + " casted to Editor with success";
-
-                try {
-                    clients.get(regular).printOnClient("You got promoted to Editor by " + editor);
-                } catch (RemoteException re) {
-                    clients.remove(regular);
-                    System.out.println("Client is off");
-                    sendUDPDatagram("flag|s;type|notifyfail;email|" + regular + ";message|" + "You got promoted to Editor by " + editor + ";");
-                } catch (NullPointerException npe) {
-                    System.out.println("Client is off");
-                    sendUDPDatagram("flag|s;type|notifyfail;email|" + regular + ";message|" + "You got promoted to Editor by " + editor + ";");
+            if (cleanMessage.get(0)[1].equals(id)) {
+                if (cleanMessage.get(2)[1].equals("y")) {
+                    System.out.println("Sucesss");
+                    rspToClient = regular + " casted to Editor with success";
+                    // Notify him
+                    try {
+                        clients.get(regular).printOnClient("You got promoted to Editor by " + editor);
+                    } catch (RemoteException re) {
+                        clients.remove(regular);
+                        System.out.println("Client is off");
+                        sendUDPDatagram("flag|"+idNotify+";type|notifyfail;email|" + regular + ";message|" + "You got promoted to Editor by " + editor + ";");
+                    } catch (NullPointerException npe) {
+                        System.out.println("Client is off");
+                        sendUDPDatagram("flag|"+idNotify+";type|notifyfail;email|" + regular + ";message|" + "You got promoted to Editor by " + editor + ";");
+                    }
+                } else {
+                    System.out.println("Aqui");
+                    rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
                 }
+                System.out.println("Aqui true");
                 exit = true;
-
             }
         }
+        System.out.println("Bou dar a answer");
         return rspToClient;
     }
 
     public String uploadMusic(String title, String uploader) {
         // Request  -> flag | s; type | requestTCPConnection; operation | upload; title | tttt; email | eeee;
         // Response -> flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; ip | iiii; port | pppp;
-        String msg = "flag|s;type|requestTCPConnection;operation|upload;title|" + title + ";email|" + uploader + ";";
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|requestTCPConnection;operation|upload;title|" + title + ";email|" + uploader + ";";
         sendUDPDatagram(msg);
 
         boolean exit = false;
         while (!exit) {
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
-            if (cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload") &&
-                cleanMessage.get(3)[1].equals(uploader) && cleanMessage.get(4)[1].equals("y")) {
+            if (cleanMessage.get(0)[1].equals(id)) {
                 System.out.println("Recebi datagram no uploadMusic vou retornar a porta");
                 return cleanMessage.get(5)[1] + " " + cleanMessage.get(6)[1];
             }
@@ -208,7 +272,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public String downloadMusic(String title, String uploader, String email) throws RemoteException {
         // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
         // Response -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; ip | iiii; port | pppp;
-        String msg = "flag|s;type|requestTCPConnection;operation|download;title|" + title + ";uploader|" + uploader + ";email|" + email + ";";
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|requestTCPConnection;operation|download;title|" + title + ";uploader|" + uploader + ";email|" + email + ";";
         sendUDPDatagram(msg);
 
         boolean exit = false;
@@ -216,9 +283,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
-            if (cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("download") &&
-                    cleanMessage.get(3)[1].equals(email) && cleanMessage.get(4)[1].equals("y")) {
-                System.out.println("Recebi datagram no uploadMusic vou retornar a porta");
+            if (cleanMessage.get(0)[1].equals(id)) {
+                System.out.println("Recebi datagram no downloadMusic vou retornar a porta");
                 return cleanMessage.get(5)[1] + " " + cleanMessage.get(6)[1];
             }
         }
@@ -228,7 +294,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public String share(String title, String shareTo, String uploader) throws RemoteException {
         // Request  -> flag | s; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
         // Response -> flag | r; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu;
-        String msg = "flag|s;type|share;title|" + title + ";shareTo|" + shareTo + ";uploader|" + uploader + ";";
+
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|share;title|" + title + ";shareTo|" + shareTo + ";uploader|" + uploader + ";";
         sendUDPDatagram(msg);
 
         boolean exit = false;
@@ -237,14 +307,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
-            System.out.println(cleanMessage.get(1)[1]);
-            System.out.println(cleanMessage.get(2)[1]);
-            System.out.println(cleanMessage.get(3)[1]);
-            System.out.println(cleanMessage.get(4)[1]);
-            System.out.println(cleanMessage.get(5)[1]);
-            System.out.println(cleanMessage.get(6)[1]);
-
-            if (cleanMessage.get(1)[1].equals("share") && cleanMessage.get(5)[1].equals(uploader)) {
+            if (cleanMessage.get(0)[1].equals(id)) {
                 if (cleanMessage.get(2)[1].equals("y")) {
                     rspToClient = "Successfully shared " + title + " with " + shareTo;
                     exit = true;
@@ -259,59 +322,14 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-    public void subscribe(String email, RMIClientInterface clientInterface) throws RemoteException {
-        this.clients.put(email, clientInterface);
-    }
-
-    public String login(String email, String password, RMIClientInterface client) throws RemoteException {
-        System.out.println("Entered login");
-        // Request  -> flag | s; type | login; email | eeee; password | pppp;
-        // Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | msg; [etc...]
-
-        String msg = "flag|s;type|login;email|" + email + ";password|" + password + ";";
-        boolean exit = false;
-        String rspToClient = "Failed to login";
-        sendUDPDatagram(msg);
-
-        while (!exit) {
-            String rsp = receiveUDPDatagram(msg);
-            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
-
-            if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("login")) {
-                if (cleanMessage.get(2)[1].equals("y")) {
-                    if (cleanMessage.get(3)[1].equals(email) && cleanMessage.get(4)[1].equals(password)) {
-                        int numNotifications = Integer.parseInt(cleanMessage.get(5)[1]);
-
-                        rspToClient = "Logado com sucesso " + email + " " + password;
-                        subscribe(email, client);
-
-                        if (numNotifications > 0) {
-                            rspToClient += "\nMissed notifications:\n";
-                            for (int i = 0; i < numNotifications; i++) {
-                                rspToClient += cleanMessage.get(6 + i)[1] + "\n";
-                            }
-                        }
-                        exit = true;
-                    }
-                } else {
-                    // result | n
-                    return rspToClient;
-                }
-            }
-        }
-        return rspToClient;
-    }
-
-    public String logout(String email) throws RemoteException {
-
-        clients.remove(email);
-        return "Logged out";
-    }
-
     public String rateAlbum(int stars, String albumName, String review, String email) throws RemoteException {
         //   Request  -> flag | s; type | critic; album | name; critic | blabla; rate | n; email | eeee;
         //   Response -> flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n; email | eeee;
-        String msg = "flag|s;type|critic;album|" + albumName + ";critic|" + review + ";rate|" + stars + "; email|" + email + ";";
+
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|critic;album|" + albumName + ";critic|" + review + ";rate|" + stars + "; email|" + email + ";";
         boolean exit = false;
         String rspToClient = "Failed to rate " + albumName;
 
@@ -321,7 +339,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
-            if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("critic")) {
+            if (cleanMessage.get(0)[1].equals(id)) {
                 if (cleanMessage.get(2)[1].equals("y")) {
                     rspToClient = "Edited sucessfully";
                     exit = true;
@@ -337,9 +355,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public String search(String param, String keyword) throws RemoteException {
         // Request  -> flag | s; type | search; param | (art, gen, tit); keyword | kkkk;
-        // Response -> flag | r; type | search; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...
+        // Response -> flag | r; type | search; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...]
 
-        String msg = "flag|s;type|details;param|" + param + ";keyword|" + keyword + ";", rspToClient = "";
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|details;param|" + param + ";keyword|" + keyword + ";", rspToClient = "";
         boolean exit = false;
 
         sendUDPDatagram(msg);
@@ -348,7 +369,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
-            if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("details")) {
+            if (cleanMessage.get(0)[1].equals(id)) {
                 if (cleanMessage.get(2)[1].equals("y")) {
                     int numItems = Integer.parseInt(cleanMessage.get(5)[1]);
                     for (int i = 0; i < numItems; i++) {
@@ -366,7 +387,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public String addArtist(String artist, String details, String email) {
         // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
         // Response -> flag | r; type | addart; email | dddd; result | (y/n);
-        String msg = "flag|s;type|addart;name|" + artist + ";details|" + details + ";email|" + email + ";", rspToClient = "";
+
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|addart;name|" + artist + ";details|" + details + ";email|" + email + ";", rspToClient = "";
         sendUDPDatagram(msg);
         boolean exit = false;
 
@@ -374,7 +399,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
-            if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("addart") && cleanMessage.get(2)[1].equals(email)) {
+            if (cleanMessage.get(0)[1].equals(id)) {
                 if (cleanMessage.get(3)[1].equals("y")) {
                     rspToClient = "Artist added with success!";
                 } else if (cleanMessage.get(3)[1].equals("n")) {
@@ -389,7 +414,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public String addAlbum(String artist, String albumTitle, String description, String genre, String email) {
         // Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
         // Response -> flag | r; type | addalb; email | ddd; result |(y/n);
-        String msg = "flag|s;type|addalb;art|" + artist + ";alb|" + albumTitle + ";description|" + description + ";genre|" + genre + ";email|" + email + ";", rspToClient = "";
+
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|addalb;art|" + artist + ";alb|" + albumTitle + ";description|" + description + ";genre|" + genre + ";email|" + email + ";", rspToClient = "";
         sendUDPDatagram(msg);
         boolean exit = false;
 
@@ -397,7 +426,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
-            if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("addlab") && cleanMessage.get(2)[1].equals(email)) {
+            if (cleanMessage.get(0)[1].equals(id)) {
                 if (cleanMessage.get(3)[1].equals("y")) {
                     rspToClient = "Album added with success!";
                 } else if (cleanMessage.get(3)[1].equals("n")) {
@@ -411,10 +440,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     public String addMusic(String musicTitle, String track, String albumTitle , String email) {
-    // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
-    // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n);
+        // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
+        // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n);
 
-        String msg =  "flag|s;type|addmusic;alb|"+albumTitle+";title|"+musicTitle+";track|"+track+";email|"+email+";"  ,rspToClient = "";
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg =  "flag|"+id+";type|addmusic;alb|"+albumTitle+";title|"+musicTitle+";track|"+track+";email|"+email+";"  ,rspToClient = "";
         sendUDPDatagram(msg);
         boolean exit = false;
 
@@ -422,7 +454,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
-            if(cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("addlab") && cleanMessage.get(2)[1].equals(albumTitle) && cleanMessage.get(3)[1].equals(email)) {
+            if(cleanMessage.get(0)[1].equals(id)) {
                 if(cleanMessage.get(4)[1].equals("y")) {
                     rspToClient = "Music " + musicTitle + " added with sucess";
                 } else {
@@ -439,17 +471,20 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         // Request  -> flag | s; type | changedetail; album | aaaa; email | eeee;
         // Response -> flag | r; type | changedetail; album | aaaa; email | eeee; result | (y/n);
 
-        String msg = "flag|s;type|changedetail;album|"+albumTitle+";email|"+email+";", rspToClient = "";
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|changedetail;album|"+albumTitle+";email|"+email+";", rspToClient = "";
         sendUDPDatagram(msg);
         boolean exit = false;
 
         while(!exit) {
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
-            if(cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("changedetail") && cleanMessage.get(2)[1].equals(albumTitle) && cleanMessage.get(3)[1].equals(email)) {
+            if(cleanMessage.get(0)[1].equals(id)) {
                 if(cleanMessage.get(4)[1].equals("y")) {
                     rspToClient = "Success changing details of album " + albumTitle;
-                } else if(cleanMessage.get(4)[1].equals("y")) {
+                } else if(cleanMessage.get(4)[1].equals("n")) {
                     rspToClient = "Something went wrong changing details of album " + albumTitle;
                 }
                 exit = true;
