@@ -237,10 +237,12 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                             out.writeLong(musicFile.length());
                             byte buffer[] = new byte[4096];
                             int count;
+                            System.out.println("Uploading file...");
                             while ((count = fis.read(buffer)) != -1) {
                                 out.write(buffer, 0, count);
                             }
                             out.close();
+                            System.out.println("Done");
                         }
                         s.close();
                     } else {
@@ -264,13 +266,14 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream((new File(filename))));
                             byte buffer[] = new byte[4096];
                             int count;
+                            System.out.println("Downloading `"+filename+"`");
                             while ((count = in.read(buffer)) != -1) {
                                 bos.write(buffer, 0, count);
                             }
                             bos.flush();
                             bos.close();
                             in.close();
-
+                            System.out.println("Done");
                         }
                         s.close();
                     } else {
