@@ -252,9 +252,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                 } else if (tokens[0].equals("download") && !email.equals("")) {
 
                     if (tokens.length >= 3) {
-                        int port;
+
                         String musicName = strCatSpaces(tokens, 2);
-                        System.out.println(email);
                         String ipport = client.serverInterface.downloadMusic(musicName, tokens[1], email);
                         String [] ipPort = ipport.split(" ");
 
@@ -288,8 +287,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     } else {
                         System.out.println("Usage: share [user] [music name]");
                     }
-                } else if (tokens[0].equals("add")) {
-
                 } else if (tokens[0].equals("help")) {
                     System.out.println(help);
                 } else {

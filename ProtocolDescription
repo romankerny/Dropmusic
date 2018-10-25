@@ -84,3 +84,7 @@ Adicionar música artista ou album
 Editar detalhe de um album
         Request  -> flag | s; type | changedetail; album | aaaa; email | eeee;
         Response -> flag | r; type | changedetail; album | aaaa; email | eeee; result | (y/n);
+
+Ver se música existe:
+        Request  -> flag | id; type | search; music | musicTitle;
+        Response -> flag | id; type | search; result | (y/n); msg | mmmmm;
