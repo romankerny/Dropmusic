@@ -620,7 +620,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         MulticastSocket socket = new MulticastSocket(RCV_PORT);  // create socket and bind it
         InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
         socket.joinGroup(group);
-        socket.setSoTimeout(10000);
+        socket.setSoTimeout(3000);
 
 
         while(!exit) {
