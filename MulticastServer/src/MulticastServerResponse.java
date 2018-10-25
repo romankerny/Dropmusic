@@ -177,6 +177,7 @@ public class MulticastServerResponse extends Thread {
                 sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;msg|Couldn't find `"+title+"` in database;", code);
             }
         }
+
         ObjectFiles.writeArtistsToDisk(artists);
     }
 
