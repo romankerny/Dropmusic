@@ -345,7 +345,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     rspToClient = "Successfully shared " + title + " with " + shareTo;
                     exit = true;
                 } else {
-                    rspToClient = "Failed to share";
+                    rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
                     exit = true;
                 }
             }
@@ -431,11 +431,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(0)[1].equals(id)) {
-                if (cleanMessage.get(3)[1].equals("y")) {
-                    rspToClient = "Artist added with success!";
-                } else if (cleanMessage.get(3)[1].equals("n")) {
-                    rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
-                }
+                rspToClient = cleanMessage.get(cleanMessage.size()-2)[1]; // Get message for y or n
                 exit = true;
             }
         }
@@ -458,12 +454,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(0)[1].equals(id)) {
-                if (cleanMessage.get(3)[1].equals("y")) {
-                    rspToClient = "Album added with success!";
-                } else if (cleanMessage.get(3)[1].equals("n")) {
-                    rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
-                }
-                exit = true;
+                rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
+                exit = !false;
             }
 
         }
@@ -486,12 +478,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if(cleanMessage.get(0)[1].equals(id)) {
-                if(cleanMessage.get(4)[1].equals("y")) {
-                    rspToClient = "Music `" + musicTitle + "` added with sucess";
-                } else {
-                    rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
-                }
-                exit = true;
+                rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
+                exit = !exit;
             }
 
         }

@@ -307,6 +307,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
             } catch (RemoteException b) {
                 client.waitForServer(client);
                 askInput = false;
+            } catch (FileNotFoundException nf) {
+                System.out.println("Couldn't find your file to upload");
             }
 
         } // while
