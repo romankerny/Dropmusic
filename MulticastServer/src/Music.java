@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Music {
     public int track;
-    public  String title;
+    public String title;
     public ConcurrentHashMap<String, MusicFile> musicFiles;
 
 

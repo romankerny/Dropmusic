@@ -92,7 +92,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- download [user] [music title]\n"+
                     "- share [user] [music title]"+
                     "  \nEditor-specific:\n"+
-                    "- promote [email]";
+                    "- promote [email]\n"+
+                    "- add {art, alb, mus} [name]\n";
 
 
         System.out.println("Connecting to: " + ip);
@@ -144,15 +145,47 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     System.out.println(client.serverInterface.logout(email));
                     email = "";
 
-                } else if (tokens[0].equals("search") && !email.equals("")) {
+                } else if (!email.equals("") && tokens[0].equals("search")
+                        && (tokens[1].equals("art") || tokens[1].equals("alb") || tokens[1].equals("gen"))) {
 
                     if (tokens.length >= 3) {
                         String keyword = strCatSpaces(tokens, 2);
                         System.out.println(client.serverInterface.search(tokens[1], keyword));
                     } else {
-                        System.out.println("Usage: search {art, alb} [keyword]");
+                        System.out.println("Usage: search {art, alb, gen} [keyword]");
                     }
 
+                } else if (tokens[0].equals("add") && !email.equals("")) {
+
+                    if (tokens.length >= 3) {
+                        String name = strCatSpaces(tokens, 2);
+
+                        if (tokens[1].equals("art")) {
+                            String description;
+                            System.out.print("Artist description: ");
+                            description = sc.nextLine();
+                            System.out.println(client.serverInterface.addArtist(name, description, email));
+                        } else if (tokens[1].equals("alb")) {
+                            String artist, description, genre;
+                            System.out.print("Artist's name: ");
+                            artist = sc.nextLine();
+                            System.out.print("Album description: ");
+                            description = sc.nextLine();
+                            System.out.print("Album genre: ");
+                            genre = sc.nextLine();
+                            System.out.println(client.serverInterface.addAlbum(artist, name, description, genre, email));
+                        } else if (tokens[1].equals("mus")) {
+                            String albumName, track;
+                            System.out.print("Track #: ");
+                            track = sc.nextLine();
+                            System.out.print("Album name: ");
+                            albumName = sc.nextLine();
+                            System.out.println(client.serverInterface.addMusic(name, track, albumName, email));
+                        }
+
+                    } else {
+                        System.out.println("Usage: add {art, alb, mus} [name]");
+                    }
 
                 } else if (tokens[0].equals("rate") && !email.equals("")) {
 
@@ -248,6 +281,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     } else {
                         System.out.println("Usage: share [user] [music name]");
                     }
+                } else if (tokens[0].equals("add")) {
 
                 } else if (tokens[0].equals("help")) {
                     System.out.println(help);

@@ -342,15 +342,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             if (cleanMessage.get(0)[1].equals(id)) {
                 if (cleanMessage.get(2)[1].equals("y")) {
-                    rspToClient = "Edited sucessfully";
-                    exit = true;
+                    rspToClient = "Rated "+albumName+" as "+stars+" successfully";
                 } else {
-                    rspToClient = "Failed to edit";
-                    exit = true;
+                    rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
                 }
+                exit = true;
             }
         }
-        System.out.println(rspToClient);
         return rspToClient;
     }
 
@@ -377,7 +375,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                         rspToClient += cleanMessage.get(6 + i)[1];
                     }
                 } else {
-                    rspToClient = "Search failed";
+                    rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
                 }
                 exit = true;
             }
@@ -385,9 +383,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-    public String addArtist(String artist, String details, String email) {
+    public String addArtist(String artist, String details, String email) throws RemoteException {
         // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
-        // Response -> flag | r; type | addart; email | dddd; result | (y/n);
+        // Response -> flag | r; type | addart; email | dddd; result | (y/n); msg | mmmmmm;
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -404,7 +402,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 if (cleanMessage.get(3)[1].equals("y")) {
                     rspToClient = "Artist added with success!";
                 } else if (cleanMessage.get(3)[1].equals("n")) {
-                    rspToClient = "Something went wrong adding " + artist + " to Data Base";
+                    rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
                 }
                 exit = true;
             }
@@ -412,7 +410,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-    public String addAlbum(String artist, String albumTitle, String description, String genre, String email) {
+    public String addAlbum(String artist, String albumTitle, String description, String genre, String email) throws  RemoteException{
         // Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
         // Response -> flag | r; type | addalb; email | ddd; result |(y/n);
 
@@ -431,7 +429,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 if (cleanMessage.get(3)[1].equals("y")) {
                     rspToClient = "Album added with success!";
                 } else if (cleanMessage.get(3)[1].equals("n")) {
-                    rspToClient = "Something went wrong adding " + albumTitle + " to Data Base";
+                    rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
                 }
                 exit = true;
             }
@@ -440,7 +438,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-    public String addMusic(String musicTitle, String track, String albumTitle , String email) {
+    public String addMusic(String musicTitle, String track, String albumTitle , String email) throws  RemoteException{
         // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
         // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n);
 
@@ -457,9 +455,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             if(cleanMessage.get(0)[1].equals(id)) {
                 if(cleanMessage.get(4)[1].equals("y")) {
-                    rspToClient = "Music " + musicTitle + " added with sucess";
+                    rspToClient = "Music `" + musicTitle + "` added with sucess";
                 } else {
-                    rspToClient = "Something went wrong adding " + musicTitle + " to album " + albumTitle;
+                    rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
                 }
                 exit = true;
             }

@@ -160,8 +160,6 @@ public class MulticastServerResponse extends Thread {
                     Music m = (Music) iMusic.next();
                     if(m.title.equals(title)) {
 
-                        for (String s : m.musicFiles.get(uploader).emails)
-                            System.out.println("Pode fazer download: "+s);
 
                         if (m.musicFiles.get(uploader).emails.contains(email)) {
                             client = serverSocket.accept();
@@ -325,10 +323,10 @@ public class MulticastServerResponse extends Thread {
         // flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n; email | eeee;
 
         Iterator iArtists = artists.iterator();
-        boolean exit = false;
-        String rsp = "flag|"+id+";type|critic;result|n;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";";
+        boolean found = false;
+        String rsp;
 
-        while (iArtists.hasNext() & !exit) {
+        while (iArtists.hasNext() & !found) {
             Artist a = (Artist) iArtists.next();
             Iterator iAlbum = a.albums.iterator();
 
@@ -336,11 +334,14 @@ public class MulticastServerResponse extends Thread {
                 Album al = (Album) iAlbum.next();
                 if(al.title.equals(albumName)) {
                     al.addCritic(critic, Integer.parseInt(rate), email);
-                    rsp = "flag|"+id+";type|critic;result|y;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";";
-                    exit = true;
+                    found = true;
                 }
             }
         }
+        if (found)
+            rsp = "flag|"+id+";type|critic;result|y;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";";
+        else
+            rsp = "flag|"+id+";type|critic;result|n;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";"+"msg|Couldn't find album `"+albumName+"`;";
 
         sendResponseMulticast(rsp, code);
     }
@@ -353,47 +354,54 @@ public class MulticastServerResponse extends Thread {
 
             if (offUser.email.equals(email)) {
                 offUser.addNotification(message);
-                System.out.println("Set user: " + email + " off");
+                //System.out.println("Set user: " + email + " off");
             }
         }
     }
 
     public void getDetails(String id, String type, String keyword, String code) {
-        // Request  -> flag | s; type | search; param | (art, gen, tit); keyword | kkkk;
-        // Response -> flag | r; type | search; param | (art, gen, tit); keyword | kkkk; item_count | n; item_x_name | name; [...]
-
-        // AINDA NAO TESTEI ESTE MÉTODO
-        // Roman: Alterei o metodo para dar num caso especifico (1 artista), precisa ser generalizado
+        // Request  -> flag | s; type | search; param | (art, alb, gen); keyword | kkkk;
+        // Response -> flag | r; type | search; param | (art, alb, gen); keyword | kkkk; item_count | n; item_x_name | name; [...]
 
         Iterator iArtists = artists.iterator();
-        String rsp = " ", response = " ";
-        boolean exit = false;
+        String rsp, response = "";
+        String message= " ";
+        boolean found = false;
         char result = 'n';
 
 
-        while (iArtists.hasNext() & !exit) {
+        while (iArtists.hasNext()) {
             Artist a = (Artist) iArtists.next();
-
-            if(type.equals("art") || type.equals("alb")) {
+            if (type.equals("art")) {
                 if (a.name.equals(keyword)) {
                     response = a.toString();
-                    exit = true;
+                    found = true;
                     result = 'y';
-                } else if(type.equals("alb")){
-                    Iterator iAlbum = a.albums.iterator();
-                    while(iAlbum.hasNext()) {
-                        Album al = (Album) iAlbum.next();
-                        if (al.title.equals(keyword)) {
-                            response = al.toString();
-                            exit = true;
-                            result = 'y';
-                        }
+                }
+            } else if (type.equals("alb") || type.equals("gen")) {
+                Iterator iAlbums = a.albums.iterator();
+                while (iAlbums.hasNext()) {
+                    Album al = (Album) iAlbums.next();
+                    System.out.println("Album " + al.title);
+                    if (al.title.equals(keyword)) {
+                        response = a.toString();
+                        found = true;
+                        result = 'y';
+                    }
+                    if (al.genre.equals(keyword)) {
+                        response += al.toString();
+                        result = 'y';
+                        found = true;
                     }
                 }
             }
+
         }
 
-        rsp = "flag|"+id+";type|details;result|" +result+";param|"+type+";keyword|"+keyword+";item_count|1;item_x_name|"+response+";";
+        if (!found)
+            message = "Couldn't find `"+keyword+"` in database";
+
+        rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";item_count|1;item_x_name|"+response+";msg|"+message+";";
         sendResponseMulticast(rsp, code);
 
     }
@@ -401,7 +409,7 @@ public class MulticastServerResponse extends Thread {
     public void addDetail(String id, String gen, String keyword, String detail, String email) {
         // Request  -> flag | s; type | detail; gen | (art, album); keyword | vvvvv; detail | ddddddddddddddddddd; email | eeee;
         // Response -> flag | r; type | detail; gen | (art, album); keyword | vvvvv; response | (y/n); email | eeee;
-
+        // TODO
         Iterator iUsers = users.iterator();
         User editor = null;
 
@@ -447,15 +455,27 @@ public class MulticastServerResponse extends Thread {
         // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
         // Response -> flag | r; type | addart; email | dddd; result | (y/n);
 
-        String rsp = "flag|"+id+";type|addart;email|"+email+";result|n";
-
+        String rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Only an Editor can add a new artist;";
+        boolean alreadyExists = false;
         Iterator iUsers = users.iterator();
+        Iterator iArtists = artists.iterator();
 
-        while (iUsers.hasNext()) {
-            User u = (User) iUsers.next();
-            if (u.email.equals(email) && u.isEditor()) {
-                this.artists.add(new Artist(name, details));
-                rsp =" flag|"+id+";type|addart;email|"+email+";result|y";
+        while(iArtists.hasNext() && !alreadyExists){
+            Artist a = (Artist) iArtists.next();
+            if (a.name.equals(name))
+                alreadyExists = true;
+
+        }
+
+        if (alreadyExists) {
+            rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|"+name+" already exists in database;";
+        } else {
+            while (iUsers.hasNext()) {
+                User u = (User) iUsers.next();
+                if (u.email.equals(email) && u.isEditor()) {
+                    this.artists.add(new Artist(name, details));
+                    rsp = " flag|" + id + ";type|addart;email|" + email + ";result|y;";
+                }
             }
         }
         sendResponseMulticast(rsp, code);
@@ -464,32 +484,95 @@ public class MulticastServerResponse extends Thread {
     public void addAlbum(String id, String artName, String albName, String description, String genre, String email, String code) {
         // Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
         // Response -> flag | r; type | addalb; email | ddd; result |(y/n); |
-
-        String rsp = "flag|"+id+";type|addalb;email|"+email+";result|n;";
-
+        String rsp = "flag|"+id+";type|addalb;email|"+email+";result|n;msg|Failed to add album;";
         Iterator iUsers = users.iterator();
+        boolean isEditor = false;
+        boolean found = false;
+        boolean alreadyExists = false;
 
         while (iUsers.hasNext()) {
             User u = (User) iUsers.next();
             if (u.email.equals(email) && u.isEditor()) {
-
+                isEditor = true;
                 Iterator iArtists = artists.iterator();
 
                 while (iArtists.hasNext()) {
                     Artist a = (Artist) iArtists.next();
                     if (a.name.equals(artName)) {
-                        a.albums.add(new Album(albName, description, genre));
-                        rsp = "flag|"+id+";type|addalb;email|"+email+";result|y;";
+
+                        // Check if already exists
+                        for (Album al : a.albums) {
+                            if (al.title.equals(albName)) {
+                                alreadyExists = true;
+                            }
+                        }
+
+                        if (!alreadyExists) {
+                            found = true;
+                            a.albums.add(new Album(albName, description, genre));
+                            rsp = "flag|" + id + ";type|addalb;email|" + email + ";result|y;";
+                        }
                     }
                 }
             }
         }
+        if (!isEditor)
+            rsp = "flag|"+id+";type|addalb;email|"+email+";result|n;msg|Only an Editor can add a new album;";
+        else if (alreadyExists)
+            rsp = "flag|"+id+";type|addalb;email|"+email+";result|n;msg|`"+albName+"` already exists;";
+        else if (!found)
+            rsp = "flag|"+id+";type|addalb;email|"+email+";result|n;msg|Couldn't find artist `"+artName+"`;";
+
         sendResponseMulticast(rsp, code);
     }
 
-    public void addMusic(String id, String albName, String title, String track) {
+    public void addMusic(String id, String albName, String title, String track, String email, String code) {
         // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
         // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n);
+        String rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Failed to add music;";
+        Iterator iUsers = users.iterator();
+        boolean isEditor = false;
+        boolean found = false;
+        boolean alreadyExists = false;
+
+        while (iUsers.hasNext()) {
+            User u = (User) iUsers.next();
+            if (u.email.equals(email) && u.isEditor()) {
+                isEditor = true;
+
+                Iterator iArtists = artists.iterator();
+
+                while (iArtists.hasNext()) {
+                    Artist a = (Artist) iArtists.next();
+                    Iterator iAlbums = a.albums.iterator();
+                    while(iAlbums.hasNext()) {
+                        Album al = (Album) iAlbums.next();
+                        if (al.title.equals(albName)) {
+
+                            for (Music m : al.tracks)
+                                if (m.track == Integer.parseInt(track))
+                                    alreadyExists = true;
+
+                            if (!alreadyExists) {
+                                found = true;
+                                al.tracks.add(new Music(Integer.parseInt(track), title));
+                                rsp = "flag|" + id + ";type|addmusic;title|" + title + ";email|" + email + ";result|y;";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!isEditor)
+            rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Only an Editor can add a new music;";
+        else if (alreadyExists)
+            rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Track #"+track+" already exists;";
+        else if (!found)
+            rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Couldn't find album `"+albName+"`;";
+
+
+        sendResponseMulticast(rsp, code);
     }
 
 
@@ -510,7 +593,6 @@ public class MulticastServerResponse extends Thread {
 
             if (cleanMessage.get(1)[1].equals("register")) { //register
                 register(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);    // (email, password)
-
             } else if (cleanMessage.get(1)[1].equals("login")) { // login
                 login(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (email, password)
             } else if (cleanMessage.get(1)[1].equals("details")) { // search Artist, Album, Music
@@ -525,6 +607,10 @@ public class MulticastServerResponse extends Thread {
                 share(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, shareTo, uploader)
             } else if (cleanMessage.get(1)[1].equals("addart")) {
                 addArtist(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1] ,cleanMessage.get(cleanMessage.size()-1)[1]);
+            } else if (cleanMessage.get(1)[1].equals("addalb")) {
+                addAlbum(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
+            } else if (cleanMessage.get(1)[1].equals("addmusic")) {
+                addMusic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
             } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload")) {
                 // flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
                 try {
