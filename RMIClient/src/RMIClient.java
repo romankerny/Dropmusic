@@ -214,9 +214,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                 } else if (tokens[0].equals("download") && !email.equals("")) {
 
                     if (tokens.length >= 3) {
-                        int port;
+
                         String musicName = strCatSpaces(tokens, 2);
-                        System.out.println(email);
                         String ipport = client.serverInterface.downloadMusic(musicName, tokens[1], email);
                         String [] ipPort = ipport.split(" ");
 
@@ -228,12 +227,14 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream((new File(filename))));
                             byte buffer[] = new byte[4096];
                             int count;
+                            System.out.println("antes do while");
                             while ((count = in.read(buffer)) != -1)
                                 bos.write(buffer, 0, count);
+                            System.out.println("depois");
                             bos.flush();
                             bos.close();
                             in.close();
-
+                            System.out.println("a sair do download");
                         }
                         s.close();
                     } else {

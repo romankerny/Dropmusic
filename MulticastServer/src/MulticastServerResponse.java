@@ -59,6 +59,8 @@ public class MulticastServerResponse extends Thread {
         return rtArray;
     }
 
+
+
     public ServerSocket getSocket() {
 
         boolean exit = false;
@@ -129,14 +131,25 @@ public class MulticastServerResponse extends Thread {
                     }
                 }
             }
+            System.out.println("Upload of " + title+ " done" );
         }
-        System.out.println("Upload of " + title+ " done" );
+
     }
 
     public void downloadMusic(String id, String title, String uploader, String email, String code) throws IOException {
         // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee;
         // Response -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; ip | ip; port | pppp;
         // alterar p so responder quem encontrar musica
+        // ID title uploader email hash
+
+        System.out.println("NO DOWNLOAD!");
+        Music msc = searchMusic(title, uploader);
+
+        if(msc == null) {
+            sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;", code);
+            return;
+        }
+        System.out.println("tenho a musica posso deixar fazer download!");
 
         Iterator iArtists = artists.iterator();
         System.out.println("A dar download de musica "+title);
@@ -148,34 +161,37 @@ public class MulticastServerResponse extends Thread {
 
         sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
 
-        while(iArtists.hasNext()) {
-            Artist a = (Artist) iArtists.next();
-            Iterator iAlbum = a.albums.iterator();
+        if(this.hashCode.equals(code)) {
+            while (iArtists.hasNext()) {
+                Artist a = (Artist) iArtists.next();
+                Iterator iAlbum = a.albums.iterator();
 
-            while(iAlbum.hasNext()) {
-                Album alb = (Album) iAlbum.next();
-                Iterator iMusic = alb.tracks.iterator();
+                while (iAlbum.hasNext()) {
+                    Album alb = (Album) iAlbum.next();
+                    Iterator iMusic = alb.tracks.iterator();
 
-                while(iMusic.hasNext()) {
-                    Music m = (Music) iMusic.next();
-                    if(m.title.equals(title)) {
+                    while (iMusic.hasNext()) {
+                        Music m = (Music) iMusic.next();
+                        if (m.title.equals(title)) {
 
-                        for (String s : m.musicFiles.get(uploader).emails)
-                            System.out.println("Pode fazer download: "+s);
+                            for (String s : m.musicFiles.get(uploader).emails)
+                                System.out.println("Pode fazer download: " + s);
 
-                        if (m.musicFiles.get(uploader).emails.contains(email)) {
-                            client = serverSocket.accept();
-                            DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                            MusicFile mf = m.musicFiles.get(uploader);
+                            if (m.musicFiles.get(uploader).emails.contains(email)) {
+                                client = serverSocket.accept();
+                                DataOutputStream out = new DataOutputStream(client.getOutputStream());
+                                MusicFile mf = m.musicFiles.get(uploader);
 
-                            // Send filename before raw data
-                            out.writeUTF(mf.filename);
-                            out.write(mf.rawData);
-                        } else {
-                            System.out.println("Nao tem permission");
+                                // Send filename before raw data
+                                out.writeUTF(mf.filename);
+                                out.write(mf.rawData);
+                                System.out.println(" a bazar do download ");
+                            } else {
+                                System.out.println("Nao tem permission");
+                            }
+
+
                         }
-
-
                     }
                 }
             }
@@ -461,6 +477,23 @@ public class MulticastServerResponse extends Thread {
         sendResponseMulticast(rsp, code);
     }
 
+    public Music searchMusic(String musicTitle, String uploader) {
+        // Request  -> flag | id; type | search; music | musicTitle;
+        // Response -> flag | id; type | search; result | (y/n); msg | mmmmm;
+
+        for(Artist a : artists) {
+            for(Album b : a.albums) {
+                for(Music m : b.tracks) {
+                    if(m.title.equals(musicTitle) && m.musicFiles.containsKey(uploader)) {
+                        return m;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     public void addAlbum(String id, String artName, String albName, String description, String genre, String email, String code) {
         // Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
         // Response -> flag | r; type | addalb; email | ddd; result |(y/n); |
@@ -528,8 +561,7 @@ public class MulticastServerResponse extends Thread {
             } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload")) {
                 // flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
                 try {
-                    System.out.println("A chamar o metodo de upload");
-                    uploadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (title, email)
+                    uploadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, email)
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (ClassNotFoundException e) {
@@ -537,10 +569,14 @@ public class MulticastServerResponse extends Thread {
                 }
 
 
+
             } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("download")) {
                 // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
+
+                // "flag|"+id+";type|requestTCPConnection;operation|download;title|"+title+";uploader|"+uploader+";email|"+email+";hash|"+hash+";");
                 try {
                     System.out.println("A chamar o metodo de download");
+                    // ID title uploader email hash
                     downloadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, uploader, email)
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -548,7 +584,11 @@ public class MulticastServerResponse extends Thread {
             } else if(cleanMessage.get(1)[1].equals("connectionrequest")) {
                 // Receive RMI packets asking Multicast to respond with their Hash codes
                 // Request  -> flag | s; type | connectionrequest;
-                sendResponseMulticast("flag|r;type|ack;", hashCode);
+                System.out.println("A ENVIAR A MINHA HASH");
+                if(cleanMessage.get(0)[1].equals("s"))
+                    sendResponseMulticast("flag|r;type|ack;", hashCode);
+                else
+                    sendResponseMulticast("flag|"+cleanMessage.get(0)[1]+";type|ack;", hashCode);
 
             } else {
                 System.out.println("Invalid protocol message");

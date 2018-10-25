@@ -23,7 +23,7 @@ public class Music {
 class MusicFile {
 
     public String filename;
-    public byte[] rawData;
+    public byte[] rawData = null;
     public ArrayList<String> emails;
 
     MusicFile(String filename, byte[] rawData) {

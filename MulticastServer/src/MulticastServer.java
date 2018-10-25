@@ -7,7 +7,7 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MulticastServer extends Thread {
-    private String MULTICAST_ADDRESS = "224.3.2.1";
+    private String MULTICAST_ADDRESS = "224.3.2.2";
     private int RECV_PORT = 5213;
     private MulticastSocket socket = null;
     private CopyOnWriteArrayList<User> users;
@@ -36,8 +36,6 @@ public class MulticastServer extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
     }
 
 
