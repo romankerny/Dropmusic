@@ -1,12 +1,8 @@
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.NoRouteToHostException;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.SQLOutput;
 import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
@@ -17,7 +13,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
     private RMIServerInterface serverInterface;
     private static String ip;
 
-    public RMIClient() throws RemoteException {
+    private RMIClient() throws RemoteException {
         super();
     }
 
@@ -29,7 +25,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         return email;
     }
 
-    public static String strCatSpaces(String[] tokens, int index) {
+    private static String strCatSpaces(String[] tokens, int index) {
         String str = "";
 
         for (int i = index; i < tokens.length; i++)
@@ -38,7 +34,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         return str;
     }
 
-    void waitForServer(RMIClient client) {
+    private void waitForServer(RMIClient client) {
 
         boolean exit = false;
         while(!exit) {
@@ -160,27 +156,33 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     if (tokens.length >= 3) {
                         String name = strCatSpaces(tokens, 2);
 
-                        if (tokens[1].equals("art")) {
-                            String description;
-                            System.out.print("Artist description: ");
-                            description = sc.nextLine();
-                            System.out.println(client.serverInterface.addArtist(name, description, email));
-                        } else if (tokens[1].equals("alb")) {
-                            String artist, description, genre;
-                            System.out.print("Artist's name: ");
-                            artist = sc.nextLine();
-                            System.out.print("Album description: ");
-                            description = sc.nextLine();
-                            System.out.print("Album genre: ");
-                            genre = sc.nextLine();
-                            System.out.println(client.serverInterface.addAlbum(artist, name, description, genre, email));
-                        } else if (tokens[1].equals("mus")) {
-                            String albumName, track;
-                            System.out.print("Track #: ");
-                            track = sc.nextLine();
-                            System.out.print("Album name: ");
-                            albumName = sc.nextLine();
-                            System.out.println(client.serverInterface.addMusic(name, track, albumName, email));
+                        switch (tokens[1]) {
+                            case "art": {
+                                String description;
+                                System.out.print("Artist description: ");
+                                description = sc.nextLine();
+                                System.out.println(client.serverInterface.addArtist(name, description, email));
+                                break;
+                            }
+                            case "alb": {
+                                String artist, description, genre;
+                                System.out.print("Artist's name: ");
+                                artist = sc.nextLine();
+                                System.out.print("Album description: ");
+                                description = sc.nextLine();
+                                System.out.print("Album genre: ");
+                                genre = sc.nextLine();
+                                System.out.println(client.serverInterface.addAlbum(artist, name, description, genre, email));
+                                break;
+                            }
+                            case "mus":
+                                String albumName, track;
+                                System.out.print("Track #: ");
+                                track = sc.nextLine();
+                                System.out.print("Album name: ");
+                                albumName = sc.nextLine();
+                                System.out.println(client.serverInterface.addMusic(name, track, albumName, email));
+                                break;
                         }
 
                     } else {
@@ -219,12 +221,12 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                 } else if (tokens[0].equals("upload") && !email.equals("")) {
 
                     if (tokens.length >= 3) {
-                        int port;
+
                         String musicName = strCatSpaces(tokens, 2);
                         String ipport = client.serverInterface.uploadMusic(musicName, email);
                         String [] ipPort = ipport.split(" ");
 
-                        // Criar socket e receber o File
+                        // Creat socket
                         Socket s = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
                         if (s.isConnected()) {
 
@@ -254,28 +256,34 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     if (tokens.length >= 3) {
 
                         String musicName = strCatSpaces(tokens, 2);
-                        String ipport = client.serverInterface.downloadMusic(musicName, tokens[1], email);
-                        String [] ipPort = ipport.split(" ");
+                        String r = client.serverInterface.downloadMusic(musicName, tokens[1], email);
+                        if (!r.equals("Music file not found.")) {
 
-                        // Criar socket e receber o File
-                        Socket s = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
-                        if (s.isConnected()) {
-                            DataInputStream in = new DataInputStream(s.getInputStream());
-                            String filename = in.readUTF();
-                            FileOutputStream fos = new FileOutputStream((new File(filename)));
-                            byte buffer[] = new byte[4096];
-                            int count;
-                            System.out.println("Downloading `"+filename+"`");
-                            while ((count = in.read(buffer)) != -1) {
-                                fos.write(buffer, 0, count);
+                            String[] ipPort = r.split(" ");
+
+                            // Create socket and receive file
+                            Socket s = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
+                            if (s.isConnected()) {
+                                DataInputStream in = new DataInputStream(s.getInputStream());
+                                String filename = in.readUTF();
+                                FileOutputStream fos = new FileOutputStream((new File(filename)));
+                                byte buffer[] = new byte[4096];
+                                int count;
+                                System.out.println("Downloading `" + filename + "`");
+                                while ((count = in.read(buffer)) != -1) {
+                                    fos.write(buffer, 0, count);
+                                }
+                                fos.flush();
+                                fos.close();
+                                in.close();
+                                s.close();
+                                System.out.println("Done");
                             }
-                            fos.flush();
-                            fos.close();
-                            in.close();
                             s.close();
-                            System.out.println("Done");
+                        } else {
+                            System.out.println(r);
                         }
-                        s.close();
+
                     } else {
                         System.out.println("Usage: download [user] [music name]");
                     }

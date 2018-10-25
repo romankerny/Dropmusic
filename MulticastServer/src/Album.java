@@ -1,6 +1,8 @@
+import java.awt.*;
+import java.io.Serializable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Album {
+public class Album implements Serializable {
     public          String  title;
     public         String  description;
     public         String   genre;

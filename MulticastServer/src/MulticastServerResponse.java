@@ -127,6 +127,7 @@ public class MulticastServerResponse extends Thread {
                     }
                 }
             }
+            ObjectFiles.writeArtistsToMemory(artists);
             System.out.println("Upload of " + title+ " done" );
         }
 
@@ -194,6 +195,7 @@ public class MulticastServerResponse extends Thread {
                 }
             }
         }
+        ObjectFiles.writeArtistsToMemory(artists);
     }
 
     public void share(String id, String title, String shareTo, String uploader, String code) {
@@ -226,6 +228,8 @@ public class MulticastServerResponse extends Thread {
                 }
             }
         }
+        ObjectFiles.writeArtistsToMemory(artists);
+        ObjectFiles.writeUsersToMemory(users);
 
         if (found) {
             rsp = "flag|"+id+";type|share;result|y;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";";
@@ -259,6 +263,7 @@ public class MulticastServerResponse extends Thread {
             User s = new User(email, password);
             this.users.add(s);
             rsp = "flag|"+id+";type|register;result|y;username|" + email + ";password|" + password + ";";
+            ObjectFiles.writeUsersToMemory(users);
         }
         sendResponseMulticast(rsp, code);
     }
@@ -330,6 +335,8 @@ public class MulticastServerResponse extends Thread {
             rsp += "msg|You have to be an Editor to use /promote;";
         }
 
+        ObjectFiles.writeUsersToMemory(users);
+
         sendResponseMulticast(rsp, code); // -> RMIServer
     }
 
@@ -359,6 +366,7 @@ public class MulticastServerResponse extends Thread {
         else
             rsp = "flag|"+id+";type|critic;result|n;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";"+"msg|Couldn't find album `"+albumName+"`;";
 
+        ObjectFiles.writeArtistsToMemory(artists);
         sendResponseMulticast(rsp, code);
     }
 
@@ -373,6 +381,7 @@ public class MulticastServerResponse extends Thread {
                 //System.out.println("Set user: " + email + " off");
             }
         }
+        ObjectFiles.writeUsersToMemory(users);
     }
 
     public void getDetails(String id, String type, String keyword, String code) {
@@ -465,6 +474,9 @@ public class MulticastServerResponse extends Thread {
 
         }
 
+        ObjectFiles.writeUsersToMemory(users);
+        ObjectFiles.writeArtistsToMemory(artists);
+
     }
 
     public void addArtist(String id, String name, String details, String email, String code) {
@@ -494,6 +506,7 @@ public class MulticastServerResponse extends Thread {
                 }
             }
         }
+        ObjectFiles.writeArtistsToMemory(artists);
         sendResponseMulticast(rsp, code);
     }
 
@@ -557,6 +570,8 @@ public class MulticastServerResponse extends Thread {
         else if (!found)
             rsp = "flag|"+id+";type|addalb;email|"+email+";result|n;msg|Couldn't find artist `"+artName+"`;";
 
+        ObjectFiles.writeArtistsToMemory(artists);
+
         sendResponseMulticast(rsp, code);
     }
 
@@ -605,6 +620,7 @@ public class MulticastServerResponse extends Thread {
         else if (!found)
             rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Couldn't find album `"+albName+"`;";
 
+        ObjectFiles.writeArtistsToMemory(artists);
 
         sendResponseMulticast(rsp, code);
     }
@@ -622,67 +638,63 @@ public class MulticastServerResponse extends Thread {
         ArrayList<String[]> cleanMessage = cleanTokens(message); // if the packet contains "flag | s" the server has to respond
 
 
-        //if (cleanMessage.get(0)[1].equals("s")) {
 
-
-            if (cleanMessage.get(1)[1].equals("register")) { //register
-                register(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);    // (email, password)
-            } else if (cleanMessage.get(1)[1].equals("login")) { // login
-                login(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (email, password)
-            } else if (cleanMessage.get(1)[1].equals("details")) { // search Artist, Album, Music
-                getDetails(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (Artist or Album, keyword)
-            } else if(cleanMessage.get(1)[1].equals("critic")) {            // add critic to album
-                writeCritic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]);// (album, critic, rate, email)
-            } else if(cleanMessage.get(1)[1].equals("privilege")) {
-                turnIntoEditor(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);       // (Editor, regularToEditor)
-            } else if(cleanMessage.get(1)[1].equals("notify")) {
-                offUserNotified(cleanMessage.get(0)[1], cleanMessage.get(4)[1], cleanMessage.get(2)[1]);    // (email, message)
-            } else if(cleanMessage.get(1)[1].equals("share")) {
-                share(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, shareTo, uploader)
-            } else if (cleanMessage.get(1)[1].equals("addart")) {
-                addArtist(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1] ,cleanMessage.get(cleanMessage.size()-1)[1]);
-            } else if (cleanMessage.get(1)[1].equals("addalb")) {
-                addAlbum(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
-            } else if (cleanMessage.get(1)[1].equals("addmusic")) {
-                addMusic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
-            } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload")) {
-                // flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
-                try {
-                    uploadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, email)
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-
-
-            } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("download")) {
-                // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
-
-                // "flag|"+id+";type|requestTCPConnection;operation|download;title|"+title+";uploader|"+uploader+";email|"+email+";hash|"+hash+";");
-                try {
-                    System.out.println("A chamar o metodo de download");
-                    // ID title uploader email hash
-                    downloadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, uploader, email)
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else if(cleanMessage.get(1)[1].equals("connectionrequest")) {
-                // Receive RMI packets asking Multicast to respond with their Hash codes
-                // Request  -> flag | s; type | connectionrequest;
-                System.out.println("A ENVIAR A MINHA HASH");
-                if(cleanMessage.get(0)[1].equals("s"))
-                    sendResponseMulticast("flag|r;type|ack;", hashCode);
-                else
-                    sendResponseMulticast("flag|"+cleanMessage.get(0)[1]+";type|ack;", hashCode);
-
-            } else {
-                System.out.println("Invalid protocol message");
+        if (cleanMessage.get(1)[1].equals("register")) { //register
+            register(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);    // (email, password)
+        } else if (cleanMessage.get(1)[1].equals("login")) { // login
+            login(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (email, password)
+        } else if (cleanMessage.get(1)[1].equals("details")) { // search Artist, Album, Music
+            getDetails(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (Artist or Album, keyword)
+        } else if(cleanMessage.get(1)[1].equals("critic")) {            // add critic to album
+            writeCritic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]);// (album, critic, rate, email)
+        } else if(cleanMessage.get(1)[1].equals("privilege")) {
+            turnIntoEditor(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);       // (Editor, regularToEditor)
+        } else if(cleanMessage.get(1)[1].equals("notify")) {
+            offUserNotified(cleanMessage.get(0)[1], cleanMessage.get(4)[1], cleanMessage.get(2)[1]);    // (email, message)
+        } else if(cleanMessage.get(1)[1].equals("share")) {
+            share(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, shareTo, uploader)
+        } else if (cleanMessage.get(1)[1].equals("addart")) {
+            addArtist(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1] ,cleanMessage.get(cleanMessage.size()-1)[1]);
+        } else if (cleanMessage.get(1)[1].equals("addalb")) {
+            addAlbum(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
+        } else if (cleanMessage.get(1)[1].equals("addmusic")) {
+            addMusic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
+        } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload")) {
+            // flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
+            try {
+                uploadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, email)
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
 
+
+
+        } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("download")) {
+            // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
+
+            // "flag|"+id+";type|requestTCPConnection;operation|download;title|"+title+";uploader|"+uploader+";email|"+email+";hash|"+hash+";");
+            try {
+                // ID title uploader email hash
+                downloadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, uploader, email)
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if(cleanMessage.get(1)[1].equals("connectionrequest")) {
+            // Receive RMI packets asking Multicast to respond with their Hash codes
+            // Request  -> flag | s; type | connectionrequest;
+
+            if(cleanMessage.get(0)[1].equals("s"))
+                sendResponseMulticast("flag|r;type|ack;", hashCode);
+            else
+                sendResponseMulticast("flag|"+cleanMessage.get(0)[1]+";type|ack;", hashCode);
+
+        } else {
+            System.out.println("Invalid protocol message");
         }
-    //}
+
+        }
 
 
 }

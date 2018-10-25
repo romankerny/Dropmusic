@@ -39,32 +39,21 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             resp += "hash|" + multicastHashes.get(globalCounter++);
 
 
-        try {
-
-            MulticastSocket socket = new MulticastSocket();
-
-            byte[] buffer = resp.getBytes();
-            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, SEND_PORT);
-            socket.send(packet);
-
-            //socket.leaveGroup(group);
-            //socket.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        sendUDPDatagramGeneral(resp);
 
     }
 
+
+
     public void sendUDPDatagramGeneral(String resp) {
 
-        // only to send connection packets
+        // - sends all kinds of packets when it's called by sendUDPDatagram()
+        // - sends requestsTCPConnection packets / download packets when called by download() or when creating
+        //   connections w/ MulticastServers
 
         try {
 
             MulticastSocket socket = new MulticastSocket();
-
             byte[] buffer = resp.getBytes();
 
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
@@ -83,6 +72,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         boolean exit = false;
         while (!exit) {
             try {
+
                 MulticastSocket socket = new MulticastSocket(RCV_PORT);  // create socket and bind it
                 InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
                 socket.joinGroup(group);
@@ -128,6 +118,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         // Request  -> flag | s; type | register; email | eeee; password | pppp;
         // Response -> flag | r; type | register; result | (y/n); email | eeee; password | pppp; msg | mmmmmmmm;
+
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
         String msg = "flag|"+id+";type|register;username|" + name + ";password|" + password + ";"; // protocol to register
@@ -307,7 +298,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
 
         while (!exit) {
-            System.out.println("A ESPERA");
             try {
                 socket.receive(packet);
             } catch (IOException e) {
@@ -331,7 +321,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             }
 
         }
-        return "Muic file not found.";
+        return "Music file not found.";
     }
 
     public String share(String title, String shareTo, String uploader) {

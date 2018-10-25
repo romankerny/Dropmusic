@@ -1,4 +1,6 @@
-public class Review {
+import java.io.Serializable;
+
+public class Review implements Serializable {
 
     public String critic;
     public int    rating;

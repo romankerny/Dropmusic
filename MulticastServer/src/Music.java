@@ -1,8 +1,9 @@
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Music {
+public class Music implements Serializable {
     public int track;
     public String title;
     public ConcurrentHashMap<String, MusicFile> musicFiles;
@@ -20,7 +21,7 @@ public class Music {
     }
 }
 
-class MusicFile {
+class MusicFile implements Serializable {
 
     public String filename;
     public byte[] rawData = null;

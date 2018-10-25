@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Artist {
+public class Artist implements Serializable {
 
     public String               name;
     public CopyOnWriteArrayList<Album> albums;
