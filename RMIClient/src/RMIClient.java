@@ -221,22 +221,25 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     if (tokens.length >= 3) {
                         int port;
                         String musicName = strCatSpaces(tokens, 2);
-                        File musicFile = new File(tokens[1]);
-                        FileInputStream fis = new FileInputStream(musicFile);
                         String ipport = client.serverInterface.uploadMusic(musicName, email);
                         String [] ipPort = ipport.split(" ");
 
                         // Criar socket e receber o File
                         Socket s = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
                         if (s.isConnected()) {
+
+                            File musicFile = new File(tokens[1]);
+                            FileInputStream fis = new FileInputStream(musicFile);
+
                             DataOutputStream out = new DataOutputStream(s.getOutputStream());
                             // Send filename and size before actual bytes
                             out.writeUTF(musicFile.getName());
                             out.writeLong(musicFile.length());
                             byte buffer[] = new byte[4096];
                             int count;
-                            while ((count = fis.read(buffer)) != -1)
+                            while ((count = fis.read(buffer)) != -1) {
                                 out.write(buffer, 0, count);
+                            }
                             out.close();
                         }
                         s.close();
@@ -261,8 +264,9 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream((new File(filename))));
                             byte buffer[] = new byte[4096];
                             int count;
-                            while ((count = in.read(buffer)) != -1)
+                            while ((count = in.read(buffer)) != -1) {
                                 bos.write(buffer, 0, count);
+                            }
                             bos.flush();
                             bos.close();
                             in.close();

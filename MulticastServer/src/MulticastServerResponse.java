@@ -113,13 +113,11 @@ public class MulticastServerResponse extends Thread {
                             String filename = in.readUTF();
                             long size = in.readLong();
 
-                            byte[] buffer = new byte[(int) size];
-                            int count;
-
+                            byte[] rawData = new byte[(int) size];
                             // Ler todos os bytes
-                            while ((count = in.read(buffer)) != -1) ;
+                            in.readFully(rawData);
 
-                            m.musicFiles.put(email, new MusicFile(filename, buffer));
+                            m.musicFiles.put(email, new MusicFile(filename, rawData));
                             m.musicFiles.get(email).emails.add(email);
 
                             in.close();
@@ -165,7 +163,6 @@ public class MulticastServerResponse extends Thread {
                             client = serverSocket.accept();
                             DataOutputStream out = new DataOutputStream(client.getOutputStream());
                             MusicFile mf = m.musicFiles.get(uploader);
-
                             // Send filename before raw data
                             out.writeUTF(mf.filename);
                             out.write(mf.rawData);
