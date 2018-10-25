@@ -221,6 +221,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(0)[1].equals(id)) {
+                System.out.println(cleanMessage.get(2)[1]);
                 if (cleanMessage.get(2)[1].equals("y")) {
                     System.out.println("Sucesss");
                     rspToClient = regular + " casted to Editor with success";
@@ -442,6 +443,33 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             if (cleanMessage.get(0)[1].equals(id)) {
                 rspToClient = cleanMessage.get(cleanMessage.size()-2)[1]; // Get message for y or n
+
+                if (rspToClient.equals("Artist updated")) {
+                    int numUsers = Integer.parseInt(cleanMessage.get(4)[1]);
+                    System.out.println("Num users: "+numUsers);
+                    if (numUsers > 0) {
+                        String userEmail = "";
+                        String notification = "";
+                        try {
+                            for (int i = 0; i < numUsers; i++) {
+                                userEmail = cleanMessage.get(5+i)[1];
+                                System.out.println(userEmail);
+                                notification = "Artist `" + artist + "` was edited";
+                                clients.get(userEmail).printOnClient(notification);
+                            }
+
+                        } catch (RemoteException re) {
+                            String uuidNotify = UUID.randomUUID().toString();
+                            String idNotify = uuid.substring(0, Math.min(uuid.length(), 8));
+                            sendUDPDatagram("flag|" + idNotify + ";type|notifyfail;email|" + userEmail + ";message|" + notification+";");
+                        } catch (NullPointerException npe) {
+                            String uuidNotify = UUID.randomUUID().toString();
+                            String idNotify = uuid.substring(0, Math.min(uuid.length(), 8));
+                            sendUDPDatagram("flag|" + idNotify + ";type|notifyfail;email|" + userEmail + ";message|" + notification+";");
+                        }
+                    }
+                }
+
                 exit = true;
             }
         }
@@ -465,7 +493,35 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             if (cleanMessage.get(0)[1].equals(id)) {
                 rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
-                exit = !false;
+
+                // Need to notify
+                if (rspToClient.equals("Album updated")) {
+                    int numUsers = Integer.parseInt(cleanMessage.get(4)[1]);
+                    System.out.println("Num users: "+numUsers);
+                    if (numUsers > 0) {
+                        String userEmail = "";
+                        String notification = "";
+                        try {
+                            for (int i = 0; i < numUsers; i++) {
+                                userEmail = cleanMessage.get(5+i)[1];
+                                System.out.println(userEmail);
+                                notification = "Album `" + albumTitle + "` by " + artist + " was edited";
+                                clients.get(userEmail).printOnClient(notification);
+                            }
+
+                        } catch (RemoteException re) {
+                            String uuidNotify = UUID.randomUUID().toString();
+                            String idNotify = uuid.substring(0, Math.min(uuid.length(), 8));
+                            sendUDPDatagram("flag|" + idNotify + ";type|notifyfail;email|" + userEmail + ";message|" + notification+";");
+                        } catch (NullPointerException npe) {
+                            String uuidNotify = UUID.randomUUID().toString();
+                            String idNotify = uuid.substring(0, Math.min(uuid.length(), 8));
+                            sendUDPDatagram("flag|" + idNotify + ";type|notifyfail;email|" + userEmail + ";message|" + notification+";");
+                        }
+                    }
+                }
+                exit = true;
+
             }
 
         }
@@ -474,7 +530,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public String addMusic(String musicTitle, String track, String albumTitle , String email) throws  RemoteException{
         // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
-        // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n);
+        // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n); notif_count | n; notif_1 | nnnnn; [etc...]
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -489,7 +545,34 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             if(cleanMessage.get(0)[1].equals(id)) {
                 rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
-                exit = !exit;
+
+                // Try to notify
+                if (rspToClient.equals("Music updated")) {
+                    int numUsers = Integer.parseInt(cleanMessage.get(5)[1]);
+                    System.out.println("Num users: "+numUsers);
+                    if (numUsers > 0) {
+                        String userEmail = "";
+                        String notification = "";
+                        try {
+                            for (int i = 0; i < numUsers; i++) {
+                                userEmail = cleanMessage.get(6+i)[1];
+                                System.out.println(userEmail);
+                                notification = "Track `" + musicTitle + "` from " + albumTitle + " was edited;";
+                                clients.get(userEmail).printOnClient(notification);
+                            }
+
+                        } catch (RemoteException re) {
+                            String uuidNotify = UUID.randomUUID().toString();
+                            String idNotify = uuid.substring(0, Math.min(uuid.length(), 8));
+                            sendUDPDatagram("flag|" + idNotify + ";type|notifyfail;email|" + userEmail + ";message|" + notification+";");
+                        } catch (NullPointerException npe) {
+                            String uuidNotify = UUID.randomUUID().toString();
+                            String idNotify = uuid.substring(0, Math.min(uuid.length(), 8));
+                            sendUDPDatagram("flag|" + idNotify + ";type|notifyfail;email|" + userEmail + ";message|" + notification+";");
+                        }
+                    }
+                }
+                exit = true;
             }
 
         }
