@@ -119,6 +119,7 @@ public class MulticastServerResponse extends Thread {
                             m.musicFiles.get(email).emails.add(email);
 
                             in.close();
+                            serverSocket.close();
                         }
                     }
                 }

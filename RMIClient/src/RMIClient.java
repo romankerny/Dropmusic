@@ -249,7 +249,6 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                             s.close();
                             System.out.println("Done");
                         }
-                        s.close();
                     } else {
                         System.out.println("Usage: upload [music name]");
                     }
@@ -276,10 +275,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                                 while ((count = in.read(buffer)) != -1) {
                                     fos.write(buffer, 0, count);
                                 }
-                                fos.flush();
-                                fos.close();
                                 in.close();
-                                s.close();
                                 System.out.println("Done");
                             }
                             s.close();
