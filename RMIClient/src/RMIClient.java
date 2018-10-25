@@ -262,16 +262,17 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                         if (s.isConnected()) {
                             DataInputStream in = new DataInputStream(s.getInputStream());
                             String filename = in.readUTF();
-                            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream((new File(filename))));
+                            FileOutputStream fos = new FileOutputStream((new File(filename)));
                             byte buffer[] = new byte[4096];
                             int count;
                             System.out.println("Downloading `"+filename+"`");
                             while ((count = in.read(buffer)) != -1) {
-                                bos.write(buffer, 0, count);
+                                fos.write(buffer, 0, count);
                             }
-                            bos.flush();
-                            bos.close();
+                            fos.flush();
+                            fos.close();
                             in.close();
+                            s.close();
                             System.out.println("Done");
                         }
                         s.close();

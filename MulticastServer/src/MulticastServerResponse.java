@@ -181,6 +181,8 @@ public class MulticastServerResponse extends Thread {
                                 // Send filename before raw data
                                 out.writeUTF(mf.filename);
                                 out.write(mf.rawData);
+                                out.close();
+                                serverSocket.close();
                                 System.out.println(" a bazar do download ");
                             } else {
                                 System.out.println("Nao tem permission");
@@ -503,6 +505,7 @@ public class MulticastServerResponse extends Thread {
             for(Album b : a.albums) {
                 for(Music m : b.tracks) {
                     if(m.title.equals(musicTitle) && m.musicFiles.containsKey(uploader)) {
+                        System.out.println("Yes!");
                         return m;
                     }
                 }

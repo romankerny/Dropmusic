@@ -269,7 +269,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     }
 
-    public String downloadMusic(String title, String uploader, String email) throws RemoteException {
+    public String downloadMusic(String title, String uploader, String email)  {
         // Request  -> flag | id; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
         // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | (y/n); ip | iiii; port | pppp;
         System.out.println("a iniciar funcao de download");
@@ -277,7 +277,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
-        refreshMulticastHashes();
+        try {
+            refreshMulticastHashes();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         boolean exit = false;
         int c = 0;
         exit = false;
@@ -534,37 +539,35 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
 
-    public void refreshMulticastHashes() {
+    public void refreshMulticastHashes() throws IOException {
 
         boolean exit = false;
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
         rmiServer.sendUDPDatagramGeneral("flag|"+id+";type|connectionrequest;");
         rmiServer.multicastHashes.clear();
-        MulticastSocket socket = null;
+        MulticastSocket socket = new MulticastSocket(RCV_PORT);  // create socket and bind it
+        InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
+        socket.joinGroup(group);
+        socket.setSoTimeout(10000);
+
 
         while(!exit) {
             // waiting for MulticastServers to group up
 
             try {
-                socket = new MulticastSocket(RCV_PORT);  // create socket and bind it
-                InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-                socket.joinGroup(group);
-                socket.setSoTimeout(2000);
                 byte[] buffer = new byte[65536];
 
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
 
                 String message = new String(packet.getData(), 0, packet.getLength());
-                System.out.println("Received packet in refreshMulticast" + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message: " + message);
+                System.out.println("Received packet in refreshMulticast(): " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message: " + message);
                 ArrayList<String[]> cleanMessage = rmiServer.cleanTokens(message);
 
 
-                if (cleanMessage.get(0)[1].equals(id) && cleanMessage.get(1)[1].equals("ack")) {
-                    if (!rmiServer.multicastHashes.contains(cleanMessage.get(2)[1])) {
-                        rmiServer.multicastHashes.add(cleanMessage.get(2)[1]);
-                    }
+                if (cleanMessage.get(0)[1].equals(id)) {
+                    rmiServer.multicastHashes.add(cleanMessage.get(2)[1]);
                 }
 
                 System.out.println("no fim deste método " + rmiServer.multicastHashes);
