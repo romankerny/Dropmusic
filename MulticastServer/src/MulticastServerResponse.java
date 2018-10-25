@@ -121,8 +121,6 @@ public class MulticastServerResponse extends Thread {
                             m.musicFiles.get(email).emails.add(email);
 
                             in.close();
-                            serverSocket.close();
-
                         }
                     }
                 }
@@ -261,7 +259,7 @@ public class MulticastServerResponse extends Thread {
         } else {
             // Fazer registo e adicionar a BD o novo user
             User s = new User(email, password);
-            this.users.add(s);
+            users.add(s);
             rsp = "flag|"+id+";type|register;result|y;username|" + email + ";password|" + password + ";";
             ObjectFiles.writeUsersToMemory(users);
         }
@@ -295,6 +293,7 @@ public class MulticastServerResponse extends Thread {
                 rsp += "notif|" + (String) iMessages.next() + ";";
 
             }
+            u.notifications.clear();
 
             System.out.println(email + " logged in");
         }
@@ -305,28 +304,30 @@ public class MulticastServerResponse extends Thread {
 
         // flag | s; type | privilege; user1 | username; user2; username;
         // flag | r; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
-        String rsp = "flag|"+id+";type|privilege;result|n:user1|" + user1 +";user2|" + user2 + ";";
+        String rsp = "flag|"+id+";type|privilege;result|n;user1|" + user1 +";user2|" + user2 + ";";
 
         Iterator iUsers1 = users.iterator();
         Iterator iUsers2 = users.iterator();
-        boolean found1 = false;
+        boolean isEditor = false;
         boolean found2 = false;
 
         // Find editor and check if he is actually an editor
-        while (iUsers1.hasNext() & !found1) {
+        while (iUsers1.hasNext() && !isEditor) {
             User s = (User) iUsers1.next();
             if(s.email.equals(user1) && s.isEditor())
-                found1 = true;
+                isEditor = true;
 
         }
-        if (found1) {
+        if (isEditor) {
             // Find regular user
             while (iUsers2.hasNext() && !found2) {
                 User s = (User) iUsers2.next();
                 if (s.email.equals(user2)) {
+                    System.out.println(s);
                     s.becomeEditor();
+                    System.out.println(s);
                     found2 = true;
-                    rsp = "flag|"+id+";type|privilege;result|y:user1|" + user1 +";user2|" + user2 + ";";
+                    rsp = "flag|"+id+";type|privilege;result|y;user1|" + user1 +";user2|" + user2 + ";";
                 }
             }
             if (!found2)
@@ -371,18 +372,13 @@ public class MulticastServerResponse extends Thread {
     }
 
     public void offUserNotified(String id, String email, String message) {
-        Iterator iUsers = users.iterator();
 
-        while (iUsers.hasNext()) {
-            User offUser = (User) iUsers.next();
-
-            if (offUser.email.equals(email)) {
-                offUser.addNotification(message);
-                //System.out.println("Set user: " + email + " off");
-            }
-        }
+        for (User u : users)
+            if(u.email.equals(email))
+                u.addNotification(message);
         ObjectFiles.writeUsersToMemory(users);
     }
+
 
     public void getDetails(String id, String type, String keyword, String code) {
         // Request  -> flag | s; type | search; param | (art, alb, gen); keyword | kkkk;
@@ -421,93 +417,6 @@ public class MulticastServerResponse extends Thread {
 
     }
 
-    public void addDetail(String id, String gen, String keyword, String detail, String email) {
-        // Request  -> flag | s; type | detail; gen | (art, album); keyword | vvvvv; detail | ddddddddddddddddddd; email | eeee;
-        // Response -> flag | r; type | detail; gen | (art, album); keyword | vvvvv; response | (y/n); email | eeee;
-        // TODO
-        Iterator iUsers = users.iterator();
-        User editor = null;
-
-        while (iUsers.hasNext()) {
-            User s = (User) iUsers.next();
-            if (s.email.equals(email) && s.isEditor()) {
-                editor = s;
-            }
-        }
-
-        if(gen.equals("art")) {
-
-            Iterator iArtists = artists.iterator();
-
-            while (iArtists.hasNext()) {
-                Artist a = (Artist) iArtists.next();
-                if(a.name.equals(keyword)) {
-                    a.setDetails(detail, editor);
-                }
-            }
-
-        } else if(gen.equals(("album"))) {
-
-            Iterator iArtists = artists.iterator();
-
-
-            while (iArtists.hasNext()) {
-                Artist a = (Artist) iArtists.next();
-                Iterator iAlbum = a.albums.iterator();
-                while(iAlbum.hasNext()) {
-                    Album alb = (Album) iAlbum.next();
-                    if(alb.title.equals(keyword)) {
-                        alb.setDetails(detail, editor);
-                    }
-                }
-            }
-
-        }
-
-        ObjectFiles.writeUsersToMemory(users);
-        ObjectFiles.writeArtistsToMemory(artists);
-
-    }
-
-    public void addArtist(String id, String name, String details, String email, String code) {
-        // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
-        // Response -> flag | r; type | addart; email | dddd; result | (y/n);
-
-        String rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Failed to add artist;";
-        boolean alreadyExists = false;
-        boolean isEditor = false;
-        Artist art;
-
-        for (User u : users)
-            if (u.email.equals(email) && u.isEditor())
-                isEditor = true;
-
-        if (isEditor) {
-            for (Artist a : artists) {
-                if (a.name.equals(name)) {
-                    alreadyExists = true;
-
-                }
-                if (alreadyExists) {
-                    a.name = name;
-                    a.details = details;
-                    rsp = "flag|"+id+";type|addart;email|"+email+";result|y;msg|Artist updated;";
-
-                }
-            }
-            if (!alreadyExists) {
-                artists.add(new Artist(name, details));
-                rsp = "flag|"+id+";type|addart;email|"+email+";result|y;msg|Artist created;";
-            }
-        }
-        ObjectFiles.writeArtistsToMemory(artists);
-
-        if(!isEditor)
-            rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Only an editor can add a new artist;";
-
-        sendResponseMulticast(rsp, code);
-    }
-
     public Music searchMusic(String musicTitle, String uploader) {
         // Request  -> flag | id; type | search; music | musicTitle;
         // Response -> flag | id; type | search; result | (y/n); msg | mmmmm;
@@ -526,6 +435,59 @@ public class MulticastServerResponse extends Thread {
         return null;
     }
 
+    public void addArtist(String id, String name, String details, String email, String code) {
+        // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
+        // Response -> flag | r; type | addart; email | dddd; result | (y/n);
+
+        String rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Failed to add artist;";
+        boolean alreadyExists = false;
+        boolean isEditor = false;
+        String notify = "notif_count|0;";
+        User editor = null;
+
+        for (User u : users)
+            if (u.email.equals(email) && u.isEditor()) {
+                isEditor = true;
+                editor = u;
+            }
+
+        if (isEditor) {
+            for (Artist a : artists) {
+                if (a.name.equals(name)) {
+                    alreadyExists = true;
+
+                }
+                if (alreadyExists) {
+                    a.name = name;
+                    a.details = details;
+
+                    a.notifyIfEdited.add(editor);
+
+                    // Get users to notify
+                    if (a.notifyIfEdited.size() > 0) {
+                        notify = "notif_count|" + a.notifyIfEdited.size() + ";";
+                        for (User u : a.notifyIfEdited) {
+                            notify += "notif|"+u.email+";";
+                        }
+                    }
+
+                    rsp = "flag|"+id+";type|addart;email|"+email+";result|y;"+notify+"msg|Artist updated;";
+
+                }
+            }
+            if (!alreadyExists) {
+                artists.add(new Artist(name, details));
+                rsp = "flag|"+id+";type|addart;email|"+email+";result|y;msg|Artist created;";
+            }
+        }
+        ObjectFiles.writeArtistsToMemory(artists);
+
+        if(!isEditor)
+            rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Only an editor can add a new artist;";
+
+        sendResponseMulticast(rsp, code);
+    }
+
     public void addAlbum(String id, String artName, String albName, String description, String genre, String email, String code) {
         // Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
         // Response -> flag | r; type | addalb; email | ddd; result |(y/n); |
@@ -533,10 +495,15 @@ public class MulticastServerResponse extends Thread {
         boolean isEditor = false;
         boolean found = false;
         boolean alreadyExists = false;
+        String notify = "notif_count|0;";
+
+        User editor = null;
 
         for (User u : users)
-            if (u.isEditor())
+            if (u.isEditor()) {
                 isEditor = true;
+                editor = u;
+            }
 
         if (isEditor) {
             for (Artist a : artists) {
@@ -552,7 +519,18 @@ public class MulticastServerResponse extends Thread {
                             al.title = albName;
                             al.description = description;
                             al.genre = genre;
-                            rsp = "flag|"+id+";type|addalb;email|"+email+";result|y;msg|Album updated;";
+
+                            al.notifyIfEdited.add(editor);
+
+                            // Get users to notify
+                            if (al.notifyIfEdited.size() > 0) {
+                                notify = "notif_count|" + al.notifyIfEdited.size() + ";";
+                                for (User u : al.notifyIfEdited) {
+                                    notify += "notif|"+u.email+";";
+                                }
+                            }
+
+                            rsp = "flag|"+id+";type|addalb;email|"+email+";result|y;"+notify+"msg|Album updated;";
                         }
                     }
                     if (!alreadyExists) {
@@ -576,17 +554,24 @@ public class MulticastServerResponse extends Thread {
 
     public void addMusic(String id, String albName, String title, String track, String email, String code) {
         // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
-        // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n);
+        // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n); msg | mmmmmmm; notif_count | n; notif_1 | nnnn;[etc...]
         String rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Failed to add music;";
         boolean isEditor = false;
         boolean found = false;
         boolean alreadyExists = false;
+        String notify = "notif_count|0;";
+
+        User editor = null;
 
         int trackNum = Integer.parseInt(track);
 
-        for (User u : users)
-            if(u.email.equals(email) && u.isEditor())
+        for (User u : users) {
+            System.out.println(u);
+            if (u.email.equals(email) && u.isEditor()) {
                 isEditor = true;
+                editor = u;
+            }
+        }
 
         if (isEditor) {
             for (Artist a : artists) {
@@ -603,12 +588,23 @@ public class MulticastServerResponse extends Thread {
                             if (alreadyExists) {
                                 m.title = title;
                                 m.track = trackNum;
-                                rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|y;msg|Music updated;";
+
+                                m.notifyIfEdited.add(editor);
+
+                                // Get users to notify
+                                if (m.notifyIfEdited.size() > 0) {
+                                    notify = "notif_count|" + m.notifyIfEdited.size() + ";";
+                                    for (User u : m.notifyIfEdited) {
+                                        notify += "notif|"+u.email+";";
+                                    }
+                                }
+
+                                rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|y;"+notify+"msg|Music updated;";
                             }
                         }
                         if (!alreadyExists) {
                             al.tracks.add(new Music(trackNum, title));
-                            rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|y;msg|Music created;";
+                            rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|y;"+notify+"msg|Music created;";
                         }
                     }
                 }
@@ -639,35 +635,35 @@ public class MulticastServerResponse extends Thread {
 
 
 
-        if (cleanMessage.get(1)[1].equals("register")) { //register
-            register(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);    // (email, password)
-        } else if (cleanMessage.get(1)[1].equals("login")) { // login
-            login(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (email, password)
-        } else if (cleanMessage.get(1)[1].equals("details")) { // search Artist, Album, Music
-            getDetails(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (Artist or Album, keyword)
-        } else if(cleanMessage.get(1)[1].equals("critic")) {            // add critic to album
-            writeCritic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]);// (album, critic, rate, email)
-        } else if(cleanMessage.get(1)[1].equals("privilege")) {
-            turnIntoEditor(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);       // (Editor, regularToEditor)
-        } else if(cleanMessage.get(1)[1].equals("notify")) {
-            offUserNotified(cleanMessage.get(0)[1], cleanMessage.get(4)[1], cleanMessage.get(2)[1]);    // (email, message)
-        } else if(cleanMessage.get(1)[1].equals("share")) {
-            share(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, shareTo, uploader)
-        } else if (cleanMessage.get(1)[1].equals("addart")) {
-            addArtist(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1] ,cleanMessage.get(cleanMessage.size()-1)[1]);
-        } else if (cleanMessage.get(1)[1].equals("addalb")) {
-            addAlbum(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
-        } else if (cleanMessage.get(1)[1].equals("addmusic")) {
-            addMusic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
-        } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload")) {
-            // flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
-            try {
-                uploadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, email)
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+            if (cleanMessage.get(1)[1].equals("register")) { //register
+                register(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);    // (email, password)
+            } else if (cleanMessage.get(1)[1].equals("login")) { // login
+                login(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (email, password)
+            } else if (cleanMessage.get(1)[1].equals("details")) { // search Artist, Album, Music
+                getDetails(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (Artist or Album, keyword)
+            } else if(cleanMessage.get(1)[1].equals("critic")) {            // add critic to album
+                writeCritic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]);// (album, critic, rate, email)
+            } else if(cleanMessage.get(1)[1].equals("privilege")) {
+                turnIntoEditor(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);       // (Editor, regularToEditor)
+            } else if(cleanMessage.get(1)[1].equals("notifyfail")) {
+                offUserNotified(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1]);    // (email, message)
+            } else if(cleanMessage.get(1)[1].equals("share")) {
+                share(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, shareTo, uploader)
+            } else if (cleanMessage.get(1)[1].equals("addart")) {
+                addArtist(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1] ,cleanMessage.get(cleanMessage.size()-1)[1]);
+            } else if (cleanMessage.get(1)[1].equals("addalb")) {
+                addAlbum(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
+            } else if (cleanMessage.get(1)[1].equals("addmusic")) {
+                addMusic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
+            } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload")) {
+                // flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
+                try {
+                    uploadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, email)
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
 
 
 

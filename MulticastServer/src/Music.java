@@ -2,16 +2,20 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Music implements Serializable {
     public int track;
     public String title;
     public ConcurrentHashMap<String, MusicFile> musicFiles;
+    public CopyOnWriteArrayList<User> notifyIfEdited;
+
 
 
     Music(int track, String title) {
         this.track = track;
         this.title = title;
+        this.notifyIfEdited = new CopyOnWriteArrayList<>();
         this.musicFiles = new ConcurrentHashMap<String, MusicFile>();
     }
 

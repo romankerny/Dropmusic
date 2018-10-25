@@ -84,7 +84,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- logout (no arguments)\n\n"+
                     "- search {art, alb} keyword\n"+
                     "- rate [album name] [1-5] [review] (max 300 chars)\n\n"+
-                    "- upload [path/to/file] [music title]\n"+
+                    "- upload [music title]\n"+
                     "- download [user] [music title]\n"+
                     "- share [user] [music title]"+
                     "  \nEditor-specific:\n"+
@@ -220,9 +220,11 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
                 } else if (tokens[0].equals("upload") && !email.equals("")) {
 
-                    if (tokens.length >= 3) {
-
-                        String musicName = strCatSpaces(tokens, 2);
+                    if (tokens.length >= 2) {
+                        int port;
+                        String musicName = strCatSpaces(tokens, 1);
+                        System.out.print("Path/to/file: ");
+                        String path = sc.nextLine();
                         String ipport = client.serverInterface.uploadMusic(musicName, email);
                         String [] ipPort = ipport.split(" ");
 
@@ -230,7 +232,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                         Socket s = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
                         if (s.isConnected()) {
 
-                            File musicFile = new File(tokens[1]);
+                            File musicFile = new File(path);
                             FileInputStream fis = new FileInputStream(musicFile);
 
                             DataOutputStream out = new DataOutputStream(s.getOutputStream());
@@ -244,11 +246,12 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                                 out.write(buffer, 0, count);
                             }
                             out.close();
+                            s.close();
                             System.out.println("Done");
                         }
                         s.close();
                     } else {
-                        System.out.println("Usage: upload [path] [music name]");
+                        System.out.println("Usage: upload [music name]");
                     }
 
                 } else if (tokens[0].equals("download") && !email.equals("")) {

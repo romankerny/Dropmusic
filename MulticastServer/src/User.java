@@ -33,7 +33,7 @@ public class User implements Serializable {
     }
 
     public String toString() {
-        return "email: " + email + " ; password: " + password + " " + getType();
+        return "email: " + email + "Editor: "+this.editor;
     }
 
 
