@@ -10,7 +10,6 @@ public class Album implements Serializable {
     public          double  ratingC;                    // += every single rate
     public          int     nCritics;                   // to count n
     public          String  details;
-    public          CopyOnWriteArrayList<User> notifyIfEdited;
     public          CopyOnWriteArrayList<Review> reviews;
 
     Album(String title, String description, String genre) {
@@ -19,7 +18,6 @@ public class Album implements Serializable {
         this.genre = genre;
         this.tracks = new CopyOnWriteArrayList<Music>();
         this.reviews = new CopyOnWriteArrayList<Review>();
-        this.notifyIfEdited = new CopyOnWriteArrayList<User>();
     }
 
     public void addAlbum(int track, String title) {
@@ -41,7 +39,6 @@ public class Album implements Serializable {
 
     public void setDetails(String details, User s) {
         this.details = details;
-        this.notifyIfEdited.add(s);
     }
 
     public double overallRating() {

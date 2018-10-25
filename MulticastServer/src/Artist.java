@@ -20,6 +20,12 @@ public class Artist implements Serializable {
         this.notifyIfEdited.add(s);
     }
 
+    public void addNotifyIfEdited(User editor) {
+        if(!this.notifyIfEdited.contains(editor)) {
+            this.notifyIfEdited.add(editor);
+        }
+    }
+
     @Override
     public String toString() {
         String discography = "";

@@ -432,10 +432,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(0)[1].equals(id)) {
-                rspToClient = cleanMessage.get(cleanMessage.size()-2)[1]; // Get message for y or n
 
+                rspToClient = cleanMessage.get(cleanMessage.size()-2)[1]; // Get message for y or n
                 if (rspToClient.equals("Artist updated")) {
                     int numUsers = Integer.parseInt(cleanMessage.get(4)[1]);
+                    System.out.println(numUsers);
                     System.out.println("Num users: "+numUsers);
                     if (numUsers > 0) {
                         String userEmail = "";
@@ -458,6 +459,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                             sendUDPDatagram("flag|" + idNotify + ";type|notifyfail;email|" + userEmail + ";message|" + notification+";");
                         }
                     }
+                } else if(rspToClient.equals("Artist created")) {
+                    rspToClient = "Artist created";
                 }
 
                 exit = true;
@@ -485,7 +488,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
 
                 // Need to notify
-                if (rspToClient.equals("Album updated")) {
+                if (rspToClient.equals("Album updated") || rspToClient.equals("Album created")) {
                     int numUsers = Integer.parseInt(cleanMessage.get(4)[1]);
                     System.out.println("Num users: "+numUsers);
                     if (numUsers > 0) {
@@ -537,7 +540,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
 
                 // Try to notify
-                if (rspToClient.equals("Music updated")) {
+                if (rspToClient.equals("Music updated") || rspToClient.equals("Music created")) {
                     int numUsers = Integer.parseInt(cleanMessage.get(5)[1]);
                     System.out.println("Num users: "+numUsers);
                     if (numUsers > 0) {

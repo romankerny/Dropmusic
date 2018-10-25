@@ -55,6 +55,11 @@ public class MulticastServer extends Thread {
 
             System.out.println("Multicast server ready - " + code);
 
+            User admin = new User("admin", "admin");
+            admin.becomeEditor();
+            admin.notifications.add("You've been promoted to Editor");
+            users.add(admin);
+
             /*
             Code to use when DB's operational.
 

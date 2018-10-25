@@ -447,19 +447,16 @@ public class MulticastServerResponse extends Thread {
             if (u.email.equals(email) && u.isEditor()) {
                 isEditor = true;
                 editor = u;
-            }
+        }
 
         if (isEditor) {
             for (Artist a : artists) {
                 if (a.name.equals(name)) {
                     alreadyExists = true;
-
                 }
                 if (alreadyExists) {
                     a.name = name;
                     a.details = details;
-
-                    a.notifyIfEdited.add(editor);
 
                     // Get users to notify
                     if (a.notifyIfEdited.size() > 0) {
@@ -468,13 +465,17 @@ public class MulticastServerResponse extends Thread {
                             notify += "notif|"+u.email+";";
                         }
                     }
-
+                    a.addNotifyIfEdited(editor);
                     rsp = "flag|"+id+";type|addart;email|"+email+";result|y;"+notify+"msg|Artist updated;";
 
                 }
             }
             if (!alreadyExists) {
-                artists.add(new Artist(name, details));
+                Artist a = new Artist(name, details);
+                artists.add(a);
+                a.addNotifyIfEdited(editor);
+                // if artist was now created there is no one to notify
+
                 rsp = "flag|"+id+";type|addart;email|"+email+";result|y;msg|Artist created;";
             }
         }
@@ -496,44 +497,58 @@ public class MulticastServerResponse extends Thread {
         String notify = "notif_count|0;";
 
         User editor = null;
+        Artist aux = null;
 
         for (User u : users)
-            if (u.isEditor()) {
+            if (u.isEditor() && u.email.equals(email)) {
                 isEditor = true;
                 editor = u;
-            }
+        }
 
         if (isEditor) {
             for (Artist a : artists) {
                 if (a.name.equals(artName)) {
                     found = true;
+                    aux = a;
                 }
                 if (found) {
                     for (Album al : a.albums) {
-                        if (al.title.equals(albName))
+                        if (al.title.equals(albName)) {
                             alreadyExists = true;
+                        }
 
                         if (alreadyExists) {
                             al.title = albName;
                             al.description = description;
                             al.genre = genre;
 
-                            al.notifyIfEdited.add(editor);
-
                             // Get users to notify
-                            if (al.notifyIfEdited.size() > 0) {
-                                notify = "notif_count|" + al.notifyIfEdited.size() + ";";
-                                for (User u : al.notifyIfEdited) {
+                            if (a.notifyIfEdited.size() > 0) {
+                                notify = "notif_count|" + a.notifyIfEdited.size() + ";";
+                                for (User u : a.notifyIfEdited) {
                                     notify += "notif|"+u.email+";";
                                 }
                             }
+                            a.addNotifyIfEdited(editor);
 
                             rsp = "flag|"+id+";type|addalb;email|"+email+";result|y;"+notify+"msg|Album updated;";
                         }
                     }
                     if (!alreadyExists) {
-                        a.albums.add(new Album(albName, description, genre));
-                        rsp = "flag|"+id+";type|addalb;email|"+email+";result|y;msg|Album created;";
+                        System.out.println(albName + " does not exits, adding");
+
+                        Album toAdd = new Album(albName, description, genre);
+                        aux.albums.add(toAdd);
+                        // Get users to notify
+                        if (aux.notifyIfEdited.size() > 0) {
+                            notify = "notif_count|" + aux.notifyIfEdited.size() + ";";
+                            for (User u : aux.notifyIfEdited) {
+                                notify += "notif|"+u.email+";";
+                            }
+                        }
+                        aux.addNotifyIfEdited(editor);
+
+                        rsp = "flag|"+id+";type|addalb;email|"+email+";result|y;"+notify+"msg|Album created;";
                     }
                 }
             }
@@ -546,7 +561,6 @@ public class MulticastServerResponse extends Thread {
             rsp = "flag|"+id+";type|addalb;email|"+email+";result|n;msg|Couldn't find artist `"+artName+"`;";
 
         ObjectFiles.writeArtistsToDisk(artists);
-
         sendResponseMulticast(rsp, code);
     }
 
@@ -560,8 +574,10 @@ public class MulticastServerResponse extends Thread {
         String notify = "notif_count|0;";
 
         User editor = null;
+        // como saber a q artista adicionar a musica?
 
         int trackNum = Integer.parseInt(track);
+        Artist aux = null;
 
         for (User u : users) {
             System.out.println(u);
@@ -576,6 +592,7 @@ public class MulticastServerResponse extends Thread {
                 for (Album al : a.albums) {
                     if (al.title.equals(albName)) {
                         found = true;
+                        aux = a;
                     }
                     if (found) {
                         for (Music m : al.tracks) {
@@ -583,25 +600,36 @@ public class MulticastServerResponse extends Thread {
                                 alreadyExists = true;
                             }
 
+
                             if (alreadyExists) {
                                 m.title = title;
                                 m.track = trackNum;
 
-                                m.notifyIfEdited.add(editor);
-
                                 // Get users to notify
-                                if (m.notifyIfEdited.size() > 0) {
-                                    notify = "notif_count|" + m.notifyIfEdited.size() + ";";
-                                    for (User u : m.notifyIfEdited) {
+                                if (a.notifyIfEdited.size() > 0) {
+                                    notify = "notif_count|" + a.notifyIfEdited.size() + ";";
+                                    for (User u : a.notifyIfEdited) {
                                         notify += "notif|"+u.email+";";
                                     }
                                 }
+                                a.addNotifyIfEdited(editor);
 
                                 rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|y;"+notify+"msg|Music updated;";
                             }
                         }
                         if (!alreadyExists) {
-                            al.tracks.add(new Music(trackNum, title));
+
+                            Music toAdd = new Music(trackNum, title);
+                            System.out.println("GAJOS: "+ aux.notifyIfEdited);
+                            // Get users to notify
+                            if (aux.notifyIfEdited.size() > 0) {
+                                notify = "notif_count|" + aux.notifyIfEdited.size() + ";";
+                                for (User u : aux.notifyIfEdited) {
+                                    notify += "notif|"+u.email+";";
+                                }
+                            }
+                            aux.addNotifyIfEdited(editor);
+                            al.tracks.add(toAdd);
                             rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|y;"+notify+"msg|Music created;";
                         }
                     }
@@ -618,8 +646,7 @@ public class MulticastServerResponse extends Thread {
 
         sendResponseMulticast(rsp, code);
     }
-
-
+    
 
     public void run() {
 
