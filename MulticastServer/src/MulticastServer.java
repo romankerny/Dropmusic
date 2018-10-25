@@ -2,7 +2,6 @@ import java.net.MulticastSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.io.IOException;
-import java.sql.*;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -42,8 +41,8 @@ public class MulticastServer extends Thread {
 
     public void run() {
         // Read from memory
-        users = ObjectFiles.readUsersFromMemory();
-        artists = ObjectFiles.readArtistsFromMemory();
+        users = ObjectFiles.readUsersFromDisk();
+        artists = ObjectFiles.readArtistsFromDisk();
 
         try {
             // Sending HASH-code to Main RMI

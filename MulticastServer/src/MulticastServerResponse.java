@@ -1,7 +1,5 @@
-import com.mysql.fabric.Server;
 import java.io.*;
 import java.net.*;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
@@ -125,7 +123,7 @@ public class MulticastServerResponse extends Thread {
                     }
                 }
             }
-            ObjectFiles.writeArtistsToMemory(artists);
+            ObjectFiles.writeArtistsToDisk(artists);
             System.out.println("Upload of " + title+ " done" );
         }
 
@@ -193,7 +191,7 @@ public class MulticastServerResponse extends Thread {
                 }
             }
         }
-        ObjectFiles.writeArtistsToMemory(artists);
+        ObjectFiles.writeArtistsToDisk(artists);
     }
 
     public void share(String id, String title, String shareTo, String uploader, String code) {
@@ -226,8 +224,8 @@ public class MulticastServerResponse extends Thread {
                 }
             }
         }
-        ObjectFiles.writeArtistsToMemory(artists);
-        ObjectFiles.writeUsersToMemory(users);
+        ObjectFiles.writeArtistsToDisk(artists);
+        ObjectFiles.writeUsersToDisk(users);
 
         if (found) {
             rsp = "flag|"+id+";type|share;result|y;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";";
@@ -261,7 +259,7 @@ public class MulticastServerResponse extends Thread {
             User s = new User(email, password);
             users.add(s);
             rsp = "flag|"+id+";type|register;result|y;username|" + email + ";password|" + password + ";";
-            ObjectFiles.writeUsersToMemory(users);
+            ObjectFiles.writeUsersToDisk(users);
         }
         sendResponseMulticast(rsp, code);
     }
@@ -336,7 +334,7 @@ public class MulticastServerResponse extends Thread {
             rsp += "msg|You have to be an Editor to use /promote;";
         }
 
-        ObjectFiles.writeUsersToMemory(users);
+        ObjectFiles.writeUsersToDisk(users);
 
         sendResponseMulticast(rsp, code); // -> RMIServer
     }
@@ -367,7 +365,7 @@ public class MulticastServerResponse extends Thread {
         else
             rsp = "flag|"+id+";type|critic;result|n;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";"+"msg|Couldn't find album `"+albumName+"`;";
 
-        ObjectFiles.writeArtistsToMemory(artists);
+        ObjectFiles.writeArtistsToDisk(artists);
         sendResponseMulticast(rsp, code);
     }
 
@@ -376,7 +374,7 @@ public class MulticastServerResponse extends Thread {
         for (User u : users)
             if(u.email.equals(email))
                 u.addNotification(message);
-        ObjectFiles.writeUsersToMemory(users);
+        ObjectFiles.writeUsersToDisk(users);
     }
 
 
@@ -480,7 +478,7 @@ public class MulticastServerResponse extends Thread {
                 rsp = "flag|"+id+";type|addart;email|"+email+";result|y;msg|Artist created;";
             }
         }
-        ObjectFiles.writeArtistsToMemory(artists);
+        ObjectFiles.writeArtistsToDisk(artists);
 
         if(!isEditor)
             rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Only an editor can add a new artist;";
@@ -547,7 +545,7 @@ public class MulticastServerResponse extends Thread {
         else if (!found)
             rsp = "flag|"+id+";type|addalb;email|"+email+";result|n;msg|Couldn't find artist `"+artName+"`;";
 
-        ObjectFiles.writeArtistsToMemory(artists);
+        ObjectFiles.writeArtistsToDisk(artists);
 
         sendResponseMulticast(rsp, code);
     }
@@ -616,7 +614,7 @@ public class MulticastServerResponse extends Thread {
         else if (!found)
             rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Couldn't find album `"+albName+"`;";
 
-        ObjectFiles.writeArtistsToMemory(artists);
+        ObjectFiles.writeArtistsToDisk(artists);
 
         sendResponseMulticast(rsp, code);
     }

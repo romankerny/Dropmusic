@@ -5,7 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ObjectFiles {
 
 
-    public static CopyOnWriteArrayList<Artist> readArtistsFromMemory(){
+    public static CopyOnWriteArrayList<Artist> readArtistsFromDisk(){
         CopyOnWriteArrayList<Artist> artists = new CopyOnWriteArrayList<Artist>();
 
         try {
@@ -19,15 +19,15 @@ public class ObjectFiles {
         } catch (FileNotFoundException ex){
             System.out.println("File artists.obj does not exist");
         } catch (IOException e) {
-            System.out.println("readArtistsFromMemory(): Exception: "+e);
+            System.out.println("readArtistsFromDisk(): Exception: "+e);
         } catch(ClassNotFoundException e){
-            System.out.println("readArtistsFromMemory(): Exception: "+e);
+            System.out.println("readArtistsFromDisk(): Exception: "+e);
         }
 
         return artists;
     }
 
-    public static CopyOnWriteArrayList<User> readUsersFromMemory(){
+    public static CopyOnWriteArrayList<User> readUsersFromDisk(){
         CopyOnWriteArrayList<User> users = new CopyOnWriteArrayList<User>();
 
         try {
@@ -41,16 +41,16 @@ public class ObjectFiles {
         } catch (FileNotFoundException ex){
             System.out.println("File users.obj does not exist");
         } catch (IOException e) {
-            System.out.println("readUsersFromMemory(): Exception: "+e);
+            System.out.println("readUsersFromDisk(): Exception: "+e);
         } catch(ClassNotFoundException e){
-            System.out.println("readUsersFromMemory(): Exception: "+e);
+            System.out.println("readUsersFromDisk(): Exception: "+e);
         }
 
         return users;
     }
 
 
-    public static void writeArtistsToMemory(CopyOnWriteArrayList<Artist> artists) {
+    public static void writeArtistsToDisk(CopyOnWriteArrayList<Artist> artists) {
         try {
             File f = new File("artists.obj");
             FileOutputStream fos = new FileOutputStream(f);
@@ -61,11 +61,11 @@ public class ObjectFiles {
             os.writeObject(null);
             os.close();
         } catch (IOException e) {
-            System.out.println("writeArtistsToMemory(): Exception: "+e);
+            System.out.println("writeArtistsToDisk(): Exception: "+e);
         }
     }
 
-    public static void writeUsersToMemory(CopyOnWriteArrayList<User> users) {
+    public static void writeUsersToDisk(CopyOnWriteArrayList<User> users) {
         try {
             File f = new File("users.obj");
             FileOutputStream fos = new FileOutputStream(f);
@@ -76,7 +76,7 @@ public class ObjectFiles {
             os.writeObject(null);
             os.close();
         } catch (IOException e) {
-            System.out.println("writeUsersToMemory(): Exception: "+e);
+            System.out.println("writeUsersToDisk(): Exception: "+e);
         }
     }
 

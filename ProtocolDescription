@@ -164,6 +164,6 @@ Ver se música existe:
             kendrick.albums.add(butterfly);
             this.artists.add(kendrick);
 
-            ObjectFiles.writeArtistsToMemory(artists);
-            ObjectFiles.writeUsersToMemory(users);
+            writeArtistsToDisk(artists);
+            writeUsersToDisk(users);
             */
