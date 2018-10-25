@@ -245,6 +245,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
+        String rspToClient = "No dice";
         String msg = "flag|"+id+";type|requestTCPConnection;operation|upload;title|" + title + ";email|" + uploader + ";";
         sendUDPDatagram(msg);
 
@@ -253,8 +254,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
             if (cleanMessage.get(0)[1].equals(id)) {
-                System.out.println("Recebi datagram no uploadMusic vou retornar a porta");
-                return cleanMessage.get(5)[1] + " " + cleanMessage.get(6)[1];
+                System.out.println(cleanMessage.get(4)[1]);
+                if (cleanMessage.get(4)[1].equals("y")) {
+                    System.out.println("Recebi datagram no uploadMusic vou retornar a porta");
+                    return cleanMessage.get(5)[1] + " " + cleanMessage.get(6)[1];
+                } else {
+                    return cleanMessage.get(cleanMessage.size()-2)[1];
+                }
             }
         }
         return "";
@@ -569,33 +575,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-    public String changeAlbumDetail(String albumTitle, String email) {
-        // Request  -> flag | s; type | changedetail; album | aaaa; email | eeee;
-        // Response -> flag | r; type | changedetail; album | aaaa; email | eeee; result | (y/n);
-
-        String uuid = UUID.randomUUID().toString();
-        String id = uuid.substring(0, Math.min(uuid.length(), 8));
-
-        String msg = "flag|"+id+";type|changedetail;album|"+albumTitle+";email|"+email+";", rspToClient = "";
-        sendUDPDatagram(msg);
-        boolean exit = false;
-
-        while(!exit) {
-            String rsp = receiveUDPDatagram(msg);
-            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
-            if(cleanMessage.get(0)[1].equals(id)) {
-                if(cleanMessage.get(4)[1].equals("y")) {
-                    rspToClient = "Success changing details of album " + albumTitle;
-                } else if(cleanMessage.get(4)[1].equals("n")) {
-                    rspToClient = "Something went wrong changing details of album " + albumTitle;
-                }
-                exit = true;
-            }
-        }
-        return rspToClient;
-    }
-
-    public boolean isAlive() {
+    public boolean isAlive() throws RemoteException {
         return true;
     }
 

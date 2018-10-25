@@ -226,28 +226,34 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                         System.out.print("Path/to/file: ");
                         String path = sc.nextLine();
                         String ipport = client.serverInterface.uploadMusic(musicName, email);
-                        String [] ipPort = ipport.split(" ");
 
-                        // Creat socket
-                        Socket s = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
-                        if (s.isConnected()) {
+                        // If first char is a number then we received an IP:Port, if not then it's an error message
+                        if (Character.isDigit(ipport.charAt(0))) {
+                            String[] ipPort = ipport.split(" ");
 
-                            File musicFile = new File(path);
-                            FileInputStream fis = new FileInputStream(musicFile);
+                            // Creat socket
+                            Socket s = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
+                            if (s.isConnected()) {
 
-                            DataOutputStream out = new DataOutputStream(s.getOutputStream());
-                            // Send filename and size before actual bytes
-                            out.writeUTF(musicFile.getName());
-                            out.writeLong(musicFile.length());
-                            byte buffer[] = new byte[4096];
-                            int count;
-                            System.out.println("Uploading file...");
-                            while ((count = fis.read(buffer)) != -1) {
-                                out.write(buffer, 0, count);
+                                File musicFile = new File(path);
+                                FileInputStream fis = new FileInputStream(musicFile);
+
+                                DataOutputStream out = new DataOutputStream(s.getOutputStream());
+                                // Send filename and size before actual bytes
+                                out.writeUTF(musicFile.getName());
+                                out.writeLong(musicFile.length());
+                                byte buffer[] = new byte[4096];
+                                int count;
+                                System.out.println("Uploading file...");
+                                while ((count = fis.read(buffer)) != -1) {
+                                    out.write(buffer, 0, count);
+                                }
+                                out.close();
+                                s.close();
+                                System.out.println("Done");
                             }
-                            out.close();
-                            s.close();
-                            System.out.println("Done");
+                        } else {
+                            System.out.println(ipport);
                         }
                     } else {
                         System.out.println("Usage: upload [music name]");

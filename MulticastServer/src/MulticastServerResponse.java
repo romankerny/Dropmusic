@@ -79,53 +79,48 @@ public class MulticastServerResponse extends Thread {
         // flag | s; type | requestTCPConnection; operation | upload; email | eeee;
         // flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; ip | ip; port | pppp;
         if(this.hashCode.equals(code)) {
-            Iterator iArtists = artists.iterator();
-            System.out.println("A dar upload de musica " + title);
-            ServerSocket serverSocket = getSocket();
-            Socket client = null;
 
-            String ip = InetAddress.getLocalHost().getHostAddress();
-            int port = serverSocket.getLocalPort();
+            Music song = null;
 
-            sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|upload;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
-
-
-            while (iArtists.hasNext()) {
-                Artist a = (Artist) iArtists.next();
-                Iterator iAlbum = a.albums.iterator();
-
-                while (iAlbum.hasNext()) {
-                    Album alb = (Album) iAlbum.next();
-                    Iterator iMusic = alb.tracks.iterator();
-
-                    while (iMusic.hasNext()) {
-                        Music m = (Music) iMusic.next();
+            for (Artist a : artists)
+                for (Album al : a.albums)
+                    for (Music m : al.tracks)
                         if (m.title.equals(title)) {
-
-                            System.out.println("socket is bound");
-                            client = serverSocket.accept();
-
-                            DataInputStream in = new DataInputStream(client.getInputStream());
-
-                            // Filename and size first
-                            String filename = in.readUTF();
-                            long size = in.readLong();
-
-                            byte[] rawData = new byte[(int) size];
-                            // Ler todos os bytes
-                            in.readFully(rawData);
-
-                            m.musicFiles.put(email, new MusicFile(filename, rawData));
-                            m.musicFiles.get(email).emails.add(email);
-
-                            in.close();
-                            serverSocket.close();
+                            song = m;
                         }
-                    }
-                }
+
+            if (song != null) {
+                ServerSocket serverSocket = getSocket();
+                Socket client = null;
+                String ip = InetAddress.getLocalHost().getHostAddress();
+                int port = serverSocket.getLocalPort();
+
+                System.out.println("A dar upload de musica " + title);
+                sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|upload;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
+
+                System.out.println("socket is bound");
+                client = serverSocket.accept();
+
+                DataInputStream in = new DataInputStream(client.getInputStream());
+
+                // Filename and size first
+                String filename = in.readUTF();
+                long size = in.readLong();
+
+                byte[] rawData = new byte[(int) size];
+                // Ler todos os bytes
+                in.readFully(rawData);
+
+                song.musicFiles.put(email, new MusicFile(filename, rawData));
+                song.musicFiles.get(email).emails.add(email);
+
+                in.close();
+                serverSocket.close();
+                ObjectFiles.writeArtistsToDisk(artists);
+                System.out.println("Upload of " + title+ " done" );
+            } else {
+                sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|upload;email|"+email+";result|n;msg|Couldn't find `"+title+"` in database;", code);
             }
-            ObjectFiles.writeArtistsToDisk(artists);
-            System.out.println("Upload of " + title+ " done" );
         }
 
     }
