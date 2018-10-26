@@ -43,6 +43,12 @@ public class MulticastServer extends Thread {
         // Read from memory
         users = ObjectFiles.readUsersFromDisk();
         artists = ObjectFiles.readArtistsFromDisk();
+        /*
+        for (User u : users)
+            System.out.println(u);
+
+        for (Artist a : artists)
+            System.out.println(a);*/
 
         try {
             // Sending HASH-code to Main RMI
@@ -54,11 +60,6 @@ public class MulticastServer extends Thread {
             socket.joinGroup(group);
 
             System.out.println("Multicast server ready - " + code);
-
-            User admin = new User("admin", "admin");
-            admin.becomeEditor();
-            admin.notifications.add("You've been promoted to Editor");
-            users.add(admin);
 
             /*
             Code to use when DB's operational.
@@ -75,11 +76,10 @@ public class MulticastServer extends Thread {
             }
             */
 
-
+            /*
             User admin = new User("admin", "admin");
             admin.becomeEditor();
             admin.notifications.add("You've been promoted to Editor");
-            users.add(admin);
 
             User diogo = new User("diogo", "diogo");
             User roman = new User("roman", "roman");
@@ -150,7 +150,7 @@ public class MulticastServer extends Thread {
             this.artists.add(kendrick);
 
             ObjectFiles.writeArtistsToDisk(artists);
-            ObjectFiles.writeUsersToDisk(users);
+            ObjectFiles.writeUsersToDisk(users);*/
 
 
 
