@@ -193,8 +193,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     public String regularToEditor(String editor, String regular) {
-        // Request  -> flag | s; type | privilege; user1 | username; user2 | username;
-        // Response -> flag | r; type | privilege; result | (y/n); user1 | username; user2 | username;
+        // Request  -> flag | id; type | privilege; user1 | username; user2; username;
+        // Response -> flag | id; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
+
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
@@ -240,8 +241,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     public String uploadMusic(String title, String uploader) {
-        // Request  -> flag | s; type | requestTCPConnection; operation | upload; title | tttt; email | eeee;
-        // Response -> flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; ip | iiii; port | pppp;
+        // Request  -> flag | id; type | requestTCPConnection; operation | upload; title | tttt; uploader | uuuu; email | eeee
+        // Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
+        // Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | n; msg | mmmmmmmmm;
+
+
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
@@ -268,8 +272,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     public String downloadMusic(String title, String uploader, String email)  {
-        // Request  -> flag | id; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
-        // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | (y/n); ip | iiii; port | pppp;
+        // Request  -> flag | id; type | requestTCPConnection; operation | download; email | eeee;
+        // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | y; ip| iiii; port | pppp;
+        // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | n; msg | mmmmmmmmm;
+
         System.out.println("a iniciar funcao de download");
 
         String uuid = UUID.randomUUID().toString();
@@ -332,8 +338,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     public String share(String title, String shareTo, String uploader) {
-        // Request  -> flag | s; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
-        // Response -> flag | r; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu;
+        // Request  -> flag | id; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
+        // Response -> flag | id; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu; msg | mmmmmm;
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -363,8 +369,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     public String rateAlbum(int stars, String albumName, String review, String email) {
-        //   Request  -> flag | s; type | critic; album | name; critic | blabla; rate | n; email | eeee;
-        //   Response -> flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n; email | eeee;
+        // flag | id; type | critic; album | name; critic | blabla; rate | n; email | eeee;
+        // flag | id; type | critic; result | (y/n); album | name; critic | blabla; rate | n; msg | mmmmm;
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -392,8 +398,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     public String search(String param, String keyword) {
-        // Request  -> flag | s; type | search; param | (art, gen, tit); keyword | kkkk;
-        // Response -> flag | r; type | search; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...]
+        // Request  -> flag | id; type | details; param | (art, gen, tit); keyword | kkkk;
+        // Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -424,7 +430,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public String addArtist(String artist, String details, String email) throws RemoteException {
         // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
-        // Response -> flag | r; type | addart; email | dddd; result | (y/n); msg | mmmmmm;
+        // Response -> flag | r; type | addart; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -477,7 +483,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public String addAlbum(String artist, String albumTitle, String description, String genre, String email) throws  RemoteException{
         // Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
-        // Response -> flag | r; type | addalb; email | ddd; result |(y/n);
+        // Response -> flag | r; type | addalb; email | ddd; result |(y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -529,7 +535,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public String addMusic(String musicTitle, String track, String albumTitle , String email) throws  RemoteException{
         // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
-        // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n); notif_count | n; notif_1 | nnnnn; [etc...]
+        // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));

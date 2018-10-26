@@ -1,60 +1,59 @@
-type | register; flag | (s/r); username | name; password | pw; result (y/n)
-neste caso queremos receber p aceitar
-type | register; flag | r; username | name; password | pw; result y
 
-
+[Protocol Description]
 
 (1) Register & Login & logout
-    Request  -> flag | s; type | register; email | eeee; password | pppp;
-    Response -> flag | r; type | register; result | (y/n); email | eeee; password | pppp; msg | mmmmmm;
+    Request  -> flag | id; type | register; email | eeee; password | pppp;
+    Response -> flag | id; type | register; result | (y/n); email | eeee; password | pppp; msg | mmmmmm;
 
-    Request  -> flag | s; type | login; email | eeee; password | pppp;
-    Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | notif; msg | mmmmmm;
-    Request  -> flag | s; type | logout; email | eeee;
-    Response -> flag | r; type | logout; result | (y/n); email | eeee;
+    Request  -> flag | id; type | login; email | eeee; password | pppp;
+    Response -> flag | id; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | notif; msg | mmmmmm;
+
+    Request  -> flag | id; type | logout; email | eeee;
 
 
-Pesquisa p/ nome do artista, o género musical ou o título do álbum (2)
-    Request  -> flag | s; type | search; param | (art, gen, tit); keyword | kkkk;
-    Response -> flag | r; type | search; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...]
+(2) Adicionar e editar artistas, albums e musicas
 
-Resposta aos clientes c/ notify de alteração em música
-    Request  -> flag | s; type | notify; message | mmmmmmm; user_count | n; user_x_email | email; [...]
-    Response -> flag | r; type | notify; message | mmmmmmm; user_count | n; user_x_email | email; [...]
+Artista:
+    Request  -> flag | id; type | addart; name | nnnn; details | dddd; email | dddd;
+    Response -> flag | id; type | addart; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
+
+Album:
+    Request  -> flag | id; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
+    Response -> flag | id; type | addalb; email | ddd; result |(y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
+
+Música;
+    Request  -> flag | id; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
+    Response -> flag | id; type | addmusic; title | tttt; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...] msg | mmmmm;
 
 
 (4) Consultar detalhes sobre álbum e artista
-    Request  -> flag | s; type | details; param | (art, alb); keyword | kkkk;
-    Response -> flag | r; type | details; param | (art, alb); keyword | kkkk; result | (y/n); response | blablablabla;
+    Request  -> flag | id; type | details; param | (art, alb, gen); keyword | kkkk;
+    Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
 
 (5) Escrever uma crítica a um álbum
-    Request  -> flag | s; type | critic; album | name; critic | blabla; rate | n; email | eeee;
-    Response -> flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n; email | eeee;
+    Request  -> flag | id; type | critic; album | name; critic | blabla; rate | n; email | eeee;
+    Response -> flag | id; type | critic; result | (y/n); album | name; critic | blabla; rate | n; msg | mmmmm;
 
 (6) Dar previlégios de editor a um utilizador
-    Request  -> flag | s; type | privilege; user1 | username; user2 | username;
-    Response -> flag | r; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
+    Request  -> flag | id; type | privilege; user1 | username; user2; username;
+    Response -> flag | id; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
 
-(7) Adicionar / alterar detalhes
-    * P/ enquanto ainda só funciona c/ o param details de Album e Artist
-    Request  -> flag | s; type | detail; gen | (art, album); keyword | vvvvv; detail | ddddddddddddddddddd; email | eeee;
-    Response -> flag | r; type | detail; gen | (art, album); keyword | vvvvv; response | (y/n); email | eeee;
+(9) Entrega posterior de notificacoes a users offline
+    Request  -> flag| id; type | notifyfail; email | userEmail; message | notification;
 
-
-
-(10) (12) [TCP Upload e download]
-
-    [Upload]
-    Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
-    Response -> flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
-
-    [Download]
-    Request from RMIClient -> flag | s; type | requestTCPConnection; operation | download; email | eeee;
-    Response               -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; port | pppp;
+(10) Upload
+    Request  -> flag | id; type | requestTCPConnection; operation | upload; title | tttt; uploader | uuuu; email | eeee
+    Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
+    Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | n; msg | mmmmmmmmm;
 
 (11) Partilhar musica
-    Request  -> flag | s; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
-    Response -> flag | r; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu;
+    Request  -> flag | id; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
+    Response -> flag | id; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu; msg | mmmmmm;
+
+(12) Download
+    Request  -> flag | id; type | requestTCPConnection; operation | download; email | eeee;
+    Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | y; ip| iiii; port | pppp;
+    Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | n; msg | mmmmmmmmm;
 
 
 [Comunicação Multicast-RMIServer]
@@ -64,30 +63,6 @@ Resposta aos clientes c/ notify de alteração em música
 
 - RMI quando se liga pede ACK
     Request  -> flag | s; type | connectionrequest;
-
-
-Adicionar música artista ou album
-
-    Artista:
-        Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
-        Response -> flag | r; type | addart; email | dddd; result | (y/n);
-
-    Album:
-        Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
-        Response -> flag | r; type | addalb; email | ddd; result |(y/n);
-
-    Música;
-        Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
-        Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n);
-
-
-Editar detalhe de um album
-        Request  -> flag | s; type | changedetail; album | aaaa; email | eeee;
-        Response -> flag | r; type | changedetail; album | aaaa; email | eeee; result | (y/n);
-
-Ver se música existe:
-        Request  -> flag | id; type | search; music | musicTitle;
-        Response -> flag | id; type | search; result | (y/n); msg | mmmmm;
 
 
 /*

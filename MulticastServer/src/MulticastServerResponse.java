@@ -76,8 +76,10 @@ public class MulticastServerResponse extends Thread {
     }
 
     public void uploadMusic(String id, String title, String email, String code) throws IOException, ClassNotFoundException {
-        // flag | s; type | requestTCPConnection; operation | upload; email | eeee;
-        // flag | r; type | requestTCPConnection; operation | upload; email | eeee; result | y; ip | ip; port | pppp;
+        // Request  -> flag | id; type | requestTCPConnection; operation | upload; title | tttt; uploader | uuuu; email | eeee
+        // Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
+        // Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | n; msg | mmmmmmmmm;
+
         if(this.hashCode.equals(code)) {
 
             Music song = null;
@@ -126,10 +128,9 @@ public class MulticastServerResponse extends Thread {
     }
 
     public void downloadMusic(String id, String title, String uploader, String email, String code) throws IOException {
-        // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee;
-        // Response -> flag | r; type | requestTCPConnection; operation | download; email | eeee; result | y; ip | ip; port | pppp;
-        // alterar p so responder quem encontrar musica
-        // ID title uploader email hash
+        // Request  -> flag | id; type | requestTCPConnection; operation | download; email | eeee;
+        // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | y; ip| iiii; port | pppp;
+        // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | n; msg | mmmmmmmmm;
 
         System.out.println("NO DOWNLOAD!");
         Music msc = searchMusic(title, uploader);
@@ -182,8 +183,8 @@ public class MulticastServerResponse extends Thread {
     }
 
     public void share(String id, String title, String shareTo, String uploader, String code) {
-        // Request  -> flag | s; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
-        // Response -> flag | r; type | share; result | (y/n); title | ttttt; shareTo | ssssss; uploader | uuuuu;
+        // Request  -> flag | id; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
+        // Response -> flag | id; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu; msg | mmmmmm;
 
         String rsp;
         boolean found = false;
@@ -287,8 +288,9 @@ public class MulticastServerResponse extends Thread {
 
     public void turnIntoEditor(String id, String user1, String user2, String code) {
 
-        // flag | s; type | privilege; user1 | username; user2; username;
-        // flag | r; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
+        // Request  -> flag | id; type | privilege; user1 | username; user2; username;
+        // Response -> flag | id; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
+
         String rsp = "flag|"+id+";type|privilege;result|n;user1|" + user1 +";user2|" + user2 + ";";
 
         Iterator iUsers1 = users.iterator();
@@ -328,8 +330,8 @@ public class MulticastServerResponse extends Thread {
 
     public void writeCritic(String id, String albumName, String critic, String rate, String email, String code) {
 
-        // flag | s; type | critic; album | name; critic | blabla; rate | n email | eeee;
-        // flag | r; type | critic; result | (y/n); album | name; critic | blabla; rate | n; email | eeee;
+        // flag | id; type | critic; album | name; critic | blabla; rate | n email | eeee;
+        // flag | id; type | critic; result | (y/n); album | name; critic | blabla; rate | n; msg | mmmmm;
 
         Iterator iArtists = artists.iterator();
         boolean found = false;
@@ -366,8 +368,8 @@ public class MulticastServerResponse extends Thread {
 
 
     public void getDetails(String id, String type, String keyword, String code) {
-        // Request  -> flag | s; type | search; param | (art, alb, gen); keyword | kkkk;
-        // Response -> flag | r; type | search; param | (art, alb, gen); keyword | kkkk; item_count | n; item_x_name | name; [...]
+        // Request  -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk;
+        // Response -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk; item_count | n; item_x_name | name; [...] msg | mmmmmm;
 
         String rsp, response = "";
         String message= " ";
@@ -403,8 +405,6 @@ public class MulticastServerResponse extends Thread {
     }
 
     public Music searchMusic(String musicTitle, String uploader) {
-        // Request  -> flag | id; type | search; music | musicTitle;
-        // Response -> flag | id; type | search; result | (y/n); msg | mmmmm;
 
         for(Artist a : artists) {
             for(Album b : a.albums) {
@@ -422,7 +422,7 @@ public class MulticastServerResponse extends Thread {
 
     public void addArtist(String id, String name, String details, String email, String code) {
         // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
-        // Response -> flag | r; type | addart; email | dddd; result | (y/n);
+        // Response -> flag | r; type | addart; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
 
         String rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Failed to add artist;";
         boolean alreadyExists = false;
@@ -476,7 +476,7 @@ public class MulticastServerResponse extends Thread {
 
     public void addAlbum(String id, String artName, String albName, String description, String genre, String email, String code) {
         // Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
-        // Response -> flag | r; type | addalb; email | ddd; result |(y/n); |
+        // Response -> flag | r; type | addalb; email | ddd; result |(y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
         String rsp = "flag|"+id+";type|addalb;email|"+email+";result|n;msg|Failed to add album;";
         boolean isEditor = false;
         boolean found = false;
@@ -553,7 +553,7 @@ public class MulticastServerResponse extends Thread {
 
     public void addMusic(String id, String albName, String title, String track, String email, String code) {
         // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
-        // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n); msg | mmmmmmm; notif_count | n; notif_1 | nnnn;[etc...]
+        // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
         String rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Failed to add music;";
         boolean isEditor = false;
         boolean found = false;
