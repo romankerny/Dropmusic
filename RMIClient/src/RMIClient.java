@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
@@ -68,7 +69,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
             ip = args[0];
         }
 
-        System.setProperty("java.rmi.server.hostname", ip);
+        System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
 
         Scanner sc = new Scanner(System.in);
         Scanner scanner;
