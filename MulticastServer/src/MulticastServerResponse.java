@@ -262,7 +262,7 @@ public class MulticastServerResponse extends Thread {
 
         while (iUsers.hasNext() && !found) {
             u = (User) iUsers.next();
-            if (u.email.equals((email)) & u.password.equals(password)) {
+            if (u.email.equals((email)) && u.password.equals(password)) {
                 found = true;
             }
         }
