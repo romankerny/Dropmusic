@@ -21,7 +21,7 @@ Para correr :
 			
 
 [*]
-Em algumas máquinas podem existir problemas de conversão de indereços IPv6, para contornar digite a seguinte de flag de configuração da JVM:
+Em algumas máquinas a JVM usa IPv6 por defeito, para contornar digite a seguinte de flag de configuração da JVM:
 
 	-Djava.net.preferIPv4Stack=true 
 
