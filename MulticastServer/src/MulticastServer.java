@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+
 public class MulticastServer extends Thread {
     private String MULTICAST_ADDRESS = "224.3.2.2";
     private int RECV_PORT = 5213;
@@ -22,6 +23,14 @@ public class MulticastServer extends Thread {
         server.start();
     }
 
+    /**
+     *  Creates a multicastSocket and sends a Datagram packet with
+     *  some protocol instruction.
+     *
+     * @param resp - protocol instruction to send
+     */
+
+
     public void sendResponseMulticast(String resp) {
 
             // only the designated Multicast Server will respond to RMIServer
@@ -37,6 +46,14 @@ public class MulticastServer extends Thread {
             }
     }
 
+
+    /**
+     *  Main loop of Multicast, starts by reading users.obj and artists.obj,
+     *  then proceeds to create a new MulticastSocket, joins the group and sends an `ack` to RMIServer.
+     *
+     *  Finally enters the loop of receiving a packet and creating a new MulticastServerResponse Thread to deal with it.
+     *
+     */
 
 
     public void run() {

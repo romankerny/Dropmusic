@@ -25,6 +25,15 @@ public class MulticastServerResponse extends Thread {
         this.hashCode = code;
     }
 
+    /**
+     *  Creates a MulticastSocket and sends a Datagram packet with
+     *  some protocol instruction. This method is only run if Multicast's hash matches RMIServer's requested hash.
+     *
+     * @param resp - protocol instruction to send
+     * @param code - unique hash
+     *
+     */
+
     public void sendResponseMulticast(String resp, String code) {
 
         if(this.hashCode.equals(code)) {
@@ -42,6 +51,14 @@ public class MulticastServerResponse extends Thread {
         }
     }
 
+    /**
+     *
+     * Parses datagram String in simple Tokens
+     *
+     * @param msg
+     * @return ArrayList of tokens example: (id, 54fsdsf4), (type, login) , ....
+     */
+
     ArrayList cleanTokens(String msg) {
 
         String[] tokens = msg.split(";");
@@ -56,6 +73,16 @@ public class MulticastServerResponse extends Thread {
         }
         return rtArray;
     }
+
+
+    /**
+     *
+     * Creates a new MulticastSocket with random port between 5000 and 6000
+     * Used upon a upload/download request.
+     *
+     *
+     * @return MulticastSocket
+     */
 
     public ServerSocket getSocket() {
 
@@ -75,7 +102,24 @@ public class MulticastServerResponse extends Thread {
         return serverSocket;
     }
 
-    public void uploadMusic(String id, String title, String email, String code) throws IOException, ClassNotFoundException {
+    /**
+     * Method to upload a music. First checks if music exists in database, if not then sends an answer with result|n and
+     * an error message as msg|error here
+     *
+     * If found then a result|y answer is sent along with Multicast's IP and Port for the client to connect.
+     * Afterwards creates a new TCP socket using #getSocket() and awaits RMIClient to connect. Once connected the client
+     * sends a filename, size and finally all file's raw data as bytes. These are stored in as a #MusicFile along with
+     * email of the uploader.
+     *
+     * @param id Packet's unique ID
+     * @param title Music's title
+     * @param email Email of the user that requested an upload
+     * @param code Multicast server's hash, this method is only run if hash send by RMIServer matches Multicast's hash.
+     * @see #getSocket()
+     * @see #sendResponseMulticast(String, String)
+     */
+
+    public void uploadMusic(String id, String title, String email, String code) throws IOException {
         // Request  -> flag | id; type | requestTCPConnection; operation | upload; title | tttt; uploader | uuuu; email | eeee
         // Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
         // Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | n; msg | mmmmmmmmm;
@@ -126,6 +170,28 @@ public class MulticastServerResponse extends Thread {
         }
 
     }
+
+    /**
+     * Method do download a music. For now only one MulticastServer contains a user's uploader. First each Multicast
+     * needs to search if it is the one that has the uploaded file. If it doesn't then immediately after sends a result|n
+     * claiming that it does not have the file and exits.
+     *
+     * If it does, then first checks if requesting user is allowed to download from the uploader, if not then sends result|n
+     * with an error message to display.
+     *
+     * Otherwise creates a new TCP socket, sends an IP and Port as answer and awaits connection. Once connected, sends
+     * file's name and raw data afterwards.
+     *
+     *
+     * @param id Packet's unique ID
+     * @param title Music's title
+     * @param uploader Email from whom the user is trying to download
+     * @param email Requesting user's email
+     * @param code Hash sent by RMIServer
+     * @see #getSocket()
+     * @see #searchMusic(String, String)
+     * @see #sendResponseMulticast(String, String)
+     */
 
     public void downloadMusic(String id, String title, String uploader, String email, String code) throws IOException {
         // Request  -> flag | id; type | requestTCPConnection; operation | download; email | eeee;
@@ -179,6 +245,20 @@ public class MulticastServerResponse extends Thread {
         ObjectFiles.writeArtistsToDisk(artists);
     }
 
+    /**
+     * Method to share an uploaded music with another user.
+     * First searches if user did indeed upload that song. If not then answers with result|n and an error message,
+     * if found then the user is now allowed to download from uploader and a result|y answer is sent.
+     *
+     * @param id Packet's unique ID
+     * @param title Music's title
+     * @param shareTo User that the uploader want's to share
+     * @param uploader The uploader himself
+     * @param code Hash sent by RMIServer
+     * @see #getSocket()
+     * @see #sendResponseMulticast(String, String)
+     */
+
     public void share(String id, String title, String shareTo, String uploader, String code) {
         // Request  -> flag | id; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
         // Response -> flag | id; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu; msg | mmmmmm;
@@ -220,6 +300,17 @@ public class MulticastServerResponse extends Thread {
         sendResponseMulticast(rsp, code);
     }
 
+    /**
+     * Method to register a new user. First checks if the email is registered already, if not then adds the new user
+     * to the database. Answers with result|n for the former and result|y for latter.
+     *
+     * @param id Packet's unique ID
+     * @param email User's new email
+     * @param password User's password
+     * @param code Hash sent by RMIServer
+     * @see #sendResponseMulticast(String, String)
+     */
+
     public void register(String id, String email, String password, String code) {
 
         String message;
@@ -248,6 +339,16 @@ public class MulticastServerResponse extends Thread {
         }
         sendResponseMulticast(rsp, code);
     }
+
+    /**
+     * Method to login. Checks if email and password match, answering with result|y or result|n if not.
+     * If user has any missed notifications, these are added to Multicast's answer.
+     * @param id Packet's unique ID
+     * @param email User's email
+     * @param password User's password
+     * @param code Hash sent by RMIServer
+     * @see #sendResponseMulticast(String, String)
+     */
 
     public void login(String id, String email, String password, String code) {
         // Request  -> flag | s; type | login; email | eeee; password | pppp;
@@ -282,6 +383,18 @@ public class MulticastServerResponse extends Thread {
         }
         sendResponseMulticast(rsp, code);
     }
+
+    /**
+     * Method to turn a regular user into an editor.
+     * First checks if user1 is actually an editor, if it is then proceeds to find the user that he wants to promote,
+     * if found then turns him into an editor and answers with result|y. Otherwise if any of the conditions fail,
+     * answers with result|n and an error message instead.
+     * @param id
+     * @param user1 The promoter
+     * @param user2 The promotee
+     * @param code Hash sent by RMIServer
+     * @see #sendResponseMulticast(String, String)
+     */
 
     public void turnIntoEditor(String id, String user1, String user2, String code) {
 
@@ -325,6 +438,19 @@ public class MulticastServerResponse extends Thread {
         sendResponseMulticast(rsp, code); // -> RMIServer
     }
 
+    /**
+     * Method to review and score an album.
+     * First checks if album exists, if does then adds a new rating and review to it. If not found then an error message
+     * is returned.
+     * @param id Packet's unique ID
+     * @param albumName Album's name
+     * @param critic The review iself
+     * @param rate 1-5 rating
+     * @param email User's email that rated
+     * @param code Hash sent by RMIServer
+     * @see #sendResponseMulticast(String, String)
+     */
+
     public void writeCritic(String id, String albumName, String critic, String rate, String email, String code) {
 
         // flag | id; type | critic; album | name; critic | blabla; rate | n email | eeee;
@@ -355,6 +481,12 @@ public class MulticastServerResponse extends Thread {
         sendResponseMulticast(rsp, code);
     }
 
+    /**
+     * Method to store offline user's missed notifications
+     * @param email Offline user's email
+     * @param message Missed notification
+     */
+
     public void offUserNotified(String id, String email, String message) {
 
         for (User u : users)
@@ -363,7 +495,16 @@ public class MulticastServerResponse extends Thread {
         ObjectFiles.writeUsersToDisk(users);
     }
 
-
+    /**
+     * Method to get details of an artist or album. Searches by artist name and album's title or genre.
+     * If keyword matches then it is added as a new found item to be sent as answer. If nothing is found then returns
+     * an error message.
+     * @param id Packet's unique ID
+     * @param type Either 'art', 'alb' or 'gen' for artist, album and genre respectively
+     * @param keyword Keyword used for the search query
+     * @param code Hash sent by RMIServer
+     * @see #sendResponseMulticast(String, String)
+     */
     public void getDetails(String id, String type, String keyword, String code) {
         // Request  -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk;
         // Response -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk; item_count | n; item_x_name | name; [...] msg | mmmmmm;
@@ -401,6 +542,14 @@ public class MulticastServerResponse extends Thread {
 
     }
 
+    /**
+     * Method used before downloading a music to see if the file exists in this particular Multicast's database
+     * @param musicTitle Music's title
+     * @param uploader Uploader's email
+     * @return Music object or null if not found
+     * @see #downloadMusic(String, String, String, String, String)
+     */
+
     public Music searchMusic(String musicTitle, String uploader) {
 
         for(Artist a : artists) {
@@ -416,6 +565,18 @@ public class MulticastServerResponse extends Thread {
 
         return null;
     }
+
+    /**
+     * Method to add/edit an artist. An edit happens if artist's name matches an existing one in database. If edited, then
+     * every user that edited this particular artist, it's albums or songs is notified.
+     * If user is not an editor then an error message is sent instead.
+     * @param id Packet's unique ID
+     * @param name Artist's name
+     * @param details Artist's description
+     * @param email Requesting
+     * @param code Hash sent by RMIServer
+     * @see #sendResponseMulticast(String, String)
+     */
 
     public void addArtist(String id, String name, String details, String email, String code) {
         // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
@@ -470,6 +631,21 @@ public class MulticastServerResponse extends Thread {
 
         sendResponseMulticast(rsp, code);
     }
+
+    /**
+     * Method to add/edit a new album to an artist. An edit happens if album's name matches an existing one in artist's
+     * database. Once added/edited every user that has added/edited an album, song or created this artist is notified.
+     * If the user is not an editor, or artist's name is not found, then an error message is sent instead.
+     *
+     * @param id Packet's unique ID
+     * @param artName Artist's name
+     * @param albName Album's name
+     * @param description Album's description
+     * @param genre Album's genre
+     * @param email User's email
+     * @param code Hash sent by RMIServer
+     * @see #sendResponseMulticast(String, String)
+     */
 
     public void addAlbum(String id, String artName, String albName, String description, String genre, String email, String code) {
         // Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
@@ -547,6 +723,19 @@ public class MulticastServerResponse extends Thread {
         ObjectFiles.writeArtistsToDisk(artists);
         sendResponseMulticast(rsp, code);
     }
+
+    /**
+     * Method to add/edit a music. An edit happens if track's number matches an existing one.
+     * Once edited/added every user that has modified either the artist, his albums or any of his songs will be notified.
+     * If user is not an editor or album's name is not found an error message is sent instead.
+     * @param id Packet's unique ID
+     * @param albName Album's name
+     * @param title Track's title
+     * @param track Track number
+     * @param email User's email
+     * @param code Hash sent by RMIServer
+     * @see #sendResponseMulticast(String, String)
+     */
 
     public void addMusic(String id, String albName, String title, String track, String email, String code) {
         // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
@@ -630,7 +819,12 @@ public class MulticastServerResponse extends Thread {
 
         sendResponseMulticast(rsp, code);
     }
-    
+
+
+    /**
+     * Thread that receives a packet, parses it with cleanTokens() and calls the respective function depending on type of packet
+     * @see #cleanTokens(String)
+     */
 
     public void run() {
 
@@ -669,8 +863,6 @@ public class MulticastServerResponse extends Thread {
                 try {
                     uploadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, email)
                 } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
 
