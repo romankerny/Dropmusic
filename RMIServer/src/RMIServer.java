@@ -31,6 +31,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         super();
     }
 
+    /**
+     * Using round-robin algorithm picks an hash code to concatenate with the @param resp
+     * then calls sendUDPDatagramGeneral() to send the protocol message.
+     *
+     * @param resp - protocol instruction to send
+     */
+
     public void sendUDPDatagram(String resp) {
 
 
@@ -43,7 +50,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     }
 
-
+    /**
+     *  Creates a multicastSocket and sends a Datagram packet with
+     *  some protocol instruction.
+     *
+     * @param resp - protocol instruction to send
+     */
 
     public void sendUDPDatagramGeneral(String resp) {
 
@@ -65,6 +77,17 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
 
     }
+
+    /**
+     *
+     * Try's to receive a Datagram via Multicast
+     * If socket is activated for + than 5 seconds without getting an answer form Multicast the setSoTimeout() creates an exception
+     * that re-sends the Datagram to Multicast that was supposed to generate the response.
+     * The method that calls this function will be locked until the answer packet it's waiting for is received.
+     *
+     * @param rspToRetry
+     * @return received Datagram
+     */
 
     public String receiveUDPDatagram(String rspToRetry) {
 
@@ -99,6 +122,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return message;
     }
 
+    /**
+     *
+     * Parses datagram String in simple Tokens
+     *
+     * @param msg
+     * @return ArrayList of tokens example: (id, 54fsdsf4), (type, login) , ....
+     */
     ArrayList<String[]> cleanTokens(String msg) {
 
         String[] tokens = msg.split(";");
@@ -107,17 +137,32 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         ArrayList<String[]> rtArray = new ArrayList<String[]>();
 
         for (int i = 0; i < tokens.length; i++) {
-            //tokens[i] = tokens[i].replaceAll("\\s+", "");
             p = tokens[i].split(Pattern.quote("|"));
             rtArray.add(p);
         }
         return rtArray;
     }
 
+    /**
+     * Receives a name and password
+     * creates datagram with the following protocol:
+     *
+     * Sends to Multicast:
+     * Request  -> flag | id; type | register; email | eeee; password | pppp;
+     *
+     * Receives from Multicast:
+     * Response -> flag | id; type | register; result | (y/n); email | eeee; password | pppp; msg | mmmmmm;
+     *
+     * If result | y -> successes
+     * If result | n -> failed, returns an error message to RMIClient
+     *
+     * @param name
+     * @param password
+     * @return rsp to Client with result
+     */
+
     public String register(String name, String password) {
 
-        // Request  -> flag | s; type | register; email | eeee; password | pppp;
-        // Response -> flag | r; type | register; result | (y/n); email | eeee; password | pppp; msg | mmmmmmmm;
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -144,9 +189,24 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
+    /**
+     *
+     * When a user calls login() w/ success
+     * It's @param clientInterface is added to the clients concurrentHashMap
+     *
+     *
+     * @param email
+     * @param clientInterface
+     */
     public void subscribe(String email, RMIClientInterface clientInterface) {
         this.clients.put(email, clientInterface);
     }
+
+    /**
+     * Simply removes the clientInterface from the clients concurrentHashMap
+     * @param email
+     * @return
+     */
 
     public String logout(String email) {
 
@@ -154,9 +214,23 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return "Logged out";
     }
 
+    /**
+     * Sends to Multicast:
+     * Request  -> flag | id; type | login; email | eeee; password | pppp;
+     *
+     * Receives from Multicast:
+     * Response -> flag | id; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | notif; msg | mmmmmm;
+     *
+     * If the op. is successful the @param client is added to clients concurrentHashMap
+     *
+     * @param email
+     * @param password
+     * @param client
+     * @return rsp to Client
+     * @throws RemoteException
+     */
+
     public String login(String email, String password, RMIClientInterface client) throws RemoteException {
-        // Request  -> flag | s; type | login; email | eeee; password | pppp;
-        // Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | notif; msg | mmmmmm;
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
@@ -192,9 +266,20 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
+    /**
+     * Request  -> flag | id; type | privilege; user1 | username; user2; username;
+     * Response -> flag | id; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
+     *
+     * Try's to cast @param regular to editor
+     * If the op. is successful the notification to the @param editor comes along in the UDP Datagram
+     *
+     * the client with email == @param editor in clients concurrentHashMap gets printed w/ printOnClient() method
+     * @param editor
+     * @param regular
+     * @return rsp to Client that called the function
+     */
+
     public String regularToEditor(String editor, String regular) {
-        // Request  -> flag | id; type | privilege; user1 | username; user2; username;
-        // Response -> flag | id; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -240,11 +325,18 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-    public String uploadMusic(String title, String uploader) {
-        // Request  -> flag | id; type | requestTCPConnection; operation | upload; title | tttt; uploader | uuuu; email | eeee
-        // Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
-        // Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | n; msg | mmmmmmmmm;
+    /**
+     * Request  -> flag | id; type | requestTCPConnection; operation | upload; title | tttt; uploader | uuuu; email | eeee
+     * Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
+     * Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | n; msg | mmmmmmmmm;
+     *
+     *
+     * @param title
+     * @param uploader
+     * @return
+     */
 
+    public String uploadMusic(String title, String uploader) {
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -271,10 +363,18 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     }
 
+    /**
+     * Request  -> flag | id; type | requestTCPConnection; operation | download; email | eeee;
+     * Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | y; ip| iiii; port | pppp;
+     * Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | n; msg | mmmmmmmmm;
+     *
+     * @param title
+     * @param uploader
+     * @param email
+     * @return
+     */
+
     public String downloadMusic(String title, String uploader, String email)  {
-        // Request  -> flag | id; type | requestTCPConnection; operation | download; email | eeee;
-        // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | y; ip| iiii; port | pppp;
-        // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | n; msg | mmmmmmmmm;
 
         System.out.println("a iniciar funcao de download");
 
@@ -337,9 +437,19 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return "Music file not found.";
     }
 
+    /**
+     * Request  -> flag | id; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
+     * Response -> flag | id; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu; msg | mmmmmm;
+     *
+     * shares a music with the user with the email == shareTo
+     *
+     * @param title
+     * @param shareTo
+     * @param uploader
+     * @return result of the operation
+     */
+
     public String share(String title, String shareTo, String uploader) {
-        // Request  -> flag | id; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
-        // Response -> flag | id; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu; msg | mmmmmm;
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -368,9 +478,19 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
+    /**
+     * flag | id; type | critic; album | name; critic | blabla; rate | n; email | eeee;
+     * flag | id; type | critic; result | (y/n); album | name; critic | blabla; rate | n; msg | mmmmm;
+     *
+     * @param stars
+     * @param albumName
+     * @param review
+     * @param email
+     * @return
+     */
+
     public String rateAlbum(int stars, String albumName, String review, String email) {
-        // flag | id; type | critic; album | name; critic | blabla; rate | n; email | eeee;
-        // flag | id; type | critic; result | (y/n); album | name; critic | blabla; rate | n; msg | mmmmm;
+
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -397,9 +517,15 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
+    /**
+     * Request  -> flag | id; type | details; param | (art, gen, tit); keyword | kkkk;
+     * Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
+     * @param param
+     * @param keyword
+     * @return
+     */
+
     public String search(String param, String keyword) {
-        // Request  -> flag | id; type | details; param | (art, gen, tit); keyword | kkkk;
-        // Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
