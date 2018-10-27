@@ -137,8 +137,6 @@ public class MulticastServerResponse extends Thread {
             sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;", code);
             return;
         }
-        //System.out.println("tenho a musica posso deixar fazer download!");
-
 
         Music song = null;
         if(this.hashCode.equals(code)) {
