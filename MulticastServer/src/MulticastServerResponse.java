@@ -878,7 +878,7 @@ public class MulticastServerResponse extends Thread {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                
+
         } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("download")) {
             // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
 
