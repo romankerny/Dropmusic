@@ -15,6 +15,25 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import static java.lang.Thread.sleep;
 
+/**
+ *
+ * RMIServer contains all methods that RMI Client can call via remote interface.
+ * The RMIServer interface is named 'rmiserver' and the registry runs on port 1099.
+ *
+ * This class contains a concurrentHaspMap that holds the correspondence between client's emails and the corresponding
+ * RMI Interfaces. It's mainly used to control which users are logged to the Server and comes in hand when the server
+ * needs to call the method printOnClient() via it's interface.
+ *
+ * The Server has 2 main UDP ports:
+ *  - 5213 where it sends Datagram Packets
+ *  - 5214 where it receives Datagram Packets
+ *
+ *  The class also contains an array of Strings that has all the UUID hashes that identify MulticastServers in an
+ *  unique way.
+ *
+ *
+ *
+ */
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface {
 
 
@@ -368,6 +387,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | y; ip| iiii; port | pppp;
      * Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | n; msg | mmmmmmmmm;
      *
+     * RMI and multicast need to establish some things before a download can happen
+     *
+     * int n_responses it's the number of negative Multicast answers
+     *
+     * When sending download packets the RMI will wait in maximum for rmiServer.multicastHashes.size()
+     * if n_responses == rmiServer.multicastHashes.size() it means that there isn't an online MulticastServer that has
+     * the music with @param title with a file available to download
      * @param title
      * @param uploader
      * @param email
@@ -389,10 +415,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
 
         boolean exit = false;
-        int c = 0;
+        int n_responses = 0;
         exit = false;
 
-
+        // send
         for(String hash: rmiServer.multicastHashes) {
             sendUDPDatagramGeneral("flag|" + id + ";type|requestTCPConnection;operation|download;title|" + title + ";uploader|" + uploader + ";email|" + email + ";hash|" + hash + ";");
             System.out.println("asking multicasts to search music " + hash);
@@ -423,8 +449,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if(cleanMessage.get(0)[1].equals(id)) {
 
                 if (cleanMessage.get(4)[1].equals("n")) {
-                    c++;
-                    if(c == multicastHashes.size()) {
+                    n_responses++;
+                    if(n_responses == multicastHashes.size()) {
                         exit = true;
                     }
                 }else if (cleanMessage.get(4)[1].equals("y")) {
@@ -834,7 +860,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
             try {
-
+                // try to bind, if it fails that means that an RMIServer is already running
                 r = LocateRegistry.createRegistry(1099);
                 r.bind("rmiserver", rmiServer);
 
@@ -846,7 +872,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     try {
 
                         try {
-
+                            // lookup the interface and ping it
                             mainServerInterface = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmiserver");
                             System.out.println("Pinging MainRMI");
                             if (mainServerInterface.isAlive()) {
@@ -862,10 +888,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                             failCount++;
 
-                            if (failCount == 5 && failedLastTime) {
+                            if (failCount == 5 && failedLastTime) { // mainRMI is down
                                 failCount = 0;
                                 takeOver = true;
-                                r = LocateRegistry.createRegistry(1099);
+                                r = LocateRegistry.createRegistry(1099); // create new registry
                             }
                             failedLastTime = true;
                         }
@@ -879,10 +905,16 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 }
             }
 
-
+            // rebing is necessary
+            // when run by mainRMI it has no effect bc/ mainRMI is already bound
+            // when run by BackUP it binds the the registry r (above)
             r.rebind("rmiserver", rmiServer);
             System.out.println("Taking over RMIMain");
 
+
+            // this multicast message tells every online Multicast to identify themselves
+            // the multicast send a packet with their Hash-code
+            // Request  -> flag | id; type | connectionrequest;
             q = "flag|s;type|connectionrequest;";
             rmiServer.sendUDPDatagramGeneral(q);
 
@@ -893,7 +925,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         while(true) {
             // waiting for MulticastServers to group up
-            // Response -> flag | r; type | ack; hash | hhhh;
+            // Response -> flag | id; type | ack; hash | hhhh;
 
 
             byte[] buffer = new byte[65536];

@@ -8,6 +8,16 @@ import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * This class will be runned in the Client's machine.
+ * It basically gets user strings via command line, parses them, and then makes remote invocations on the RMIServer
+ * via it's interface based on them.
+ * It connects to the RMIServer with the IP provided in the args array when starting the program
+ * If for some reason RMIServers go off during the execution of a RMIServer method the client will hold and wait
+ * for the reconection - this happens in the method waitForServer()
+ * and then retry to call the method.
+ *
+ */
 public class RMIClient extends UnicastRemoteObject implements RMIClientInterface {
 
     private static String email = "";
@@ -22,9 +32,21 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         System.out.println(msg);
     }
 
+    /**
+     * called by RMIServer, simply returns the email of the Client
+     * @return
+     * @throws RemoteException
+     */
     public String getEmail() throws RemoteException {
         return email;
     }
+
+    /**
+     * function used to simplify Strings
+     * @param tokens
+     * @param index
+     * @return
+     */
 
     private static String strCatSpaces(String[] tokens, int index) {
         String str = "";
@@ -34,6 +56,16 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         str = str.replaceAll(".$", "");
         return str;
     }
+
+    /**
+     * In main when an RMIServer method call throws an RemoteExeption this method is called in the handling of the
+     * throw
+     * The method sleeps for 1 sec and then try's to lookup the registry of the RMIServer
+     * this happens mostly when an RMI Server goes down
+     * if the lookup happens w/ successes than the client also call's subscribe to send it's interface to the new RMIServer
+     *
+     * @param client
+     */
 
     private void waitForServer(RMIClient client) {
 
@@ -62,13 +94,18 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
     public static void main(String args[]) throws IOException, NotBoundException {
 
+
+        // read RMIServer's IP from the args array
         if (args.length != 1) {
             System.out.println("Missing IP argument");
             System.exit(0);
         } else {
             ip = args[0];
         }
-
+        // this line is very important and it works around a serious issue that we found when connecting Client-ServerRMI
+        // in different machines
+        // it assures that java.rmi owns the right IP of the machine where it's running on.
+        // For some reason without this line java.rmi assumes as if the machine's IP is the loopback address
         System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
 
         Scanner sc = new Scanner(System.in);
@@ -95,6 +132,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
         System.out.println("Connecting to: " + ip);
 
+        // connects to RMIServer when the Client first runs, if it fails the code won't exit the while loop
         while (!rmiConnected)
             try {
                 client.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, 1099).lookup("rmiserver");
@@ -114,7 +152,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
         while (!exit) {
             try {
-
+                // get instruction from user
                 if(askInput) {
                     userInput = sc.nextLine();
                     tokens = userInput.split(" ");
@@ -308,10 +346,13 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     System.out.println("Invalid command. Type 'help' for more info");
                 }
 
+                // if an instruction runs nicely then the client can receive another one
                 askInput = true;
+
 
             } catch (RemoteException b) {
                 client.waitForServer(client);
+                // if an instruction fails than the client will recall it
                 askInput = false;
             } catch (FileNotFoundException nf) {
                 System.out.println("Couldn't find your file to upload");
