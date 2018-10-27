@@ -2,6 +2,18 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ *
+ * This class contains all remote methods from RMIServer class.
+ *
+ * the isAlive() method is the only one that is used only between RMIServers, all the others are called by clients.
+ *
+ *
+ * the subscribe() method is called either when a clients logs in [runs in the login() method in RMIServer]
+ * or when a client loses it's connection to the server and has to re-send it's interface [runned in the waitforServer() method
+ * in the RMIClient code].
+ *
+ */
 public interface RMIServerInterface extends Remote {
 
     // 1.
