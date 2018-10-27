@@ -5,6 +5,13 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * MulticastServer initializes the server and database. Creates a new Thread every time a new packet is received
+ * This class contains an array of users and artist
+ * Multicast's address is set to "224.3.2.2" and it's receiving port is 5213
+ *
+ */
+
 
 public class MulticastServer extends Thread {
     private String MULTICAST_ADDRESS = "224.3.2.2";

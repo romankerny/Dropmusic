@@ -5,6 +5,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.Iterator;
 
+/**
+ *
+ * MulticastServerResponse is a Thread that is created by MulticastServer every time a new packet arrives for processing.
+ * It received the packet, Multicast's IP, users and artists array and it's hashCode.
+ *
+ * This thread contains all methods to deal with all kinds of packets send by the RMIServer.
+ *
+ */
+
 public class MulticastServerResponse extends Thread {
 
     private DatagramPacket packet;
