@@ -94,8 +94,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
         }
         // this line is very important and it works around a serious issue that we found when connecting Client-ServerRMI
         // in different machines
-        // it assures that java.rmi owns the right IP of the machine it is running on
-        // for some reason without this line java.rmi assumes as if the machine's IP is the loopback address
+        // it assures that java.rmi owns the right IP of the machine where it's running on.
+        // For some reason without this line java.rmi assumes as if the machine's IP is the loopback address
         System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
 
         Scanner sc = new Scanner(System.in);
