@@ -15,6 +15,25 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import static java.lang.Thread.sleep;
 
+/**
+ *
+ * RMIServer contains all methods that RMI Client can call via remote interface.
+ * The RMIServer interface is named 'rmiserver' and the registry runs on port 1099.
+ *
+ * This class contains a concurrentHaspMap that holds the correspondence between client's emails and the corresponding
+ * RMI Interfaces. It's mainly used to control which users are logged to the Server and comes in hand when the server
+ * needs to call the method printOnClient() via it's interface.
+ *
+ * The Server has 2 main UDP ports:
+ *  - 5213 where it sends Datagram Packets
+ *  - 5214 where it receives Datagram Packets
+ *
+ *  The class also contains an array of Strings that has all the UUID hashes that identify MulticastServers in an
+ *  unique way.
+ *
+ *
+ *
+ */
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface {
 
 
