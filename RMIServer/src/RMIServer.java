@@ -376,12 +376,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public String downloadMusic(String title, String uploader, String email)  {
 
-        System.out.println("a iniciar funcao de download");
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
         try {
+            // refresh rmiServer.multicastHashes bc there is the possibility that a server died in the past
+            // if that happens we need to "clean" our set of Hashes
             refreshMulticastHashes();
         } catch (IOException e) {
             e.printStackTrace();
@@ -554,9 +555,20 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
+    /**
+     * Request  -> flag | id; type | addart; name | nnnn; details | dddd; email | dddd;
+     * Rsponse -> flag | id; type | addart; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
+     *
+     * Adds artist and notifies users if they that have edited the artist work in the past
+     * @param artist
+     * @param details
+     * @param email
+     * @return
+     * @throws RemoteException
+     */
+
     public String addArtist(String artist, String details, String email) throws RemoteException {
-        // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
-        // Response -> flag | r; type | addart; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
+
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -607,9 +619,19 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
+    /**
+     *  Request  -> flag | id; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
+     *  Response -> flag | id; type | addalb; email | ddd; result |(y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
+     * @param artist
+     * @param albumTitle
+     * @param description
+     * @param genre
+     * @param email
+     * @return
+     * @throws RemoteException
+     */
+
     public String addAlbum(String artist, String albumTitle, String description, String genre, String email) throws  RemoteException{
-        // Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
-        // Response -> flag | r; type | addalb; email | ddd; result |(y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -659,9 +681,20 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
+    /**
+     * Request  -> flag | id; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
+     * Response -> flag | id; type | addmusic; title | tttt; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...] msg | mmmmm;
+     *
+     * @param musicTitle
+     * @param track
+     * @param albumTitle
+     * @param email
+     * @return
+     * @throws RemoteException
+     */
+
     public String addMusic(String musicTitle, String track, String albumTitle , String email) throws  RemoteException{
-        // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
-        // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
+
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -710,9 +743,28 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
+    /**
+     * Method to be used between RMI Main and RMI Backup
+     * The Backup will be constantly calling this method with the RMIMain's Interface
+     *
+     * @return
+     * @throws RemoteException
+     */
+
     public boolean isAlive() throws RemoteException {
         return true;
     }
+
+    /**
+     * RMI sends:
+     * Request  -> flag | id; type | connectionrequest;
+     *
+     * Multicast responds:
+     * Response -> flag | id; type | ack; hash | hhhh;
+     *
+
+     * @throws IOException
+     */
 
 
     public void refreshMulticastHashes() throws IOException {

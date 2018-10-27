@@ -131,8 +131,6 @@ public class MulticastServerResponse extends Thread {
         // Request  -> flag | id; type | requestTCPConnection; operation | download; email | eeee;
         // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | y; ip| iiii; port | pppp;
         // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | n; msg | mmmmmmmmm;
-
-        System.out.println("NO DOWNLOAD!");
         Music msc = searchMusic(title, uploader);
 
         if(msc == null) {
@@ -140,7 +138,6 @@ public class MulticastServerResponse extends Thread {
             return;
         }
         //System.out.println("tenho a musica posso deixar fazer download!");
-        System.out.println("A dar download de musica "+title);
 
 
         Music song = null;
