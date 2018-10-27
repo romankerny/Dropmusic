@@ -8,6 +8,16 @@ import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * This class will be runned in the Client's machine.
+ * It basically gets user strings via command line, parses them, and then makes remote invocations on the RMIServer
+ * via it's interface based on them.
+ * It connects to the RMIServer with the IP provided in the args array when starting the program
+ * If for some reason RMIServers go off during the execution of a RMIServer method the client will hold and wait
+ * for the reconection - this happens in the method waitForServer()
+ * and then retry to call the method.
+ *
+ */
 public class RMIClient extends UnicastRemoteObject implements RMIClientInterface {
 
     private static String email = "";
