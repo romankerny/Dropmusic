@@ -197,12 +197,18 @@ public class MulticastServerResponse extends Thread {
         // Request  -> flag | id; type | requestTCPConnection; operation | download; email | eeee;
         // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | y; ip| iiii; port | pppp;
         // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | n; msg | mmmmmmmmm;
+
+
+        // server tries to find the music w/ the given uploader
         Music msc = searchMusic(title, uploader);
 
+        // if the music isn't found then the server will send a packet to RMI w/ result|n
+        // then returns; ending the method
         if(msc == null) {
             sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;", code);
             return;
         }
+        // if music is fond then proceed to download
 
         Music song = null;
         if(this.hashCode.equals(code)) {
@@ -438,11 +444,11 @@ public class MulticastServerResponse extends Thread {
 
     /**
      * Method to review and score an album.
-     * First checks if album exists, if does then adds a new rating and review to it. If not found then an error message
+     * First checks if album exists, if it does then adds a new rating and review to it. If not found then an error message
      * is returned.
      * @param id Packet's unique ID
      * @param albumName Album's name
-     * @param critic The review iself
+     * @param critic The review itself
      * @param rate 1-5 rating
      * @param email User's email that rated
      * @param code Hash sent by RMIServer
@@ -863,9 +869,7 @@ public class MulticastServerResponse extends Thread {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
-
+                
         } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("download")) {
             // Request  -> flag | s; type | requestTCPConnection; operation | download; title | tttt; uploader | uuuu; email | eeee
 
