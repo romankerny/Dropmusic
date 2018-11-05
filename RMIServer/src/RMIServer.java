@@ -905,7 +905,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 }
             }
 
-            // rebing is necessary
+            // rebind is necessary
             // when run by mainRMI it has no effect bc/ mainRMI is already bound
             // when run by BackUP it binds the the registry r (above)
             r.rebind("rmiserver", rmiServer);
