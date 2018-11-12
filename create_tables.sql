@@ -4,15 +4,15 @@ use dropmusic;
 
 CREATE TABLE artist (
 	name	 varchar(200),
-	details	 varchar(512),
-	album_id varchar(80) NOT NULL,
+	details	 varchar(10000),
+-- album_id varchar(80) NOT NULL,
 	PRIMARY KEY(name)
 );
 
 CREATE TABLE album (
 	id		 varchar(80),
 	title	 varchar(200),
-	description	 varchar(512),
+	description	 varchar(10000),
 	genre	 varchar(100),
 	launch_date	 date,
 	editor_label varchar(100),
@@ -40,7 +40,7 @@ CREATE TABLE music (
 	id	 varchar(512),
 	track	 int,
 	title	 varchar(200),
-	lyrics	 varchar(512) DEFAULT 2000,
+	lyrics	 varchar(10000) DEFAULT 2000,
 	album_id varchar(80) NOT NULL,
 	PRIMARY KEY(id)
 );
@@ -133,9 +133,159 @@ ALTER TABLE shows_artist ADD CONSTRAINT shows_artist_fk2 FOREIGN KEY (artist_nam
 
 INSERT INTO artist (name, details) VALUES ('Kendrick Lamar'
 , 'Kendrick Lamar Duckworth (born June 17, 1987) is an American rapper, songwriter, and record producer. He has been branded as the "new king of hip hop" numerous times.
-
 Raised in Compton, California, Lamar embarked on his musical career as a teenager under the stage name K-Dot, releasing a mixtape that garnered local attention and led to his signing with indie record label Top Dawg Entertainment (TDE). He began to gain recognition in 2010, after his first retail release, Overly Dedicated. The following year, he independently released his first studio album, Section.80, which included his debut single, "HiiiPoWeR". By that time, he had amassed a large online following and collaborated with several prominent hip hop artists, including The Game, Busta Rhymes, and Snoop Dogg. Lamar''s major label debut album, good kid, m.A.A.d city, was released in 2012 by TDE, Aftermath, and Interscope Records to critical acclaim. It debuted at #2 on the US Billboard 200 and was later certified platinum by the RIAA. The record contained the top 40 singles "Swimming Pools (Drank)", "Bitch, Don''t Kill My Vibe", and "Poetic Justice". His critically acclaimed third album To Pimp a Butterfly (2015) incorporated elements of funk, soul, jazz, and spoken word. It debuted atop the charts in the US and the UK, and won the Grammy Award for Best Rap Album at the 58th ceremony. In 2016, Lamar released Untitled Unmastered, a collection of unreleased demos that originated during the recording sessions for Butterfly. He released his fourth album Damn in 2017 to further acclaim; its lead single "Humble" topped the US Billboard Hot 100 chart.
-
 Aside from his solo career, Lamar is also known as a member of the West Coast hip hop supergroup Black Hippy, alongside his TDE label-mates and fellow South Los Angeles–based rappers Ab-Soul, Jay Rock, and Schoolboy Q.
-
 Lamar has received many accolades over the course of his career, including twelve Grammy Awards. In early 2013, MTV named him the "Hottest MC in the Game", on their annual list. Time named him one of the 100 most influential people in the world in 2016. In 2018, Damn became the first non-classical and non-jazz album to be awarded the Pulitzer Prize for Music.[7] ');
+
+INSERT INTO album (id, title, description, genre, launch_date, editor_label, artist_name)
+VALUES ('eb36079b-10f5-4f2b-a485-ac96a1452568', 'To Pimp a Butterfly', 'o Pimp a Butterfly is the third studio album by American rapper Kendrick Lamar. It was released on March 15, 2015, by Aftermath Entertainment, Interscope Records and Top Dawg Entertainment.
+The album was recorded in studios throughout the United States, with production from Sounwave, Terrace Martin, Taz "Tisa" Arnold, Thundercat, Rahki, LoveDragon, Flying Lotus, Pharrell Williams, Boi-1da, knxwledge, and several other high-profile hip hop producers, as well as executive production from Dr. Dre and Anthony "Top Dawg" Tiffith. The album incorporates elements of jazz, funk, soul, spoken word, and avant-garde music and explores a variety of political and personal themes concerning African-American culture, racial inequality, depression, and institutional discrimination.', 'Hip-Hop', '2015-03-15', 'Aftermath Entertainment' , 'Kendrick Lamar');
+
+INSERT INTO music (id, track, title, album_id, lyrics)
+VALUES ('3d9b3305-0c42-4b84-9479-12b643d7c62f',1 , '"Wesley''s Theory" (featuring George Clinton and Thundercat)', 'eb36079b-10f5-4f2b-a485-ac96a1452568', 'When the four corners of this cocoon collide
+You’ll slip through the cracks hoping that you’ll survive
+Gather your wind, take a deep look inside
+Are you really who they idolize?
+To pimp a butterfly
+At first, I did love you
+But now I just wanna fuck
+Late night thinkin'' of you
+Until I got my nut
+Tossed and turned, lesson learned
+You was my first girlfriend
+Bridges burned, all across the board
+Destroyed, but what for?
+When I get signed, homie I''mma act a fool
+Hit the dance floor, strobe lights in the room
+Snatch your little secretary bitch for the homies
+Blue eyed devil with a fat ass smokey
+I''mma buy a brand new Caddy on fours
+Trunk the hood up, two times, deuce four
+Platinum on everything, platinum on wedding ring
+Married to the game, made a bad bitch yours
+When I get signed homie I''mma buy a strap
+Straight from the CIA, set it on my lap
+Take a few M-16s to the hood
+Pass ''em all out on the block, what''s good?
+I''mma put the Compton swap meet by the White House
+Republican, run up, get socked out
+Hit the press with a Cuban link on my neck
+Uneducated but I got a million dollar check, like that
+We should never gave, we should never gave
+Niggas money go back home, money go back home
+We should never gave, we should never gave
+Niggas money go back home, money go back home
+At first, I did love you
+But now I just wanna fuck
+Late night thinkin'' of you
+Until I got my nut
+Tossed and turned, lesson learned
+You was my first girlfriend
+Bridges burned, all across the board
+Destroyed, but what for?
+Yo what''s up? It''s Dre
+Remember the first time you came out to the house?
+You said you wanted a spot like mine
+But remember, anybody can get it
+The hard part is keeping it, motherfucker
+What you want you? A house or a car?
+Forty acres and a mule, a piano, a guitar?
+Anything, see, my name is Uncle Sam on your dollar
+Motherfucker you can live at the mall
+I know your kind (that''s why I''m kind)
+Don''t have receipts (oh man, that''s fine)
+Pay me later, wear those gators
+Cliche and say, fuck your haters
+I can see the borrow in you
+I can see the dollar in you
+Little white lies with a snow white collar in you
+But it''s whatever though because I''m still followin'' you
+Because you make me feel forever baby, count it all together baby
+Then hit the register and make me feel better baby
+Your horoscope is a gemini, two sides
+So you better cop everything two times
+Two coupes, two chains, two c-notes
+Too much and enough both we know
+Christmas, tell ''em what''s on your wish list
+Get it all, you deserve it Kendrick
+And when you get the White House, do you
+But remember, you ain''t pass economics in school
+And everything you buy, taxes will deny
+I''ll Wesley Snipe your ass before thirty-five
+Lookin'' down is quite a drop (it''s quite a drop, drop)
+Lookin'' good when you''re on top (when you''re on top you got it)
+A lot of metaphors, leavin'' miracles metaphysically in a state of euphoria
+Look both ways before you cross my mind
+We should never gave, we should never gave
+Niggas money go back home, money go back home
+We should never gave, we should never gave
+Niggas money go back home, money go back home
+Tax man comin''');
+
+
+INSERT INTO music (id, track, title, album_id, lyrics)
+VALUES ('49848153-a24a-4822-8c19-285115f1beac', 2, '	"For Free? (Interlude)"', 'eb36079b-10f5-4f2b-a485-ac96a1452568', 'I go on and on
+Can''t understand how I last so long
+I must have the superpowers
+Last 223 thousand hours
+And it''s cause I''m off of CC
+And I''m off the Hennessy
+And like your boy from Compton said
+You know this dick ain''t free!
+I got girls that I shoulda made pay for it
+Got girls that I should made wait for it
+I got girls that''ll cancel a flight back home
+Stay another day for it
+You got attitude on na na
+And your pussy on agua
+And your stomach on flat flat
+And your ass on what''s that?
+And, yeah, I need it all right now
+Last year I had drama, girl not right now
+I was never gon'' chat what we talkin'' about
+You the only one I know could fit it all in them, man
+I always wonder if you ask yourself
+Is it just me?
+Is it just me?
+Or is this sex so good I shouldn''t have to fuck for free?
+Is it just me?
+Is it just me?
+Is this sex so good I shouldn''t have to
+Fuck for free
+I know you workin'' day and night to get a college degree
+Bet nobody that you''ve been with even know you a freak, right?
+You know you only do that with me, right?
+Yeah, double checkin'' on you
+You know I never put the pressure on you
+You know that you make your own mind up
+You knew what it was when you signed up
+Now you gotta run it up
+I be out of words, tryna sum it up
+Girl you throw it back like one love
+Even let me slash on the tour bus
+Yeah I talk to her but she don''t do enough
+Even though you in the hood I''m still pullin'' up
+Dip, dip, straight to your doorstep
+This the real thing, can you feel the force yet
+I always wonder if you ask yourself
+Is it just me?
+Is it just me?
+Or is this sex so good I shouldn''t have to fuck for free?
+Is it just me?
+Yeah, is it just me?
+Is this sex so good I shouldn''t have to
+(Would you fuck me for free?)
+Another one
+They don''t want me to have another anthem
+So I made sure I got another anthem
+It''s We The Best OVO
+Summers ours
+It always has been
+Don''t ever play yourself
+One time for Future the Prince
+One time for 40
+One time for Drake
+Another one
+Bless up');
+
+
