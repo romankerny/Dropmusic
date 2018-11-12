@@ -294,7 +294,7 @@ Tax man comin''');
 
 
 INSERT INTO music (id, track, title, album_id, lyrics)
-VALUES ('49848153-a24a-4822-8c19-285115f1beac', 2, '	"For Free? (Interlude)"', 'eb36079b-10f5-4f2b-a485-ac96a1452568', 'I go on and on
+VALUES ('49848153-a24a-4822-8c19-285115f1beac', 2, '"For Free? (Interlude)"', 'eb36079b-10f5-4f2b-a485-ac96a1452568', 'I go on and on
 Can''t understand how I last so long
 I must have the superpowers
 Last 223 thousand hours
@@ -357,3 +357,5 @@ One time for 40
 One time for Drake
 Another one
 Bless up');
+
+
