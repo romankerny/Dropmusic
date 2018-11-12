@@ -40,7 +40,7 @@ CREATE TABLE music (
 	id	 varchar(512),
 	track	 int,
 	title	 varchar(200),
-	lyrics	 varchar(512),
+	lyrics	 varchar(4096),
 	album_id varchar(80) NOT NULL,
 	PRIMARY KEY(id)
 );
@@ -98,7 +98,6 @@ CREATE TABLE shows_artist (
 	PRIMARY KEY(shows_id,artist_name)
 );
 
-ALTER TABLE artist ADD CONSTRAINT artist_fk1 FOREIGN KEY (album_id) REFERENCES album(id);
 ALTER TABLE album ADD CONSTRAINT album_fk1 FOREIGN KEY (artist_name) REFERENCES artist(name);
 ALTER TABLE album ADD CONSTRAINT main_constrains CHECK (id != "" AND title != "" AND description != "" AND genre != "" AND editor_label != "");
 ALTER TABLE album ADD CONSTRAINT datas CHECK (launch_date > date('1900-01-01') AND launch_date < sysdate);
@@ -139,7 +138,7 @@ INSERT into artist (name, details)
 VALUES ('Tool', 'Tool is an American rock band from Los Angeles, California. Formed in 1990, the group''s line-up includes drummer Danny Carey, guitarist Adam Jones, and vocalist Maynard James Keenan. Justin Chancellor has been the band''s bassist since 1995, replacing their original bassist Paul D''Amour. Tool has won three Grammy Awards, performed worldwide tours, and produced albums topping the charts in several countries.');
 
 insert into album (id, title, description, genre, launch_date, editor_label, artist_name)
-VALUES ('4c82932e-57cc-4971-9373-0ed2b7ef3027', 'Lateralus', 'Lateralus (/ˌlætəˈræləs/) is the third studio album by American rock band Tool. It was released on May 15, 2001 through Volcano Entertainment. The album was recorded at Cello Studios in Hollywood and The Hook, Big Empty Space, and The Lodge, in North Hollywood, between October 2000 and January 2001. David Bottrill, who had produced the band''s two previous releases Ænima and Salival, produced the album along with the band. On August 23, 2005, Lateralus was released as a limited edition two-picture-disc vinyl LP in a holographic gatefold package.', 'Progressive Metal', '2001-05-15', 'Volcano Entertainment', 'Tool');
+VALUES ('4c82932e-57cc-4971-9373-0ed2b7ef3027', 'Lateralus', 'Lateralus is the third studio album by American rock band Tool. It was released on May 15, 2001 through Volcano Entertainment. The album was recorded at Cello Studios in Hollywood and The Hook, Big Empty Space, and The Lodge, in North Hollywood, between October 2000 and January 2001. David Bottrill, who had produced the band''s two previous releases Ænima and Salival, produced the album along with the band. On August 23, 2005, Lateralus was released as a limited edition two-picture-disc vinyl LP in a holographic gatefold package.', 'Progressive Metal', '2001-05-15', 'Volcano Entertainment', 'Tool');
 
 insert into music (id, track, title, album_id, lyrics)
 VALUES ('4f5e6c46-b408-45c4-a3c6-6e4372ca0208', 1, 'The Grudge', '4c82932e-57cc-4971-9373-0ed2b7ef3027', 'Wear the grudge like a crown of negativity
@@ -358,5 +357,3 @@ One time for 40
 One time for Drake
 Another one
 Bless up');
-
-
