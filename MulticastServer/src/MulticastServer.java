@@ -91,8 +91,8 @@ public class MulticastServer extends Thread {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/dropmusic?useSSL=false", "admin", "dropmusic");
             Statement stmt = conn.createStatement();
 
-            ResultSet rs = stmt.executeQuery("SELECT * from mysql.users");
-            System.out.println(rs);
+          //  ResultSet rs = stmt.executeQuery("SELECT * from mysql.users");
+           // System.out.println(rs);
 
 
             /*
