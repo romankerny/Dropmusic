@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="DropMusic" uuid="256f52d7-7fbc-4467-8059-2e6dc0cbdb7c">
+    <data-source source="LOCAL" name="DropMusic" uuid="12445d63-f588-401f-8f3d-a4cf269113fe">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>

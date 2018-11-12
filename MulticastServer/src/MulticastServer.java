@@ -2,6 +2,7 @@ import java.net.MulticastSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.io.IOException;
+import java.sql.*;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -85,20 +86,14 @@ public class MulticastServer extends Thread {
 
             System.out.println("Multicast server ready - " + code);
 
-            /*
-            Code to use when DB's operational.
 
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/dropmusic?useSSL=false", "root", "root");
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/dropmusic?useSSL=false", "admin", "dropmusic");
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * from music");
+
+            ResultSet rs = stmt.executeQuery("SELECT * from mysql.users");
             System.out.println(rs);
 
-            while (rs.next()) {
-                System.out.println(rs.getString("title"));
-                System.out.println(rs.getInt("track"));
-            }
-            */
 
             /*
             User admin = new User("admin", "admin");
@@ -188,7 +183,7 @@ public class MulticastServer extends Thread {
 
 
             }
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException e) {
             e.printStackTrace();
         } finally {
             socket.close();
