@@ -14,22 +14,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 
 
-public class MulticastServer extends Thread {
-    private String MULTICAST_ADDRESS = "224.3.2.2";
-    private int RECV_PORT = 5213;
-    private MulticastSocket socket = null;
-    private CopyOnWriteArrayList<User> users;
-    private CopyOnWriteArrayList<Artist> artists;
-
-    public MulticastServer() {
-        artists = new CopyOnWriteArrayList<Artist>();
-        users = new CopyOnWriteArrayList<User>();
-    }
-
-    public static void main(String[] args) {
-        MulticastServer server = new MulticastServer();
-        server.start();
-    }
+public class MulticastServer {
+    private static String MULTICAST_ADDRESS = "224.3.2.2";
+    private static int RECV_PORT = 5213;
+    private static MulticastSocket socket = null;
+    private static CopyOnWriteArrayList<User> users = new CopyOnWriteArrayList<>();
+    private static CopyOnWriteArrayList<Artist> artists = new CopyOnWriteArrayList<>();
 
     /**
      *  Creates a multicastSocket and sends a Datagram packet with
@@ -39,7 +29,7 @@ public class MulticastServer extends Thread {
      */
 
 
-    public void sendResponseMulticast(String resp) {
+    public static void sendResponseMulticast(String resp) {
 
             // only the designated Multicast Server will respond to RMIServer
             try {
@@ -64,7 +54,7 @@ public class MulticastServer extends Thread {
      */
 
 
-    public void run() {
+    public static void main(String[] args) {
         // Read from memory
         users = ObjectFiles.readUsersFromDisk();
         artists = ObjectFiles.readArtistsFromDisk();
@@ -91,8 +81,8 @@ public class MulticastServer extends Thread {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/dropmusic?useSSL=false", "admin", "dropmusic");
             Statement stmt = conn.createStatement();
 
-          //  ResultSet rs = stmt.executeQuery("SELECT * from mysql.users");
-           // System.out.println(rs);
+            ResultSet rs = stmt.executeQuery("SELECT * from artist");
+            System.out.println(rs);
 
 
             /*
