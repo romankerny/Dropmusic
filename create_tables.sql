@@ -4,15 +4,14 @@ use dropmusic;
 
 CREATE TABLE artist (
 	name	 varchar(200),
-	details	 varchar(512),
-	album_id varchar(80) NOT NULL,
+	details	 varchar(10000),
 	PRIMARY KEY(name)
 );
 
 CREATE TABLE album (
 	id		 varchar(80),
 	title	 varchar(200),
-	description	 varchar(512),
+	description	 varchar(10000),
 	genre	 varchar(100),
 	launch_date	 date,
 	editor_label varchar(100),
@@ -40,7 +39,7 @@ CREATE TABLE music (
 	id	 varchar(512),
 	track	 int,
 	title	 varchar(200),
-	lyrics	 varchar(512) DEFAULT 2000,
+	lyrics	 varchar(512),
 	album_id varchar(80) NOT NULL,
 	PRIMARY KEY(id)
 );
@@ -129,3 +128,74 @@ ALTER TABLE music_playlist ADD CONSTRAINT music_playlist_fk2 FOREIGN KEY (playli
 ALTER TABLE music_playlist ADD CONSTRAINT music_playlist_fk3 FOREIGN KEY (playlist_user_email) REFERENCES playlist(user_email);
 ALTER TABLE shows_artist ADD CONSTRAINT shows_artist_fk1 FOREIGN KEY (shows_id) REFERENCES shows(id);
 ALTER TABLE shows_artist ADD CONSTRAINT shows_artist_fk2 FOREIGN KEY (artist_name) REFERENCES artist(name);
+
+INSERT into user (email, password, editor) VALUES ('admin', 'admin', true);
+INSERT into user (email, password, editor) VALUES ('roman', 'roman', false);
+INSERT into user (email, password, editor) VALUES ('diogo', 'diogo', false);
+
+
+INSERT into artist (name, details)
+VALUES ('Tool', 'Tool is an American rock band from Los Angeles, California. Formed in 1990, the group''s line-up includes drummer Danny Carey, guitarist Adam Jones, and vocalist Maynard James Keenan. Justin Chancellor has been the band''s bassist since 1995, replacing their original bassist Paul D''Amour. Tool has won three Grammy Awards, performed worldwide tours, and produced albums topping the charts in several countries.')
+
+insert into album (id, title, description, genre, launch_date, editor_label, artist_name)
+VALUES ('4c82932e-57cc-4971-9373-0ed2b7ef3027', 'Lateralus', 'Lateralus (/ˌlætəˈræləs/) is the third studio album by American rock band Tool. It was released on May 15, 2001 through Volcano Entertainment. The album was recorded at Cello Studios in Hollywood and The Hook, Big Empty Space, and The Lodge, in North Hollywood, between October 2000 and January 2001. David Bottrill, who had produced the band''s two previous releases Ænima and Salival, produced the album along with the band. On August 23, 2005, Lateralus was released as a limited edition two-picture-disc vinyl LP in a holographic gatefold package.', 'Progressive Metal', '2001-05-15', 'Volcano Entertainment', 'Tool');
+
+insert into music (id, track, title, album_id, lyrics)
+VALUES ('4f5e6c46-b408-45c4-a3c6-6e4372ca0208', 1, 'The Grudge', '4c82932e-57cc-4971-9373-0ed2b7ef3027', 'Wear the grudge like a crown of negativity
+Calculate what we will or will not tolerate
+Desperate to control all and everything
+Unable to forgive your scarlet lettermen
+
+Clutch it like a cornerstone, otherwise it all comes down
+Justify denials and grip ''em to the lonesome end
+Clutch it like a cornerstone, otherwise it all comes down
+Terrified of being wrong, ultimatum prison cell
+
+Saturn ascends
+Choose one or ten
+Hang on or be humbled again
+
+Clutch it like a cornerstone, otherwise it all comes down
+Justify denials and grip ''em to the lonesome end
+Saturn ascends, comes round again
+Saturn ascends, the one, the ten
+Ignorant to the damage done
+
+Wear the grudge like a crown of negativity
+Calculate what we will or will not tolerate
+Desperate to control all and everything
+Unable to forgive these scarlet lettermen
+
+Wear the grudge like a crown
+Desperate to control
+Unable to forgive and sinking deeper
+
+Defining
+Confining
+And sinking deeper
+Controlling
+Defining
+And we''re sinking deeper
+
+Saturn comes back around to show you everything
+Let''s you choose what you will not see and then
+Drags you down like a stone or lifts you up again
+Spits you out like a child, light and innocent
+
+Saturn comes back around.
+Lifts you up like a child or
+Drags you down like a stone
+To consume you till you choose to let this go
+Choose to let this go
+
+Give away the stone
+Let the oceans take and trans mutate this cold and fated anchor
+Give away the stone
+Let the waters kiss and trans mutate these leaden grudges into gold
+
+Let go
+
+');
+
+insert into music (id, track, title, lyrics, album_id)
+VALUES ('84b9c726-a8f4-41df-aa3c-bccba985d39f ', 2, 'Eon Blue Apocalypse', '(instrumental)', '4c82932e-57cc-4971-9373-0ed2b7ef3027')
