@@ -330,7 +330,7 @@ public class MulticastServerResponse extends Thread {
     public void register(String id, String email, String password, String code) {
 
 
-        String rspDB = DB.insertUser(email, password, con);
+        String rspDB = DB.insertUser(email, password);
 
         String message;
         // Verificar se existe
@@ -422,6 +422,8 @@ public class MulticastServerResponse extends Thread {
         // Response -> flag | id; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
 
         String rsp = "flag|"+id+";type|privilege;result|n;user1|" + user1 +";user2|" + user2 + ";";
+
+        String rs = DB.promoteUser(user1, user2);
 
         Iterator iUsers1 = users.iterator();
         Iterator iUsers2 = users.iterator();

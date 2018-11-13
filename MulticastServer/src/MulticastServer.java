@@ -28,7 +28,6 @@ public class MulticastServer {
      * @param resp - protocol instruction to send
      */
 
-
     public static void sendResponseMulticast(String resp) {
 
             // only the designated Multicast Server will respond to RMIServer
@@ -52,7 +51,6 @@ public class MulticastServer {
      *  Finally enters the loop of receiving a packet and creating a new MulticastServerResponse Thread to deal with it.
      *
      */
-
 
     public static void main(String[] args) {
         // Read from memory
@@ -79,16 +77,7 @@ public class MulticastServer {
 
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost/dropmusic?useSSL=false", "admin", "dropmusic");
-
-
-
-
-
-            /*
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * from artist");
-            System.out.println(rs);
-            */
+            DB.con = con;
 
 
             while (true) {

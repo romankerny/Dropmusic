@@ -2,7 +2,9 @@ import java.sql.*;
 
 public class DB {
 
-    public static String insertUser(String email, String password, Connection con)  {
+    public static Connection con;
+
+    public static String insertUser(String email, String password)  {
 
         PreparedStatement pstmt = null;
         String rspToMulticast = null;
@@ -29,6 +31,34 @@ public class DB {
             }
 
         }
+        return rspToMulticast;
+    }
+
+    public static String promoteUser(String promoter, String email) {
+        PreparedStatement pstmt;
+        String rspToMulticast = "";
+        int rs;
+
+        try {
+            pstmt = con.prepareStatement("update user as u, (select editor from user where email = ? ) as p "+
+                                                 "set u.editor = true " +
+                                                    "where p.editor = true and u.email = ?");
+            pstmt.setString(1, promoter);
+            pstmt.setString(2, email);
+
+            rs = pstmt.executeUpdate();
+
+            if (rs == 0)
+                rspToMulticast = "Failed to promote user";
+            else if (rs == 1)
+                rspToMulticast = "Updated sucessfully";
+            else
+                System.out.println("Unreachable code");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return rspToMulticast;
     }
 
