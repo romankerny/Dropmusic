@@ -32,7 +32,7 @@ CREATE TABLE review (
 CREATE TABLE user (
 	email	 varchar(200),
 	password varchar(50),
-	editor	 boolean,
+	editor	 boolean DEFAULT false,
 	PRIMARY KEY(email)
 );
 

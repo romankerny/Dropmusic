@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
@@ -23,15 +24,17 @@ public class MulticastServerResponse extends Thread {
     private String MULTICAST_ADDRESS;
     private CopyOnWriteArrayList<User> users;
     private CopyOnWriteArrayList<Artist> artists;
+    private Connection con;
 
 
-    MulticastServerResponse(DatagramPacket packet, String ip, CopyOnWriteArrayList<User> users, CopyOnWriteArrayList<Artist> artists, String code) {
+    MulticastServerResponse(DatagramPacket packet, String ip, CopyOnWriteArrayList<User> users, CopyOnWriteArrayList<Artist> artists, String code, Connection con) {
 
         this.packet = packet;
         MULTICAST_ADDRESS = ip;
         this.users = users;
         this.artists = artists;
         this.hashCode = code;
+        this.con = con;
     }
 
     /**
@@ -326,8 +329,12 @@ public class MulticastServerResponse extends Thread {
 
     public void register(String id, String email, String password, String code) {
 
+
+        String rspDB = DB.insertUser(email, password, con);
+
         String message;
         // Verificar se existe
+
         String rsp;
         boolean found = false;
         Iterator iUser = users.iterator();
