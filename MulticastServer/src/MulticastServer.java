@@ -77,8 +77,6 @@ public class MulticastServer {
 
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost/dropmusic?useSSL=false", "admin", "dropmusic");
-            DB.con = con;
-
 
             while (true) {
 

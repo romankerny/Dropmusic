@@ -5,7 +5,6 @@ use dropmusic;
 CREATE TABLE artist (
 	name	 varchar(200),
 	details	 varchar(10000),
--- album_id varchar(80) NOT NULL,
 	PRIMARY KEY(name)
 );
 
@@ -132,6 +131,8 @@ ALTER TABLE shows_artist ADD CONSTRAINT shows_artist_fk2 FOREIGN KEY (artist_nam
 INSERT into user (email, password, editor) VALUES ('admin', 'admin', true);
 INSERT into user (email, password, editor) VALUES ('roman', 'roman', false);
 INSERT into user (email, password, editor) VALUES ('diogo', 'diogo', false);
+
+INSERT into notification (notification, user_email) VALUES ('You''ve been promoted to Editor', 'admin');
 
 
 INSERT into artist (name, details)
