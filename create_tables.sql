@@ -16,7 +16,8 @@ CREATE TABLE album (
 	launch_date	 date,
 	editor_label varchar(100),
 	artist_name	 varchar(200) NOT NULL,
-	PRIMARY KEY(id)
+	PRIMARY KEY(id),
+  UNIQUE KEY(title, artist_name)
 );
 
 CREATE TABLE review (
@@ -40,7 +41,8 @@ CREATE TABLE music (
 	title	 varchar(200),
 	lyrics	 varchar(5000),
 	album_id bigint NOT NULL,
-	PRIMARY KEY(id)
+	PRIMARY KEY(id),
+  UNIQUE KEY(track, album_id)
 );
 
 CREATE TABLE notification (
