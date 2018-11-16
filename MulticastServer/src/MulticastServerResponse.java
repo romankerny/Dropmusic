@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.*;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
@@ -330,8 +332,33 @@ public class MulticastServerResponse extends Thread {
     public void register(String id, String email, String password, String code) {
 
 
-        String rspDB = DB.insertUser(email, password);
+        // ---------- BD
+        PreparedStatement pstmt = null;
+        int rs;
 
+        try {
+            pstmt = con.prepareStatement("INSERT INTO user (email, password) VALUES (?,?)");
+            pstmt.setString(1, email);
+            pstmt.setString(2, password);
+            rs = pstmt.executeUpdate();
+
+            System.out.println("Inserted " + rs + " new user(s).");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+            switch (e.getErrorCode()) {
+                case 1062:
+                    // duplicate entry
+                    System.out.println("Got ERROR:1062");
+                    System.out.println("User : " + email +" already exists.");
+                    break;
+            }
+
+        }
+
+
+        // ----------- Classes
         String message;
         // Verificar se existe
 
@@ -421,9 +448,33 @@ public class MulticastServerResponse extends Thread {
         // Request  -> flag | id; type | privilege; user1 | username; user2; username;
         // Response -> flag | id; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
 
-        String rsp = "flag|"+id+";type|privilege;result|n;user1|" + user1 +";user2|" + user2 + ";";
+        // ---------------- BD
+        PreparedStatement pstmt;
+        int rs;
 
-        String rs = DB.promoteUser(user1, user2);
+        try {
+            pstmt = con.prepareStatement("update user as u, (select editor from user where email = ? ) as p "+
+                    "set u.editor = true " +
+                    "where p.editor = true and u.email = ?");
+            pstmt.setString(1, user1);
+            pstmt.setString(2, user2);
+
+            rs = pstmt.executeUpdate();
+
+            if (rs == 0)
+                System.out.println("Failed to promote user");
+            else if (rs == 1)
+                System.out.println("Updated sucessfully");
+            else
+                System.out.println("Unreachable code");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        // --------------- Classes
+        String rsp = "flag|"+id+";type|privilege;result|n;user1|" + user1 +";user2|" + user2 + ";";
 
         Iterator iUsers1 = users.iterator();
         Iterator iUsers2 = users.iterator();
@@ -603,6 +654,34 @@ public class MulticastServerResponse extends Thread {
     public void addArtist(String id, String name, String details, String email, String code) {
         // Request  -> flag | s; type | addart; name | nnnn; details | dddd; email | dddd;
         // Response -> flag | r; type | addart; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
+
+        // ------------- BD
+        PreparedStatement pstmt = null;
+        int rs;
+
+        try {
+            pstmt = con.prepareStatement("INSERT INTO artist (name, details) VALUES (?,?)");
+            pstmt.setString(1, name);
+            pstmt.setString(2, details);
+            rs = pstmt.executeUpdate();
+
+            System.out.println("Artist " + name + " added to DB with success");
+            System.out.println("Inserted " + rs + " new artist(s).");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+            switch (e.getErrorCode()) {
+                case 1062:
+                    // duplicate entry
+                    System.out.println("Got ERROR:1062");
+                    System.out.println("Artist : " + name +" already exists.");
+                    break;
+            }
+
+        }
+
+        // ------------- Classes
 
         String rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Failed to add artist;";
         boolean alreadyExists = false;
