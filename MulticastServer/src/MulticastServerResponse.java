@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -331,9 +332,9 @@ public class MulticastServerResponse extends Thread {
 
     public void register(String id, String email, String password, String code) {
 
-
+        String rsp = "flag|"+id+";type|register;result|n;username|" + email + ";password|" + password + ";msg|Failed to register;";
         // ---------- BD
-        PreparedStatement pstmt = null;
+        PreparedStatement pstmt;
         int rs;
 
         try {
@@ -343,6 +344,7 @@ public class MulticastServerResponse extends Thread {
             rs = pstmt.executeUpdate();
 
             System.out.println("Inserted " + rs + " new user(s).");
+            rsp = "flag|"+id+";type|register;result|y;username|" + email + ";password|" + password + ";";
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -351,14 +353,16 @@ public class MulticastServerResponse extends Thread {
                 case 1062:
                     // duplicate entry
                     System.out.println("Got ERROR:1062");
-                    System.out.println("User : " + email +" already exists.");
+                    String message = "User : " + email +" already exists.";
+                    System.out.println(message);
+                    rsp = "flag|"+id+";type|register;result|n;username|" + email + ";password|" + password + ";"+"msg|"+message+";";
                     break;
             }
 
         }
 
 
-        // ----------- Classes
+        /* ----------- Classes
         String message;
         // Verificar se existe
 
@@ -383,7 +387,7 @@ public class MulticastServerResponse extends Thread {
             users.add(s);
             rsp = "flag|"+id+";type|register;result|y;username|" + email + ";password|" + password + ";";
             ObjectFiles.writeUsersToDisk(users);
-        }
+        } */
         sendResponseMulticast(rsp, code);
     }
 
@@ -400,6 +404,47 @@ public class MulticastServerResponse extends Thread {
     public void login(String id, String email, String password, String code) {
         // Request  -> flag | s; type | login; email | eeee; password | pppp;
         // Response -> flag | r; type | login; result | (y/n); email | eeee; password | pppp; notification_count | n; notif_x | notif; msg | mmmmmm;
+
+        String rsp = "flag|"+id+";type|login;result|n;email|" + email + ";password|" + password + ";msg|Incorrect user/password;";
+
+        // ------------- BD
+        PreparedStatement pstmt;
+        ResultSet rs;
+
+        try {
+            pstmt = con.prepareStatement("SELECT password from user where email = ? " +
+                    "UNION select notification from notification where user_email = ?");
+
+            pstmt.setString(1, email);
+            pstmt.setString(2, email);
+
+            rs = pstmt.executeQuery();
+
+            String dbPassword;
+            if (rs.next()) { // Get password
+                dbPassword = rs.getString(1);
+
+                if(dbPassword.equals(password)) { // User authenticated, retrieve his missed notifications
+                    int notifCount = 0;
+                    String notifications = "";
+                    rsp = "flag|"+id+";type|login;result|y;email|" + email + ";password|" + password + ";notif_count|";
+
+                    while (rs.next()) {
+                        notifCount++;
+                        notifications += "notif|"+ rs.getString(1) +";";
+                    }
+
+                    rsp += notifCount +";"+notifications;
+
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        /* ------------ Classes
+
         String rsp = "flag|"+id+";type|login;result|n;email|" + email + ";password|" + password + ";msg|Incorrect user/password;";
 
         Iterator iUsers = users.iterator();
@@ -427,7 +472,7 @@ public class MulticastServerResponse extends Thread {
             u.notifications.clear();
 
             System.out.println(email + " logged in");
-        }
+        }*/
         sendResponseMulticast(rsp, code);
     }
 
