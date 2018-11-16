@@ -4,14 +4,14 @@ use dropmusic;
 
 CREATE TABLE artist (
 	name	 varchar(200),
-	details	 varchar(10000),
+	details varchar(5000),
 	PRIMARY KEY(name)
 );
 
 CREATE TABLE album (
-	id		 varchar(80),
+	id		 bigint AUTO_INCREMENT,
 	title	 varchar(200),
-	description	 varchar(10000),
+	description	 varchar(5000),
 	genre	 varchar(100),
 	launch_date	 date,
 	editor_label varchar(100),
@@ -20,12 +20,11 @@ CREATE TABLE album (
 );
 
 CREATE TABLE review (
-	id	 boolean,
 	critic	 varchar(300),
 	rating	 int,
 	user_email varchar(200),
-	album_id	 varchar(80) NOT NULL,
-	PRIMARY KEY(id,user_email)
+	album_id	 bigint,
+	PRIMARY KEY(user_email,album_id)
 );
 
 CREATE TABLE user (
@@ -36,23 +35,24 @@ CREATE TABLE user (
 );
 
 CREATE TABLE music (
-	id	 varchar(512),
+	id	 bigint AUTO_INCREMENT,
 	track	 int,
 	title	 varchar(200),
-	lyrics	 varchar(4096),
-	album_id varchar(80) NOT NULL,
+	lyrics	 varchar(5000),
+	album_id bigint NOT NULL,
 	PRIMARY KEY(id)
 );
 
 CREATE TABLE notification (
+	id		 bigint AUTO_INCREMENT,
 	notification varchar(100),
-	user_email	 varchar(200),
-	PRIMARY KEY(notification,user_email)
+	user_email	 varchar(200) NOT NULL,
+	PRIMARY KEY(id)
 );
 
 CREATE TABLE upload (
 	musicfilename varchar(300),
-	music_id	 varchar(512),
+	music_id	 bigint,
 	user_email	 varchar(200),
 	PRIMARY KEY(music_id,user_email)
 );
@@ -72,7 +72,7 @@ CREATE TABLE shows (
 );
 
 CREATE TABLE upload_user (
-	upload_music_id	 varchar(512),
+	upload_music_id	 bigint,
 	upload_user_email varchar(200),
 	user_email	 varchar(200),
 	PRIMARY KEY(upload_music_id,upload_user_email,user_email)
@@ -85,7 +85,7 @@ CREATE TABLE artist_user (
 );
 
 CREATE TABLE music_playlist (
-	music_id		 varchar(512),
+	music_id		 bigint,
 	playlist_name	 varchar(512),
 	playlist_user_email varchar(200),
 	PRIMARY KEY(music_id,playlist_name,playlist_user_email)
@@ -128,9 +128,10 @@ ALTER TABLE music_playlist ADD CONSTRAINT music_playlist_fk3 FOREIGN KEY (playli
 ALTER TABLE shows_artist ADD CONSTRAINT shows_artist_fk1 FOREIGN KEY (shows_id) REFERENCES shows(id);
 ALTER TABLE shows_artist ADD CONSTRAINT shows_artist_fk2 FOREIGN KEY (artist_name) REFERENCES artist(name);
 
+
 INSERT into user (email, password, editor) VALUES ('admin', 'admin', true);
-INSERT into user (email, password, editor) VALUES ('roman', 'roman', false);
-INSERT into user (email, password, editor) VALUES ('diogo', 'diogo', false);
+INSERT into user (email, password) VALUES ('roman', 'roman');
+INSERT into user (email, password) VALUES ('diogo', 'diogo');
 
 INSERT into notification (notification, user_email) VALUES ('You''ve been promoted to Editor', 'admin');
 
@@ -138,11 +139,11 @@ INSERT into notification (notification, user_email) VALUES ('You''ve been promot
 INSERT into artist (name, details)
 VALUES ('Tool', 'Tool is an American rock band from Los Angeles, California. Formed in 1990, the group''s line-up includes drummer Danny Carey, guitarist Adam Jones, and vocalist Maynard James Keenan. Justin Chancellor has been the band''s bassist since 1995, replacing their original bassist Paul D''Amour. Tool has won three Grammy Awards, performed worldwide tours, and produced albums topping the charts in several countries.');
 
-insert into album (id, title, description, genre, launch_date, editor_label, artist_name)
-VALUES ('4c82932e-57cc-4971-9373-0ed2b7ef3027', 'Lateralus', 'Lateralus is the third studio album by American rock band Tool. It was released on May 15, 2001 through Volcano Entertainment. The album was recorded at Cello Studios in Hollywood and The Hook, Big Empty Space, and The Lodge, in North Hollywood, between October 2000 and January 2001. David Bottrill, who had produced the band''s two previous releases Ænima and Salival, produced the album along with the band. On August 23, 2005, Lateralus was released as a limited edition two-picture-disc vinyl LP in a holographic gatefold package.', 'Progressive Metal', '2001-05-15', 'Volcano Entertainment', 'Tool');
+insert into album (title, description, genre, launch_date, editor_label, artist_name)
+VALUES ('Lateralus', 'Lateralus is the third studio album by American rock band Tool. It was released on May 15, 2001 through Volcano Entertainment. The album was recorded at Cello Studios in Hollywood and The Hook, Big Empty Space, and The Lodge, in North Hollywood, between October 2000 and January 2001. David Bottrill, who had produced the band''s two previous releases Ænima and Salival, produced the album along with the band. On August 23, 2005, Lateralus was released as a limited edition two-picture-disc vinyl LP in a holographic gatefold package.', 'Progressive Metal', '2001-05-15', 'Volcano Entertainment', 'Tool');
 
-insert into music (id, track, title, album_id, lyrics)
-VALUES ('4f5e6c46-b408-45c4-a3c6-6e4372ca0208', 1, 'The Grudge', '4c82932e-57cc-4971-9373-0ed2b7ef3027', 'Wear the grudge like a crown of negativity
+insert into music (track, title, album_id, lyrics)
+VALUES (1, 'The Grudge', 1, 'Wear the grudge like a crown of negativity
 Calculate what we will or will not tolerate
 Desperate to control all and everything
 Unable to forgive your scarlet lettermen
@@ -198,8 +199,8 @@ Let go
 
 ');
 
-insert into music (id, track, title, lyrics, album_id)
-VALUES ('84b9c726-a8f4-41df-aa3c-bccba985d39f ', 2, 'Eon Blue Apocalypse', '(instrumental)', '4c82932e-57cc-4971-9373-0ed2b7ef3027');
+insert into music (track, title, lyrics, album_id)
+VALUES (2, 'Eon Blue Apocalypse', '(instrumental)', 1);
 
 
 INSERT INTO artist (name, details) VALUES ('Kendrick Lamar'
@@ -208,12 +209,12 @@ Raised in Compton, California, Lamar embarked on his musical career as a teenage
 Aside from his solo career, Lamar is also known as a member of the West Coast hip hop supergroup Black Hippy, alongside his TDE label-mates and fellow South Los Angeles–based rappers Ab-Soul, Jay Rock, and Schoolboy Q.
 Lamar has received many accolades over the course of his career, including twelve Grammy Awards. In early 2013, MTV named him the "Hottest MC in the Game", on their annual list. Time named him one of the 100 most influential people in the world in 2016. In 2018, Damn became the first non-classical and non-jazz album to be awarded the Pulitzer Prize for Music.[7] ');
 
-INSERT INTO album (id, title, description, genre, launch_date, editor_label, artist_name)
-VALUES ('eb36079b-10f5-4f2b-a485-ac96a1452568', 'To Pimp a Butterfly', 'o Pimp a Butterfly is the third studio album by American rapper Kendrick Lamar. It was released on March 15, 2015, by Aftermath Entertainment, Interscope Records and Top Dawg Entertainment.
+INSERT INTO album (title, description, genre, launch_date, editor_label, artist_name)
+VALUES ('To Pimp a Butterfly', 'o Pimp a Butterfly is the third studio album by American rapper Kendrick Lamar. It was released on March 15, 2015, by Aftermath Entertainment, Interscope Records and Top Dawg Entertainment.
 The album was recorded in studios throughout the United States, with production from Sounwave, Terrace Martin, Taz "Tisa" Arnold, Thundercat, Rahki, LoveDragon, Flying Lotus, Pharrell Williams, Boi-1da, knxwledge, and several other high-profile hip hop producers, as well as executive production from Dr. Dre and Anthony "Top Dawg" Tiffith. The album incorporates elements of jazz, funk, soul, spoken word, and avant-garde music and explores a variety of political and personal themes concerning African-American culture, racial inequality, depression, and institutional discrimination.', 'Hip-Hop', '2015-03-15', 'Aftermath Entertainment' , 'Kendrick Lamar');
 
-INSERT INTO music (id, track, title, album_id, lyrics)
-VALUES ('3d9b3305-0c42-4b84-9479-12b643d7c62f',1 , '"Wesley''s Theory" (featuring George Clinton and Thundercat)', 'eb36079b-10f5-4f2b-a485-ac96a1452568', 'When the four corners of this cocoon collide
+INSERT INTO music (track, title, album_id, lyrics)
+VALUES (1 , '"Wesley''s Theory" (featuring George Clinton and Thundercat)', 2, 'When the four corners of this cocoon collide
 You’ll slip through the cracks hoping that you’ll survive
 Gather your wind, take a deep look inside
 Are you really who they idolize?
@@ -294,8 +295,8 @@ Niggas money go back home, money go back home
 Tax man comin''');
 
 
-INSERT INTO music (id, track, title, album_id, lyrics)
-VALUES ('49848153-a24a-4822-8c19-285115f1beac', 2, '"For Free? (Interlude)"', 'eb36079b-10f5-4f2b-a485-ac96a1452568', 'I go on and on
+INSERT INTO music (track, title, album_id, lyrics)
+VALUES (2, '"For Free? (Interlude)"', 2, 'I go on and on
 Can''t understand how I last so long
 I must have the superpowers
 Last 223 thousand hours
