@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.UUID;
 
 public class DB {
 
@@ -93,4 +94,63 @@ public class DB {
 
     }
 
+    public static void insertAlbum(String title, String description, String genre, String launch_date, String editor_label, String artist_name) {
+
+        PreparedStatement pstmt = null;
+        String rspToMulticast = null, id = null;
+        int rs;
+
+        id =  UUID.randomUUID().toString();
+
+        try {
+            
+            pstmt = con.prepareStatement(
+                    "IF EXISTS (SELECT * FROM album WHERE title = ? AND artist_name = ?)" +
+                         "THEN UPDATE album SET description = ?, genre = ?, launch_date = ?, editor_label = ?" +
+                         "ELSE INSERT INTO album (id, title, description, genre, launch_date, editor_label, artist_name) VALUES (?,?,?,?,?,?,?)");
+
+            pstmt.setString(1, title);
+            pstmt.setString(2, artist_name);
+            pstmt.setString(3, description);
+            pstmt.setString(4, genre);
+            pstmt.setString(5, launch_date);
+            pstmt.setString(6, editor_label);
+
+
+            pstmt.setString(7, id);
+            pstmt.setString(8, title);
+            pstmt.setString(9, description);
+            pstmt.setString(10, genre);
+            pstmt.setString(11, launch_date);
+            pstmt.setString(12, editor_label);
+            pstmt.setString(13, artist_name);
+            pstmt.setString(14, artist_name);
+
+            rs = pstmt.executeUpdate();
+
+        rspToMulticast = "Album " + title + " added to DB with sucsses";
+        System.out.println("Inserted " + rs + " new albun(s).");
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+
+        switch (e.getErrorCode()) {
+            case 1062:
+                // duplicate entry
+                System.out.println("Got ERROR:1062");
+                rspToMulticast = "Artist : " + name +" already exists.";
+                break;
+        }
+
+    */
+        }
+
+        return rspToMulticast;
+
+    }
+
 }
+
+
+}
+
