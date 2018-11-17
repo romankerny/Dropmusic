@@ -4,6 +4,7 @@ import java.net.Socket;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLOutput;
 import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
@@ -204,23 +205,31 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                                 break;
                             }
                             case "alb": {
-                                String artist, description, genre;
+                                String artist, description, genre, launchDate, editorLabel;
                                 System.out.print("Artist's name: ");
                                 artist = sc.nextLine();
                                 System.out.print("Album description: ");
                                 description = sc.nextLine();
                                 System.out.print("Album genre: ");
                                 genre = sc.nextLine();
-                                System.out.println(client.serverInterface.addAlbum(artist, name, description, genre, email));
+                                System.out.println("Launch Date: ");
+                                launchDate = sc.nextLine();
+                                System.out.println("Editor Label: ");
+                                editorLabel = sc.nextLine();
+                                System.out.println(client.serverInterface.addAlbum(artist, name, description, genre, email, launchDate, editorLabel));
                                 break;
                             }
                             case "mus":
-                                String albumName, track;
+                                String albumName, track, lyrics, artistName;
                                 System.out.print("Track #: ");
                                 track = sc.nextLine();
                                 System.out.print("Album name: ");
                                 albumName = sc.nextLine();
-                                System.out.println(client.serverInterface.addMusic(name, track, albumName, email));
+                                System.out.print("Artist name: ");
+                                artistName = sc.nextLine();
+                                System.out.print("Lyrics: ");
+                                lyrics = sc.nextLine();
+                                System.out.println(client.serverInterface.addMusic(name, track, albumName, email, lyrics, artistName));
                                 break;
                         }
 

@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
@@ -87,6 +89,17 @@ public class MulticastServerResponse extends Thread {
             rtArray.add(p);
         }
         return rtArray;
+    }
+
+    boolean isValidDate(String inDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+        try {
+            dateFormat.parse(inDate.trim());
+        } catch (ParseException pe) {
+            return false;
+        }
+        return true;
     }
 
 
@@ -848,81 +861,70 @@ public class MulticastServerResponse extends Thread {
         // Response -> flag | r; type | addart; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
 
         // ------------- BD
-        PreparedStatement pstmt = null;
-        int rs;
+        PreparedStatement pstmt = null, pstmtEd = null, pstmtNot = null;
+        String usrIsEditor = "", rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Failed to add artist;", notify  = "", bfNot = "";
+        ResultSet qSet;
+        int rs, notifCount = 0;
 
         try {
-            pstmt = con.prepareStatement("INSERT INTO artist (name, details) VALUES (?,?)");
-            pstmt.setString(1, name);
-            pstmt.setString(2, details);
-            rs = pstmt.executeUpdate();
 
-            System.out.println("Artist " + name + " added to DB with success");
-            System.out.println("Inserted " + rs + " new artist(s).");
+            // check if user is editor
+            pstmtEd = con.prepareStatement("SELECT editor FROM user WHERE email = ?");
+            pstmtEd.setString(1, email);
+            qSet = pstmtEd.executeQuery();
+            while(qSet.next()) {
+                usrIsEditor = qSet.getString("editor");
+            }
+
+            if(usrIsEditor.equals("1")) {
+                // insert new Artist
+                System.out.println(email + " is editor");
+                pstmt = con.prepareStatement("INSERT INTO artist (name, details) VALUES (?,?)");
+                pstmt.setString(1, name);
+                pstmt.setString(2, details);
+                rs = pstmt.executeUpdate();
+
+                // notify Editors
+                pstmtNot = con.prepareStatement("SELECT user_email FROM artist_user WHERE artist_name = ?");
+                pstmtNot.setString(1, name);
+                qSet = pstmtNot.executeQuery();
+                while(qSet.next()) {
+                    notifCount++;
+                    String notifEmail = qSet.getString("user_email");
+                    notify += "notif|"+ notifEmail+";";
+                }
+                bfNot = "notif_count|" + Integer.toString(notifCount) + ";" + notify;
+                rsp = "flag|"+id+";type|addart;email|"+email+";result|y;"+bfNot+"msg|Artist info added with success;";
+
+                System.out.println("Artist " + name + " added to DB with success");
+                System.out.println("Inserted " + rs + " new artist(s).");
+
+            } else {
+                // user is not editor
+                rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Only an editor can add a new artist;";
+            }
+            if (pstmt != null )
+                pstmt.close();
+            if (pstmtEd != null)
+                pstmtEd.close();
+            if(pstmtNot != null)
+                pstmtNot.close();
 
         } catch (SQLException e) {
-            e.printStackTrace();
 
             switch (e.getErrorCode()) {
                 case 1062:
                     // duplicate entry
-                    System.out.println("Got ERROR:1062");
-                    System.out.println("Artist : " + name +" already exists.");
+                    System.out.println("Got ERROR:1062 - Artist already exists");
+                    rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Artist already exists;";
                     break;
             }
 
         }
 
-        // ------------- Classes
-
-        String rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Failed to add artist;";
-        boolean alreadyExists = false;
-        boolean isEditor = false;
-        String notify = "notif_count|0;";
-        User editor = null;
-
-        for (User u : users)
-            if (u.email.equals(email) && u.isEditor()) {
-                isEditor = true;
-                editor = u;
-        }
-
-        if (isEditor) {
-            for (Artist a : artists) {
-                if (a.name.equals(name)) {
-                    alreadyExists = true;
-                }
-                if (alreadyExists) {
-                    a.name = name;
-                    a.details = details;
-
-                    // Get users to notify
-                    if (a.notifyIfEdited.size() > 0) {
-                        notify = "notif_count|" + a.notifyIfEdited.size() + ";";
-                        for (User u : a.notifyIfEdited) {
-                            notify += "notif|"+u.email+";";
-                        }
-                    }
-                    a.addNotifyIfEdited(editor);
-                    rsp = "flag|"+id+";type|addart;email|"+email+";result|y;"+notify+"msg|Artist updated;";
-
-                }
-            }
-            if (!alreadyExists) {
-                Artist a = new Artist(name, details);
-                artists.add(a);
-                a.addNotifyIfEdited(editor);
-                // if artist was now created there is no one to notify
-
-                rsp = "flag|"+id+";type|addart;email|"+email+";result|y;msg|Artist created;";
-            }
-        }
-        ObjectFiles.writeArtistsToDisk(artists);
-
-        if(!isEditor)
-            rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Only an editor can add a new artist;";
 
         sendResponseMulticast(rsp, code);
+
     }
 
     /**
@@ -940,81 +942,105 @@ public class MulticastServerResponse extends Thread {
      * @see #sendResponseMulticast(String, String)
      */
 
-    public void addAlbum(String id, String artName, String albName, String description, String genre, String email, String code) {
+    public void addAlbum(String id, String artName, String albName, String description, String genre, String email, String launchDate, String editorLabel, String code) {
         // Request  -> flag | s; type | addalb; art | aaaa; alb | bbbb; description | dddd; genre | gggg; email | dddd;
         // Response -> flag | r; type | addalb; email | ddd; result |(y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
         String rsp = "flag|"+id+";type|addalb;email|"+email+";result|n;msg|Failed to add album;";
-        boolean isEditor = false;
-        boolean found = false;
-        boolean alreadyExists = false;
-        String notify = "notif_count|0;";
+        String notify = "";
 
-        User editor = null;
-        Artist aux = null;
+        // ----BD
 
-        for (User u : users)
-            if (u.isEditor() && u.email.equals(email)) {
-                isEditor = true;
-                editor = u;
-        }
+        PreparedStatement pstmt1 = null, pstmt2 = null, pstmtNot = null, pstmtEd = null;
+        String usrIsEditor = "", bfNot = "";
+        int rs, notifCount = 0;
+        ResultSet qSet;
 
-        if (isEditor) {
-            for (Artist a : artists) {
-                if (a.name.equals(artName)) {
-                    found = true;
-                    aux = a;
-                }
-                if (found) {
-                    for (Album al : a.albums) {
-                        if (al.title.equals(albName)) {
-                            alreadyExists = true;
-                        }
+        System.out.println("launch date " + launchDate);
+        System.out.println("editor Label " + editorLabel);
+        System.out.println("description " + description);
 
-                        if (alreadyExists) {
-                            al.title = albName;
-                            al.description = description;
-                            al.genre = genre;
 
-                            // Get users to notify
-                            if (a.notifyIfEdited.size() > 0) {
-                                notify = "notif_count|" + a.notifyIfEdited.size() + ";";
-                                for (User u : a.notifyIfEdited) {
-                                    notify += "notif|"+u.email+";";
-                                }
-                            }
-                            a.addNotifyIfEdited(editor);
+        try {
 
-                            rsp = "flag|"+id+";type|addalb;email|"+email+";result|y;"+notify+"msg|Album updated;";
-                        }
-                    }
-                    if (!alreadyExists) {
-                        System.out.println(albName + " does not exits, adding");
-
-                        Album toAdd = new Album(albName, description, genre);
-                        aux.albums.add(toAdd);
-                        // Get users to notify
-                        if (aux.notifyIfEdited.size() > 0) {
-                            notify = "notif_count|" + aux.notifyIfEdited.size() + ";";
-                            for (User u : aux.notifyIfEdited) {
-                                notify += "notif|"+u.email+";";
-                            }
-                        }
-                        aux.addNotifyIfEdited(editor);
-
-                        rsp = "flag|"+id+";type|addalb;email|"+email+";result|y;"+notify+"msg|Album created;";
-                    }
-                }
+            // check if user is editor
+            pstmtEd = con.prepareStatement("SELECT editor FROM user WHERE email = ?");
+            pstmtEd.setString(1, email);
+            qSet = pstmtEd.executeQuery();
+            while(qSet.next()) {
+                usrIsEditor = qSet.getString("editor");
             }
+
+            if(usrIsEditor.equals("1") && isValidDate(launchDate)) {
+
+                pstmt1 = con.prepareStatement("INSERT INTO album (title, description, genre, launch_date, editor_label, artist_name) VALUES (?, ?, ?, ?, ?, ?)" +
+                        "ON DUPLICATE KEY UPDATE description = ?, genre = ?, launch_date = ?, editor_label = ?");
+                pstmt1.setString(1, albName);
+                pstmt1.setString(2, description);
+                pstmt1.setString(3, genre);
+                pstmt1.setString(4, launchDate);
+                pstmt1.setString(5, editorLabel);
+                pstmt1.setString(6, artName);
+
+                pstmt1.setString(7, description);
+                pstmt1.setString(8, genre);
+                pstmt1.setString(9, launchDate);
+                pstmt1.setString(10, editorLabel);
+
+                rs = pstmt1.executeUpdate();
+
+                // notify editors
+                pstmtNot = con.prepareStatement("SELECT user_email FROM artist_user WHERE artist_name = ?");
+                pstmtNot.setString(1, artName);
+                qSet = pstmtNot.executeQuery();
+                while (qSet.next()) {
+                    notifCount++;
+                    String notifEmail = qSet.getString("user_email");
+                    notify += "notif|"+ notifEmail+";";
+                }
+                bfNot = "notif_count|" + Integer.toString(notifCount) + ";" + notify;
+                rsp = "flag|"+id+";type|addalb;email|"+email+";result|y;"+bfNot+"msg|Album info added with success;";
+
+                // user_email = email will ignore the duplicate key
+                // the user will only have 1 instance in the table of Editors
+                pstmt2 = con.prepareStatement("INSERT INTO artist_user (user_email, artist_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE user_email = ?");
+                pstmt2.setString(1, email);
+                pstmt2.setString(2, albName);
+                pstmt2.setString(3, email);
+
+                System.out.println("Info of Artist " + artName + " added to DB with success");
+
+                if (pstmt1 != null)
+                    pstmt1.close();
+                if (pstmt2 != null)
+                    pstmt2.close();
+                if (pstmtEd != null)
+                    pstmtEd.close();
+                if(pstmtNot != null)
+                    pstmtNot.close();
+
+            } else {
+                // user is not editor
+                if (usrIsEditor.equals("0"))
+                    rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Only an editor can add a new albuns;";
+                else
+                    rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Date inserted has invalid format;";
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+            switch (e.getErrorCode()) {
+
+                case 1452:
+                    System.out.println("Got ERROR: 1452 - Artist not found");
+                    break;
+            }
+
         }
 
-
-        if (!isEditor)
-            rsp = "flag|"+id+";type|addalb;email|"+email+";result|n;msg|Only an Editor can add a new album;";
-        else if (!found)
-            rsp = "flag|"+id+";type|addalb;email|"+email+";result|n;msg|Couldn't find artist `"+artName+"`;";
-
-        ObjectFiles.writeArtistsToDisk(artists);
         sendResponseMulticast(rsp, code);
+
     }
 
     /**
@@ -1030,87 +1056,116 @@ public class MulticastServerResponse extends Thread {
      * @see #sendResponseMulticast(String, String)
      */
 
-    public void addMusic(String id, String albName, String title, String track, String email, String code) {
+    public void addMusic(String id, String albName, String title, String track, String email, String lyrics, String artiName, String code) {
         // Request  -> flag | s; type | addmusic; alb | bbbb; title | tttt; track | n; email | dddd;
         // Response -> flag | r; type | addmusic; title | tttt; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
         String rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Failed to add music;";
         boolean isEditor = false;
         boolean found = false;
         boolean alreadyExists = false;
-        String notify = "notif_count|0;";
+        String notify = "", artName = null;
 
         User editor = null;
-        // como saber a q artista adicionar a musica?
 
-        int trackNum = Integer.parseInt(track);
-        Artist aux = null;
+        // BD
 
-        for (User u : users) {
-            System.out.println(u);
-            if (u.email.equals(email) && u.isEditor()) {
-                isEditor = true;
-                editor = u;
+        PreparedStatement pstmt1 = null, pstmt2 = null, pstmtNot = null, pstmtAlb = null, pstmtEd = null;
+        int rs, notifCount = 0;
+        String usrIsEditor = "", bfNot = "", albID = "";
+        ResultSet qSet;
+
+        System.out.println("ARTOIST NAME " + artiName);
+        System.out.println("code " + code);
+        System.out.println("lyrics " + lyrics);
+        try {
+
+            // check if user is editor
+            pstmtEd = con.prepareStatement("SELECT editor FROM user WHERE email = ?");
+            pstmtEd.setString(1, email);
+            qSet = pstmtEd.executeQuery();
+            while(qSet.next()) {
+                usrIsEditor = qSet.getString("editor");
             }
-        }
-
-        if (isEditor) {
-            for (Artist a : artists) {
-                for (Album al : a.albums) {
-                    if (al.title.equals(albName)) {
-                        found = true;
-                        aux = a;
-                    }
-                    if (found) {
-                        for (Music m : al.tracks) {
-                            if (m.track == trackNum) {
-                                alreadyExists = true;
-                            }
 
 
-                            if (alreadyExists) {
-                                m.title = title;
-                                m.track = trackNum;
+            if(usrIsEditor.equals("1")) {
 
-                                // Get users to notify
-                                if (a.notifyIfEdited.size() > 0) {
-                                    notify = "notif_count|" + a.notifyIfEdited.size() + ";";
-                                    for (User u : a.notifyIfEdited) {
-                                        notify += "notif|"+u.email+";";
-                                    }
-                                }
-                                a.addNotifyIfEdited(editor);
-
-                                rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|y;"+notify+"msg|Music updated;";
-                            }
-                        }
-                        if (!alreadyExists) {
-
-                            Music toAdd = new Music(trackNum, title);
-                            System.out.println("GAJOS: "+ aux.notifyIfEdited);
-                            // Get users to notify
-                            if (aux.notifyIfEdited.size() > 0) {
-                                notify = "notif_count|" + aux.notifyIfEdited.size() + ";";
-                                for (User u : aux.notifyIfEdited) {
-                                    notify += "notif|"+u.email+";";
-                                }
-                            }
-                            aux.addNotifyIfEdited(editor);
-                            al.tracks.add(toAdd);
-                            rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|y;"+notify+"msg|Music created;";
-                        }
-                    }
+                // fetch album ID
+                pstmtAlb = con.prepareStatement("SELECT id FROM album WHERE title = ? AND artist_name = ?");
+                pstmtAlb.setString(1, albName);
+                pstmtAlb.setString(2, artiName);
+                qSet = pstmtAlb.executeQuery();
+                while(qSet.next()) {
+                    albID = qSet.getString("id");
                 }
+
+                pstmt1 = con.prepareStatement("INSERT INTO music (track, title, lyrics, album_id) VALUES (?, ?, ?, ?)" +
+                        "ON DUPLICATE KEY UPDATE lyrics = ?, title = ?");
+                pstmt1.setString(1, track);
+                pstmt1.setString(2, title);
+                pstmt1.setString(3, lyrics);
+                pstmt1.setString(4, albID);
+
+                pstmt1.setString(5, lyrics);
+                pstmt1.setString(6, title);
+
+                rs = pstmt1.executeUpdate();
+
+
+                // notify editors of that album
+                pstmtNot = con.prepareStatement("SELECT user_email FROM artist_user WHERE artist_name = ?");
+                pstmtNot.setString(1, artiName);
+                qSet = pstmtNot.executeQuery();
+                while (qSet.next()) {
+                    notifCount++;
+                    String notifEmail = qSet.getString("user_email");
+                    notify += "notif|"+ notifEmail+";";
+                }
+
+                bfNot = "notif_count|" + Integer.toString(notifCount) + ";" + notify;
+                rsp = "flag|"+id+";type|addalb;email|"+email+";result|y;"+bfNot+"msg|Music info added with success;";
+
+
+                // add editor
+                // user_email = email will ignore the duplicate key
+                // the user will only have 1 instance in the table of Editors
+                pstmt2 = con.prepareStatement("INSERT INTO artist_user (user_email, artist_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE user_email = ?");
+
+                pstmt2.setString(1, email);
+                pstmt2.setString(2, albName);
+                pstmt2.setString(3, email);
+
+                System.out.println("Info of music " + title + " added to DB with success");
+
+                if (pstmt1 != null)
+                    pstmt1.close();
+                if (pstmt2 != null)
+                    pstmt2.close();
+                if (pstmtAlb != null)
+                    pstmtAlb.close();
+                if (pstmtEd != null)
+                    pstmtEd.close();
+                if (pstmtNot != null)
+                    pstmtNot.close();
+
+            } else {
+                // user is not editor
+                rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Only an Editor can add a new music;";
             }
+
+
+        } catch (SQLException e) {
+            rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Something went wrong adding music;";
+            switch (e.getErrorCode()) {
+
+                case 1452:
+                    System.out.println("Got ERROR: 1452 - Music not found");
+                    break;
+            }
+
         }
-
-        if (!isEditor)
-            rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Only an Editor can add a new music;";
-        else if (!found)
-            rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Couldn't find album `"+albName+"`;";
-
-        ObjectFiles.writeArtistsToDisk(artists);
-
         sendResponseMulticast(rsp, code);
+
     }
 
 
@@ -1148,9 +1203,10 @@ public class MulticastServerResponse extends Thread {
             } else if (cleanMessage.get(1)[1].equals("addart")) {
                 addArtist(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1] ,cleanMessage.get(cleanMessage.size()-1)[1]);
             } else if (cleanMessage.get(1)[1].equals("addalb")) {
-                addAlbum(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
+                System.out.println(cleanMessage.get(5)[1] + cleanMessage.get(6)[1] + cleanMessage.get(7)[1] + cleanMessage.get(8)[1] + cleanMessage.get(9)[1]);
+                addAlbum(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(7)[1], cleanMessage.get(8)[1], cleanMessage.get(9)[1]);
             } else if (cleanMessage.get(1)[1].equals("addmusic")) {
-                addMusic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
+                addMusic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(7)[1], cleanMessage.get(8)[1]);
             } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload")) {
                 // flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
                 try {
