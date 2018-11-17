@@ -408,16 +408,13 @@ public class MulticastServerResponse extends Thread {
         String rsp = "flag|"+id+";type|login;result|n;email|" + email + ";password|" + password + ";msg|Incorrect user/password;";
 
         // ------------- BD
-        PreparedStatement pstmt;
-        ResultSet rs;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
 
         try {
-            pstmt = con.prepareStatement("SELECT password from user where email = ? " +
-                    "UNION select notification from notification where user_email = ?");
+            pstmt = con.prepareStatement("SELECT password from user where email = ?");
 
             pstmt.setString(1, email);
-            pstmt.setString(2, email);
-
             rs = pstmt.executeQuery();
 
             String dbPassword;
@@ -425,6 +422,13 @@ public class MulticastServerResponse extends Thread {
                 dbPassword = rs.getString(1);
 
                 if(dbPassword.equals(password)) { // User authenticated, retrieve his missed notifications
+
+                    pstmt = con.prepareStatement("SELECT notification, user_email, id " +
+                            "from notification where user_email = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+
+                    pstmt.setString(1, email);
+                    rs = pstmt.executeQuery();
+
                     int notifCount = 0;
                     String notifications = "";
                     rsp = "flag|"+id+";type|login;result|y;email|" + email + ";password|" + password + ";notif_count|";
@@ -432,6 +436,7 @@ public class MulticastServerResponse extends Thread {
                     while (rs.next()) {
                         notifCount++;
                         notifications += "notif|"+ rs.getString(1) +";";
+                        rs.deleteRow();
                     }
 
                     rsp += notifCount +";"+notifications;
@@ -440,6 +445,8 @@ public class MulticastServerResponse extends Thread {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try { rs.close(); pstmt.close(); } catch (SQLException e) { System.out.println(e); }
         }
 
 
@@ -493,6 +500,8 @@ public class MulticastServerResponse extends Thread {
         // Request  -> flag | id; type | privilege; user1 | username; user2; username;
         // Response -> flag | id; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
 
+        String rsp = "flag|"+id+";type|privilege;result|n;user1|" + user1 +";user2|" + user2 + ";msg|Failed to promote user;";
+
         // ---------------- BD
         PreparedStatement pstmt;
         int rs;
@@ -508,8 +517,10 @@ public class MulticastServerResponse extends Thread {
 
             if (rs == 0)
                 System.out.println("Failed to promote user");
-            else if (rs == 1)
+            else if (rs == 1) {
                 System.out.println("Updated sucessfully");
+                rsp = "flag|"+id+";type|privilege;result|y;user1|" + user1 +";user2|" + user2 + ";";
+            }
             else
                 System.out.println("Unreachable code");
 
@@ -518,7 +529,7 @@ public class MulticastServerResponse extends Thread {
         }
 
 
-        // --------------- Classes
+        /* --------------- Classes
         String rsp = "flag|"+id+";type|privilege;result|n;user1|" + user1 +";user2|" + user2 + ";";
 
         Iterator iUsers1 = users.iterator();
@@ -551,7 +562,7 @@ public class MulticastServerResponse extends Thread {
             rsp += "msg|You have to be an Editor to use /promote;";
         }
 
-        ObjectFiles.writeUsersToDisk(users);
+        ObjectFiles.writeUsersToDisk(users); */
 
         sendResponseMulticast(rsp, code); // -> RMIServer
     }
@@ -569,10 +580,46 @@ public class MulticastServerResponse extends Thread {
      * @see #sendResponseMulticast(String, String)
      */
 
-    public void writeCritic(String id, String albumName, String critic, String rate, String email, String code) {
+    public void writeCritic(String id, String artistName, String albumName, String critic, String rate, String email, String code) {
 
         // flag | id; type | critic; album | name; critic | blabla; rate | n email | eeee;
         // flag | id; type | critic; result | (y/n); album | name; critic | blabla; rate | n; msg | mmmmm;
+
+        // BD
+        String rsp = "flag|"+id+";type|critic;result|n;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";"+"msg|Couldn't find album `"+albumName+"` by "+artistName+";";
+
+        PreparedStatement pstmt;
+        int rs;
+        try {
+            pstmt = con.prepareStatement("INSERT INTO review (critic, rating, user_email, album_id) " +
+                    "VALUES (?, ?, ?, (select id from album where title = ? and artist_name = ?)) ON DUPLICATE KEY UPDATE critic = ?, rating = ?");
+
+            pstmt.setString(1, critic);
+            pstmt.setInt(2, Integer.parseInt(rate));
+            pstmt.setString(3, email);
+            pstmt.setString(4, albumName);
+            pstmt.setString(5, artistName);
+            pstmt.setString(6, critic);
+            pstmt.setInt(7, Integer.parseInt(rate));
+
+            rs = pstmt.executeUpdate();
+
+            if (rs == 1)
+                rsp = "flag|"+id+";type|critic;result|y;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";";
+
+            pstmt.close();
+
+        } catch (SQLException e) {
+            switch (e.getErrorCode()) {
+                case 1452:
+                    System.out.println("Wrong user_email");
+                    break;
+                case 1048:
+                    System.out.println("Wrong album_id");
+            }
+        }
+
+        /* ------------ Classes
 
         Iterator iArtists = artists.iterator();
         boolean found = false;
@@ -595,7 +642,8 @@ public class MulticastServerResponse extends Thread {
         else
             rsp = "flag|"+id+";type|critic;result|n;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";"+"msg|Couldn't find album `"+albumName+"`;";
 
-        ObjectFiles.writeArtistsToDisk(artists);
+        ObjectFiles.writeArtistsToDisk(artists); */
+
         sendResponseMulticast(rsp, code);
     }
 
@@ -607,10 +655,33 @@ public class MulticastServerResponse extends Thread {
 
     public void offUserNotified(String id, String email, String message) {
 
+        // ------------ BD
+        PreparedStatement pstmt;
+        int rs;
+
+        try {
+            pstmt = con.prepareStatement("INSERT into notification (notification, user_email) " +
+                                        "VALUES (?, ?)");
+
+            pstmt.setString(1, message);
+            pstmt.setString(2, email);
+            rs = pstmt.executeUpdate();
+
+            if ( rs == 1)
+                System.out.println("Added offline notification to "+email);
+            else // UNREACHABLE
+                System.out.println("Shouldn't happen");
+
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        /* ------------ Classes
         for (User u : users)
             if(u.email.equals(email))
                 u.addNotification(message);
-        ObjectFiles.writeUsersToDisk(users);
+        ObjectFiles.writeUsersToDisk(users); */
     }
 
     /**
@@ -991,7 +1062,7 @@ public class MulticastServerResponse extends Thread {
             } else if (cleanMessage.get(1)[1].equals("details")) { // search Artist, Album, Music
                 getDetails(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (Artist or Album, keyword)
             } else if(cleanMessage.get(1)[1].equals("critic")) {            // add critic to album
-                writeCritic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size()-1)[1]);// (album, critic, rate, email)
+                writeCritic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1],cleanMessage.get(cleanMessage.size()-1)[1]);// (album, critic, rate, email)
             } else if(cleanMessage.get(1)[1].equals("privilege")) {
                 turnIntoEditor(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]);       // (Editor, regularToEditor)
             } else if(cleanMessage.get(1)[1].equals("notifyfail")) {
