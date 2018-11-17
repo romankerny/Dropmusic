@@ -214,6 +214,23 @@ public class MulticastServerResponse extends Thread {
                     else
                         System.out.println("Failed to add upload to DB");
 
+                    // Add uploader as allowed to download
+                    pstmt = con.prepareStatement("INSERT into upload_user (upload_music_id, upload_user_email, user_email)" +
+                            "VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE user_email=?");
+                    pstmt.setInt(1, musicID);
+                    pstmt.setString(2, email);
+                    pstmt.setString(3, email);
+                    pstmt.setString(4, email);
+
+
+                    rsl = pstmt.executeUpdate();
+                    if (rsl == 1)
+                        System.out.println(email +" added to allowed");
+                    else
+                        System.out.println("Failed to add "+email+" to allowed");
+
+                    pstmt.close();
+
                 } else {
                     String errorMsg = "msg|Couldn't find track #"+track+" in `"+albumName+"` by "+artistName+" in database;";
                     sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|upload;email|"+email+";result|n;"+errorMsg, code);
