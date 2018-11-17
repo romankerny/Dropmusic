@@ -122,7 +122,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- logout (no arguments)\n\n"+
                     "- search {art, alb} keyword\n"+
                     "- rate [1-5]\n\n"+
-                    "- upload [music title]\n"+
+                    "- upload [track #]\n"+
                     "- download [user] [music title]\n"+
                     "- share [user] [music title]"+
                     "  \nEditor-specific:\n"+
@@ -259,18 +259,22 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
                 } else if (tokens[0].equals("upload") && !email.equals("")) {
 
-                    if (tokens.length >= 2) {
+                    if (tokens.length == 2) {
                         int port;
-                        String musicName = strCatSpaces(tokens, 1);
+                        int trackNumber = Integer.parseInt(tokens[1]);
                         System.out.print("Path/to/file: ");
                         String path = sc.nextLine();
-                        String ipport = client.serverInterface.uploadMusic(musicName, email);
+                        System.out.print("Artist's name: ");
+                        String artistName = sc.nextLine();
+                        System.out.print(artistName +"'s album name: ");
+                        String albumName = sc.nextLine();
+                        String ipport = client.serverInterface.uploadMusic(artistName, albumName, Integer.toString(trackNumber), email);
 
                         // If first char is a number then we received an IP:Port, if not then it's an error message
                         if (Character.isDigit(ipport.charAt(0))) {
                             String[] ipPort = ipport.split(" ");
 
-                            // Creat socket
+                            // Create socket
                             Socket s = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
                             if (s.isConnected()) {
 
@@ -278,9 +282,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                                 FileInputStream fis = new FileInputStream(musicFile);
 
                                 DataOutputStream out = new DataOutputStream(s.getOutputStream());
-                                // Send filename and size before actual bytes
+                                // Send filename first
                                 out.writeUTF(musicFile.getName());
-                                out.writeLong(musicFile.length());
                                 byte buffer[] = new byte[4096];
                                 int count;
                                 System.out.println("Uploading file...");

@@ -350,18 +350,18 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | n; msg | mmmmmmmmm;
      *
      *
-     * @param title
+     * @param track
      * @param uploader
      * @return
      */
 
-    public String uploadMusic(String title, String uploader) {
+    public String uploadMusic(String artistName, String albumName, String track, String uploader) {
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
         String rspToClient = "No dice";
-        String msg = "flag|"+id+";type|requestTCPConnection;operation|upload;title|" + title + ";email|" + uploader + ";";
+        String msg = "flag|"+id+";type|requestTCPConnection;operation|upload;artist|"+artistName+";album|"+albumName+";track|" + track + ";email|" + uploader + ";";
         sendUDPDatagram(msg);
 
         boolean exit = false;

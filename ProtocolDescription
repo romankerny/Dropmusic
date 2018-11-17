@@ -43,7 +43,7 @@ penso que seja o contador que vai incrementado
 
 (10) Upload
     Request  -> flag | id; type | requestTCPConnection; operation | upload; title | tttt; uploader | uuuu; email | eeee
-    Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
+    Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | y; ip | iiiii; port | pppp;
     Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | n; msg | mmmmmmmmm;
 
 (11) Partilhar musica
