@@ -249,7 +249,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @throws RemoteException
      */
 
-    public String login(String email, String password, RMIClientInterface client) throws RemoteException {
+    public String login(String email, String password, RMIClientInterface client) {
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
@@ -516,13 +516,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @return
      */
 
-    public String rateAlbum(int stars, String albumName, String review, String email) {
+    public String rateAlbum(int stars, String artistName, String albumName, String review, String email) {
 
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
-        String msg = "flag|"+id+";type|critic;album|" + albumName + ";critic|" + review + ";rate|" + stars + "; email|" + email + ";";
+        String msg = "flag|"+id+";type|critic;artist|"+artistName+";album|" + albumName + ";critic|" + review + ";rate|" + stars + ";email|" + email + ";";
         boolean exit = false;
         String rspToClient = "Failed to rate " + albumName;
 

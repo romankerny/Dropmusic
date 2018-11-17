@@ -122,7 +122,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- login [email] [password]\n"+
                     "- logout (no arguments)\n\n"+
                     "- search {art, alb} keyword\n"+
-                    "- rate [album name] [1-5] [review] (max 300 chars)\n\n"+
+                    "- rate [1-5]\n\n"+
                     "- upload [music title]\n"+
                     "- download [user] [music title]\n"+
                     "- share [user] [music title]"+
@@ -239,23 +239,23 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
                 } else if (tokens[0].equals("rate") && !email.equals("")) {
 
-                    if (tokens.length >= 4) {
-                        String albumName = "";
-                        int stars;
-                        String review = "";
-                        scanner = new Scanner(userInput);
-                        scanner.next(); // Skip "rate"
-                        while (!scanner.hasNextInt())
-                            albumName = albumName + scanner.next() + " ";
-                        albumName = albumName.replaceFirst(".$", "");
-                        stars = scanner.nextInt();
-                        while (scanner.hasNext())
-                            review = review + scanner.next() + " ";
-                        review = review.replaceFirst(".$", "");
-                        System.out.println(client.serverInterface.rateAlbum(stars, albumName, review, email));
+                    if (tokens.length == 2) {
+                        int stars = Integer.parseInt(tokens[1]);
+
+                        System.out.print("Artist's name: ");
+                        String artistName = sc.nextLine();
+                        System.out.print(artistName +"'s album name: ");
+                        String albumName = sc.nextLine();
+                        System.out.print(artistName +" review (max 300 characters): ");
+                        String review = sc.nextLine();
+
+                        if (review.length() <= 300)
+                            System.out.println(client.serverInterface.rateAlbum(stars, artistName, albumName, review, email));
+                        else
+                            System.out.println("Character limit exceeded for review (max 300)");
 
                     } else {
-                        System.out.println("Usage: rate [album name] [1-5] [review] (max 300 chars)");
+                        System.out.println("Usage: rate [1-5]");
                     }
 
                 } else if (tokens[0].equals("promote") && !email.equals("")) {
