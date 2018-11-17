@@ -610,7 +610,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if (cleanMessage.get(0)[1].equals(id)) {
 
                 rspToClient = cleanMessage.get(cleanMessage.size()-2)[1]; // Get message for y or n
-                if (rspToClient.equals("Artist updated")) {
+                if (rspToClient.equals("Artist info added with success")) {
                     int numUsers = Integer.parseInt(cleanMessage.get(4)[1]);
                     System.out.println(numUsers);
                     System.out.println("Num users: "+numUsers);
@@ -657,12 +657,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @throws RemoteException
      */
 
-    public String addAlbum(String artist, String albumTitle, String description, String genre, String email) throws  RemoteException{
+    public String addAlbum(String artist, String albumTitle, String description, String genre, String email, String launchDate, String editorLabel) throws  RemoteException{
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
-        String msg = "flag|"+id+";type|addalb;art|" + artist + ";alb|" + albumTitle + ";description|" + description + ";genre|" + genre + ";email|" + email + ";", rspToClient = "";
+        String msg = "flag|"+id+";type|addalb;art|" + artist + ";alb|" + albumTitle + ";description|" + description + ";genre|" + genre + ";email|" + email +
+                ";launchDate|" + launchDate + ";editorLabel|" + editorLabel + ";", rspToClient = "";
         sendUDPDatagram(msg);
         boolean exit = false;
 
@@ -674,7 +675,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
 
                 // Need to notify
-                if (rspToClient.equals("Album updated") || rspToClient.equals("Album created")) {
+                if (rspToClient.equals("Album info added with success")) {
                     int numUsers = Integer.parseInt(cleanMessage.get(4)[1]);
                     System.out.println("Num users: "+numUsers);
                     if (numUsers > 0) {
@@ -719,13 +720,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @throws RemoteException
      */
 
-    public String addMusic(String musicTitle, String track, String albumTitle , String email) throws  RemoteException{
+    public String addMusic(String musicTitle, String track, String albumTitle , String email, String lyrics, String artistName) throws  RemoteException{
 
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
-        String msg =  "flag|"+id+";type|addmusic;alb|"+albumTitle+";title|"+musicTitle+";track|"+track+";email|"+email+";"  ,rspToClient = "";
+        String msg =  "flag|"+id+";type|addmusic;alb|"+albumTitle+";title|"+musicTitle+";track|"+track+";email|"+email+";lyrics|" + lyrics + ";artistName|" + artistName + ";",rspToClient = "";
         sendUDPDatagram(msg);
         boolean exit = false;
 
@@ -737,8 +738,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
 
                 // Try to notify
-                if (rspToClient.equals("Music updated") || rspToClient.equals("Music created")) {
-                    int numUsers = Integer.parseInt(cleanMessage.get(5)[1]);
+                if (rspToClient.equals("Music info added with success")) {
+                    int numUsers = Integer.parseInt(cleanMessage.get(4)[1]);
                     System.out.println("Num users: "+numUsers);
                     if (numUsers > 0) {
                         String userEmail = "";
