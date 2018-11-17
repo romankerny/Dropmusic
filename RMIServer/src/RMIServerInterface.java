@@ -27,7 +27,7 @@ public interface RMIServerInterface extends Remote {
     public String addAlbum(String artist, String albumTitle, String description, String genre, String email) throws  RemoteException;
     public String addMusic(String musicTitle, String track, String albumTitle , String email) throws  RemoteException;
 
-        // 3.
+    // 3.
     public String search(String param, String keyword) throws RemoteException;
 
     // 5.
