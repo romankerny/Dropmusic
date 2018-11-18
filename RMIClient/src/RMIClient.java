@@ -125,7 +125,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- rate [1-5]\n\n"+
                     "- upload [track #]\n"+
                     "- download [user] [music title]\n"+
-                    "- share [user] [music title]"+
+                    "- share [user]"+
                     "  \nEditor-specific:\n"+
                     "- promote [email]\n"+
                     "- add {art, alb, mus} [name]\n";
@@ -351,11 +351,18 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
                 } else if (tokens[0].equals("share") && !email.equals("")) {
 
-                    if (tokens.length >= 3) {
-                        String musicName = strCatSpaces(tokens, 2);
-                        System.out.println(client.serverInterface.share(musicName, tokens[1], email));
+                    if (tokens.length == 2) {
+                        System.out.print("Artist's name: ");
+                        String artistName = sc.nextLine();
+                        System.out.print(artistName +"'s album name: ");
+                        String albumName = sc.nextLine();
+                        System.out.print(albumName +"'s track #: ");
+                        int trackNumber = sc.nextInt();
+
+
+                        System.out.println(client.serverInterface.share(artistName, albumName, Integer.toString(trackNumber), tokens[1], email));
                     } else {
-                        System.out.println("Usage: share [user] [music name]");
+                        System.out.println("Usage: share [user]");
                     }
                 } else if (tokens[0].equals("help")) {
                     System.out.println(help);

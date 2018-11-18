@@ -470,18 +470,18 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      *
      * shares a music with the user with the email == shareTo
      *
-     * @param title
+     * @param track
      * @param shareTo
      * @param uploader
      * @return result of the operation
      */
 
-    public String share(String title, String shareTo, String uploader) {
+    public String share(String artist, String album, String track, String shareTo, String uploader) {
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
-        String msg = "flag|"+id+";type|share;title|" + title + ";shareTo|" + shareTo + ";uploader|" + uploader + ";";
+        String msg = "flag|"+id+";type|share;artist|"+artist+";album|"+album+";track|" + track + ";shareTo|" + shareTo + ";uploader|" + uploader + ";";
         sendUDPDatagram(msg);
 
         boolean exit = false;
@@ -492,7 +492,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             if (cleanMessage.get(0)[1].equals(id)) {
                 if (cleanMessage.get(2)[1].equals("y")) {
-                    rspToClient = "Successfully shared " + title + " with " + shareTo;
+                    rspToClient = "Successfully shared with " + shareTo;
                     exit = true;
                 } else {
                     rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];

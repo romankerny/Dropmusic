@@ -40,7 +40,7 @@ public interface RMIServerInterface extends Remote {
     public String uploadMusic(String artistName, String albumName, String track, String uploader) throws RemoteException;
 
     // 11.
-    public String share(String title, String shareTo, String uploader) throws RemoteException;
+    public String share(String artist, String album, String track, String shareTo, String uploader) throws RemoteException;
     // 12.
     public String downloadMusic(String title, String uploader, String email, String albumName, String artistName) throws RemoteException;
 

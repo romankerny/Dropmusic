@@ -473,16 +473,63 @@ public class MulticastServerResponse extends Thread {
      * if found then the user is now allowed to download from uploader and a result|y answer is sent.
      *
      * @param id Packet's unique ID
-     * @param title Music's title
+     * @param track Music's track #
      * @param shareTo User that the uploader want's to share
      * @param uploader The uploader himself
      * @param code Hash sent by RMIServer
      * @see #sendResponseMulticast(String, String)
      */
 
-    public void share(String id, String title, String shareTo, String uploader, String code) {
-        // Request  -> flag | id; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
+    public void share(String id, String artist, String album, String track, String shareTo, String uploader, String code) {
+        // Request  -> flag | id; type | share; artist | name; album | name; track | n; shareTo | sssss; uploader | uuuuuu;
         // Response -> flag | id; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu; msg | mmmmmm;
+
+        // ----------- BD
+
+        String rsp = "flag|"+id+";type|share;result|n;track|"+track+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find upload file;";
+        PreparedStatement pstmt;
+        int rs;
+        try {
+            pstmt = con.prepareStatement("INSERT INTO upload_user (upload_music_id, upload_user_email, user_email) " +
+                    "VALUES (" +
+                    "(select upload.music_id " +
+                    "from upload, (select music.id " +
+                    "               from music, (select id " +
+                    "                            from album " +
+                    "                            where album.title = ? and album.artist_name = ?) alb " +
+                    "               where alb.id = music.album_id and music.track = ?  ) mus " +
+                    "where upload.music_id = mus.id )," +
+                    " ?," +
+                    " ?) ON DUPLICATE KEY UPDATE upload_user_email = ?");
+
+            pstmt.setString(1, album);
+            pstmt.setString(2, artist);
+            pstmt.setInt(3, Integer.parseInt(track));
+            pstmt.setString(4, uploader);
+            pstmt.setString(5, shareTo);
+            pstmt.setString(6, uploader);
+            rs = pstmt.executeUpdate();
+
+            if (rs == 1)
+                rsp = "flag|"+id+";type|share;result|y;track|"+track+";shareTo|"+shareTo+";uploader|"+uploader+";";
+
+            pstmt.close();
+
+        } catch (SQLException e) {
+            switch (e.getErrorCode()) {
+                case 1452: // Foreign key violation
+                    System.out.println("Wrong upload_user_email");
+                    rsp = "flag|"+id+";type|share;result|n;track|"+track+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find user;";
+                    break;
+                case 1048: // Can't be null
+                    System.out.println("Wrong upload_music_id");
+                    rsp = "flag|"+id+";type|share;result|n;track|"+track+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find song;";
+            }
+        }
+
+
+
+        /* ----------- Classes
 
         String rsp;
         boolean found = false;
@@ -517,7 +564,7 @@ public class MulticastServerResponse extends Thread {
             rsp = "flag|"+id+";type|share;result|y;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";";
         } else {
             rsp = "flag|"+id+";type|share;result|n;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find upload file;";
-        }
+        }*/
         sendResponseMulticast(rsp, code);
     }
 
@@ -1285,7 +1332,7 @@ public class MulticastServerResponse extends Thread {
             } else if(cleanMessage.get(1)[1].equals("notifyfail")) {
                 offUserNotified(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1]);    // (email, message)
             } else if(cleanMessage.get(1)[1].equals("share")) {
-                share(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, shareTo, uploader)
+                share(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, shareTo, uploader)
             } else if (cleanMessage.get(1)[1].equals("addart")) {
                 addArtist(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1] ,cleanMessage.get(cleanMessage.size()-1)[1]);
             } else if (cleanMessage.get(1)[1].equals("addalb")) {
