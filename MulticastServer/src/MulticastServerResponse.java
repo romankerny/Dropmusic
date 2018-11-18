@@ -310,27 +310,123 @@ public class MulticastServerResponse extends Thread {
      * @param email Requesting user's email
      * @param code Hash sent by RMIServer
      * @see #getSocket()
-     * @see #searchMusic(String, String)
      * @see #sendResponseMulticast(String, String)
      */
 
-    public void downloadMusic(String id, String title, String uploader, String email, String code) throws IOException {
+    public void downloadMusic(String id, String title, String uploader, String email, String albumName, String artistName, String code) throws IOException {
         // Request  -> flag | id; type | requestTCPConnection; operation | download; email | eeee;
         // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | y; ip| iiii; port | pppp;
         // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | n; msg | mmmmmmmmm;
 
 
         // server tries to find the music w/ the given uploader
-        Music msc = searchMusic(title, uploader);
+        // Music msc = searchMusic(title, uploader);
+        ResultSet rs;
+        PreparedStatement pstmt = null, pstmt1 = null;
+        String path;
+        int c = 0;
+
+        try {
+            // check if user with email can downlaoad
+
+            System.out.println("Figuring out if user with ´email´ can download the given music. . .");
+            pstmt = con.prepareStatement("SELECT DISTINCT m.id FROM music m, artist a, album alb, upload_user up " +
+                    "                          WHERE up.upload_user_email = ? AND up.user_email = ? AND up.upload_music_id = m.id" +
+                    "                          AND m.title = ? AND alb.title = ? AND a.name = ?" +
+                    "                          AND alb.artist_name = a.name AND m.album_id = alb.id");
+            pstmt.setString(1, uploader);
+            pstmt.setString(2, email);
+            pstmt.setString(3, title);
+            pstmt.setString(4, albumName);
+            pstmt.setString(5, artistName);
+
+            rs = pstmt.executeQuery();
+
+            if ((rs.next())) {
+                System.out.println("Fetching file path in DB");
+                String musicID = rs.getString("id");
+                pstmt1 = con.prepareStatement("SELECT musicfilename FROM upload WHERE music_id = ? AND user_email = ?");
+                pstmt1.setString(1, musicID);
+                pstmt1.setString(2, uploader);
+                rs = pstmt1.executeQuery();
+
+                if(rs.next()) {
+                    System.out.println("Starting Download . . .");
+                    path = rs.getString("musicfilename");
+                    System.out.println("Path : " + path);
+                    ServerSocket serverSocket = getSocket();
+                    String ip = InetAddress.getLocalHost().getHostAddress();
+                    int port = serverSocket.getLocalPort();
+                    Socket client = null;
+                    sendResponseMulticast("flag|" + id + ";type|requestTCPConnection;operation|download;email|" + email + ";result|y;ip|" + ip + ";port|" + port + ";", code);
+                    client = serverSocket.accept();
+                    System.out.println("Accepted client socket");
+                    File musicFile = new File(path);
+                    FileInputStream fis = new FileInputStream((musicFile));
+                    DataOutputStream out = new DataOutputStream(client.getOutputStream());
+
+                    out.writeUTF(musicFile.getName());
+                    System.out.println("File.getName() : " + musicFile.getName());
+                    byte buffer[] = new byte[4096];
+                    int count;
+                    System.out.println("Uploading file...");
+                    while ((count = fis.read(buffer)) != -1) {
+                        out.write(buffer, 0, count);
+                    }
+                    out.close();
+                } else {
+                    sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;msg|Could not file File in DB;", code);
+                }
+
+            } else {
+                // if music does not exist / no permission
+                sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;", code);
+                return;
+            }
+            /*
+            if (c > 0) {
+                // if music is fond then proceed to download
+
+                // fetch musicFileName
+                ServerSocket serverSocket = getSocket();
+                String ip = InetAddress.getLocalHost().getHostAddress();
+                int port = serverSocket.getLocalPort();
+                Socket client = null;
+                sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
+
+                client = serverSocket.accept();
+                DataOutputStream out = new DataOutputStream(client.getOutputStream());
+                // MusicFile mf = song.musicFiles.get(uploader);
+
+                // Send filename before raw data
+                out.writeUTF(mf.filename);
+                out.write(mf.rawData);
+                out.close();
+                serverSocket.close();
+                System.out.println(" a bazar do download ");
+
+
+            } else {
+
+            }
+            */
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
+
+
+
 
         // if the music isn't found then the server will send a packet to RMI w/ result|n
         // then returns; ending the method
-        if(msc == null) {
-            sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;", code);
-            return;
-        }
         // if music is fond then proceed to download
-
+        /*
         Music song = null;
         if(this.hashCode.equals(code)) {
             for (Artist a : artists)
@@ -368,6 +464,7 @@ public class MulticastServerResponse extends Thread {
         }
 
         ObjectFiles.writeArtistsToDisk(artists);
+        */
     }
 
     /**
@@ -836,29 +933,6 @@ public class MulticastServerResponse extends Thread {
 
     }
 
-    /**
-     * Method used before downloading a music to see if the file exists in this particular Multicast's database
-     * @param musicTitle Music's title
-     * @param uploader Uploader's email
-     * @return Music object or null if not found
-     * @see #downloadMusic(String, String, String, String, String)
-     */
-
-    public Music searchMusic(String musicTitle, String uploader) {
-
-        for(Artist a : artists) {
-            for(Album b : a.albums) {
-                for(Music m : b.tracks) {
-                    if(m.title.equals(musicTitle) && m.musicFiles.containsKey(uploader)) {
-                        System.out.println("Yes!");
-                        return m;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
 
     /**
      * Method to add/edit an artist. An edit happens if artist's name matches an existing one in database. If edited, then
@@ -937,7 +1011,6 @@ public class MulticastServerResponse extends Thread {
             }
 
         }
-
 
         sendResponseMulticast(rsp, code);
 
@@ -1090,9 +1163,6 @@ public class MulticastServerResponse extends Thread {
         String usrIsEditor = "", bfNot = "", albID = "";
         ResultSet qSet;
 
-        System.out.println("ARTOIST NAME " + artiName);
-        System.out.println("code " + code);
-        System.out.println("lyrics " + lyrics);
         try {
 
             // check if user is editor
@@ -1237,7 +1307,7 @@ public class MulticastServerResponse extends Thread {
             // "flag|"+id+";type|requestTCPConnection;operation|download;title|"+title+";uploader|"+uploader+";email|"+email+";hash|"+hash+";");
             try {
                 // ID title uploader email hash
-                downloadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, uploader, email)
+                downloadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(7)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, uploader, email)
             } catch (IOException e) {
                 e.printStackTrace();
             }
