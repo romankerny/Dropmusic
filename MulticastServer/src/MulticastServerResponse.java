@@ -380,7 +380,6 @@ public class MulticastServerResponse extends Thread {
      * @param shareTo User that the uploader want's to share
      * @param uploader The uploader himself
      * @param code Hash sent by RMIServer
-     * @see #getSocket()
      * @see #sendResponseMulticast(String, String)
      */
 
