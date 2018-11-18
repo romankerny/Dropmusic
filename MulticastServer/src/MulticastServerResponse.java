@@ -491,23 +491,19 @@ public class MulticastServerResponse extends Thread {
         int rs;
         try {
             pstmt = con.prepareStatement("INSERT INTO upload_user (upload_music_id, upload_user_email, user_email) " +
-                    "VALUES (" +
-                    "(select upload.music_id " +
-                    "from upload, (select music.id " +
-                    "               from music, (select id " +
-                    "                            from album " +
-                    "                            where album.title = ? and album.artist_name = ?) alb " +
-                    "               where alb.id = music.album_id and music.track = ?  ) mus " +
-                    "where upload.music_id = mus.id )," +
-                    " ?," +
-                    " ?) ON DUPLICATE KEY UPDATE upload_user_email = ?");
+                                                "select upload.music_id, upload.user_email, ? " +
+                                                "from upload, (select music.id " +
+                                                              "from music, (select id " +
+                                                                           "from album " +
+                                                                           "where album.title = ? and album.artist_name = ?) alb " +
+                                                              "where alb.id = music.album_id and music.track = ? ) mus " +
+                                                 "where upload.music_id = mus.id and upload.user_email = ?;");
 
-            pstmt.setString(1, album);
-            pstmt.setString(2, artist);
-            pstmt.setInt(3, Integer.parseInt(track));
-            pstmt.setString(4, uploader);
-            pstmt.setString(5, shareTo);
-            pstmt.setString(6, uploader);
+            pstmt.setString(1, shareTo);
+            pstmt.setString(2, album);
+            pstmt.setString(3, artist);
+            pstmt.setInt(4, Integer.parseInt(track));
+            pstmt.setString(5, uploader);
             rs = pstmt.executeUpdate();
 
             if (rs == 1)
@@ -518,12 +514,16 @@ public class MulticastServerResponse extends Thread {
         } catch (SQLException e) {
             switch (e.getErrorCode()) {
                 case 1452: // Foreign key violation
-                    System.out.println("Wrong upload_user_email");
+                    System.out.println("Wrong user_email");
                     rsp = "flag|"+id+";type|share;result|n;track|"+track+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find user;";
                     break;
-                case 1048: // Can't be null
+                case 1048: // Can't be null (means select failed, user didn't upload that song)
                     System.out.println("Wrong upload_music_id");
-                    rsp = "flag|"+id+";type|share;result|n;track|"+track+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find song;";
+                    rsp = "flag|"+id+";type|share;result|n;track|"+track+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find your upload;";
+                    break;
+                case 1062: // Duplicate entry
+                    rsp = "flag|"+id+";type|share;result|n;track|"+track+";shareTo|"+shareTo+";uploader|"+uploader+";msg|You already shared this;";
+
             }
         }
 
