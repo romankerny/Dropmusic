@@ -140,17 +140,110 @@ public class MulticastServerResponse extends Thread {
      * email of the uploader.
      *
      * @param id Packet's unique ID
-     * @param title Music's title
+     * @param track Music's track # in album
      * @param email Email of the user that requested an upload
      * @param code Multicast server's hash, this method is only run if hash send by RMIServer matches Multicast's hash.
      * @see #getSocket()
      * @see #sendResponseMulticast(String, String)
      */
 
-    public void uploadMusic(String id, String title, String email, String code) throws IOException {
-        // Request  -> flag | id; type | requestTCPConnection; operation | upload; title | tttt; uploader | uuuu; email | eeee
-        // Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
+    public void uploadMusic(String id, String artistName, String albumName, String track, String email, String code) throws IOException {
+        // Request  -> flag | id; type | requestTCPConnection; operation | upload; artist | name; album | name; track | n; uploader | uuuu; email | eeee
+        // Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | y; ip| iiii; port | pppp;
         // Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | n; msg | mmmmmmmmm;
+
+        // ---------- BD
+
+        if (this.hashCode.equals(code)) {
+            PreparedStatement pstmt;
+            ResultSet rs;
+            try {
+                pstmt = con.prepareStatement("select music.id " +
+                        "from music, (select id from album where title = ? and artist_name = ?) as alb " +
+                        "where music.album_id = alb.id and music.track = ?");
+                pstmt.setString(1, albumName);
+                pstmt.setString(2, artistName);
+                pstmt.setInt(3, Integer.parseInt(track));
+                rs = pstmt.executeQuery();
+
+                if (rs.next()) {
+                    int musicID = rs.getInt(1);
+                    rs.close();
+                    // Time to upload
+                    ServerSocket serverSocket = getSocket();
+                    Socket client = null;
+                    String ip = InetAddress.getLocalHost().getHostAddress();
+                    int port = serverSocket.getLocalPort();
+
+                    sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|upload;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
+
+                    client = serverSocket.accept();
+                    // Connected
+                    DataInputStream in = new DataInputStream(client.getInputStream());
+                    // Create unique path artist/album/track/email/filename.mp3
+                    char ps = File.separatorChar;
+                    String filename = in.readUTF();
+                    String uploadedPath = "uploads/"+artistName+ps+albumName+ps+track+ps+email+ps;
+
+                    File directory = new File(uploadedPath);
+                    directory.mkdirs();
+                    File upload = new File(uploadedPath+filename);
+
+                    FileOutputStream fos = new FileOutputStream(upload);
+                    byte buffer[] = new byte[4096];
+                    int count;
+                    System.out.println("Uploading `" + filename + "`");
+                    while ((count = in.read(buffer)) != -1) {
+                        fos.write(buffer, 0, count);
+                    }
+                    in.close();
+                    System.out.println("Done");
+
+                    // Add to DB
+                    int rsl;
+                    pstmt = con.prepareStatement("INSERT into upload (musicfilename, music_id, user_email) " +
+                                        "VALUES (?,?,?) ON DUPLICATE KEY UPDATE musicfilename = ?");
+                    pstmt.setString(1, uploadedPath+filename);
+                    pstmt.setInt(2, musicID);
+                    pstmt.setString(3, email);
+                    pstmt.setString(4, uploadedPath+filename);
+
+                    rsl = pstmt.executeUpdate();
+                    if (rsl == 1)
+                        System.out.println("Added upload to DB with success");
+                    else
+                        System.out.println("Failed to add upload to DB");
+
+                    // Add uploader as allowed to download
+                    pstmt = con.prepareStatement("INSERT into upload_user (upload_music_id, upload_user_email, user_email)" +
+                            "VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE user_email=?");
+                    pstmt.setInt(1, musicID);
+                    pstmt.setString(2, email);
+                    pstmt.setString(3, email);
+                    pstmt.setString(4, email);
+
+
+                    rsl = pstmt.executeUpdate();
+                    if (rsl == 1)
+                        System.out.println(email +" added to allowed");
+                    else
+                        System.out.println("Failed to add "+email+" to allowed");
+
+                    pstmt.close();
+
+                } else {
+                    String errorMsg = "msg|Couldn't find track #"+track+" in `"+albumName+"` by "+artistName+" in database;";
+                    sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|upload;email|"+email+";result|n;"+errorMsg, code);
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // ---------- Classes
+
+        /*
 
         if(this.hashCode.equals(code)) {
 
@@ -195,7 +288,7 @@ public class MulticastServerResponse extends Thread {
             } else {
                 sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|upload;email|"+email+";result|n;msg|Couldn't find `"+title+"` in database;", code);
             }
-        }
+        }*/
 
     }
 
@@ -1201,7 +1294,7 @@ public class MulticastServerResponse extends Thread {
             } else if(cleanMessage.get(1)[1].equals("requestTCPConnection") && cleanMessage.get(2)[1].equals("upload")) {
                 // flag | s; type | requestTCPConnection; operation | upload; tittle | tttt; email | eeee;
                 try {
-                    uploadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, email)
+                    uploadMusic(cleanMessage.get(0)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, email)
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

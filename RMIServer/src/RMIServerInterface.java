@@ -27,7 +27,7 @@ public interface RMIServerInterface extends Remote {
     public String addAlbum(String artist, String albumTitle, String description, String genre, String email, String launchDate, String editorLabel) throws RemoteException;
     public String addMusic(String musicTitle, String track, String albumTitle , String email, String lyrics, String artistName) throws  RemoteException;
 
-        // 3.
+    // 3.
     public String search(String param, String keyword) throws RemoteException;
 
     // 5.
@@ -37,7 +37,7 @@ public interface RMIServerInterface extends Remote {
     public String regularToEditor(String editor, String regular) throws RemoteException;
 
     // 10.
-    public String uploadMusic(String title, String uploader) throws RemoteException;
+    public String uploadMusic(String artistName, String albumName, String track, String uploader) throws RemoteException;
 
     // 11.
     public String share(String title, String shareTo, String uploader) throws RemoteException;

@@ -31,7 +31,7 @@ penso que seja o contador que vai incrementado
     Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
 
 (5) Escrever uma crítica a um álbum
-    Request  -> flag | id; type | critic; album | name; critic | blabla; rate | n; email | eeee;
+    Request  -> flag | id; type | critic; artist | name; album | name; critic | blabla; rate | n; email | eeee;
     Response -> flag | id; type | critic; result | (y/n); album | name; critic | blabla; rate | n; msg | mmmmm;
 
 (6) Dar previlégios de editor a um utilizador
@@ -43,7 +43,7 @@ penso que seja o contador que vai incrementado
 
 (10) Upload
     Request  -> flag | id; type | requestTCPConnection; operation | upload; title | tttt; uploader | uuuu; email | eeee
-    Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | y; port | pppp;
+    Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | y; ip | iiiii; port | pppp;
     Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | n; msg | mmmmmmmmm;
 
 (11) Partilhar musica
