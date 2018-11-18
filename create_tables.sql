@@ -298,7 +298,7 @@ Tax man comin''');
 
 
 INSERT INTO music (track, title, album_id, lyrics)
-VALUES (2, '"For Free? (Interlude)"', 2, 'I go on and on
+VALUES (2, 'For Free? (Interlude)', 2, 'I go on and on
 Can''t understand how I last so long
 I must have the superpowers
 Last 223 thousand hours

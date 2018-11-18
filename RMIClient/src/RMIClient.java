@@ -327,6 +327,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                             // Create socket and receive file
                             Socket s = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
                             if (s.isConnected()) {
+                                System.out.println("Connecting to server to download . . .");
                                 DataInputStream in = new DataInputStream(s.getInputStream());
                                 String filename = in.readUTF();
                                 FileOutputStream fos = new FileOutputStream((new File(filename)));

@@ -329,7 +329,7 @@ public class MulticastServerResponse extends Thread {
         try {
             // check if user with email can downlaoad
 
-
+            System.out.println("Figuring out if user with ´email´ can download the given music. . .");
             pstmt = con.prepareStatement("SELECT DISTINCT m.id FROM music m, artist a, album alb, upload_user up " +
                     "                          WHERE up.upload_user_email = ? AND up.user_email = ? AND up.upload_music_id = m.id" +
                     "                          AND m.title = ? AND alb.title = ? AND a.name = ?" +
@@ -343,6 +343,7 @@ public class MulticastServerResponse extends Thread {
             rs = pstmt.executeQuery();
 
             if ((rs.next())) {
+                System.out.println("Fetching file path in DB");
                 String musicID = rs.getString("id");
                 pstmt1 = con.prepareStatement("SELECT musicfilename FROM upload WHERE music_id = ? AND user_email = ?");
                 pstmt1.setString(1, musicID);
@@ -350,20 +351,22 @@ public class MulticastServerResponse extends Thread {
                 rs = pstmt1.executeQuery();
 
                 if(rs.next()) {
-
-                    path = rs.toString();
+                    System.out.println("Starting Download . . .");
+                    path = rs.getString("musicfilename");
+                    System.out.println("Path : " + path);
                     ServerSocket serverSocket = getSocket();
                     String ip = InetAddress.getLocalHost().getHostAddress();
                     int port = serverSocket.getLocalPort();
                     Socket client = null;
                     sendResponseMulticast("flag|" + id + ";type|requestTCPConnection;operation|download;email|" + email + ";result|y;ip|" + ip + ";port|" + port + ";", code);
                     client = serverSocket.accept();
-
+                    System.out.println("Accepted client socket");
                     File musicFile = new File(path);
                     FileInputStream fis = new FileInputStream((musicFile));
                     DataOutputStream out = new DataOutputStream(client.getOutputStream());
 
                     out.writeUTF(musicFile.getName());
+                    System.out.println("File.getName() : " + musicFile.getName());
                     byte buffer[] = new byte[4096];
                     int count;
                     System.out.println("Uploading file...");
@@ -372,7 +375,7 @@ public class MulticastServerResponse extends Thread {
                     }
                     out.close();
                 } else {
-                    sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;msg|You're not allowed to download this song;", code);
+                    sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;msg|Could not file File in DB;", code);
                 }
 
             } else {
