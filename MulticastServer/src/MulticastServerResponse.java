@@ -348,10 +348,10 @@ public class MulticastServerResponse extends Thread {
                 pstmt1.setString(1, musicID);
                 pstmt1.setString(2, uploader);
                 rs = pstmt1.executeQuery();
-                path = rs.toString();
 
                 if(rs.next()) {
-                    // allowed t download
+
+                    path = rs.toString();
                     ServerSocket serverSocket = getSocket();
                     String ip = InetAddress.getLocalHost().getHostAddress();
                     int port = serverSocket.getLocalPort();
@@ -376,7 +376,7 @@ public class MulticastServerResponse extends Thread {
                 }
 
             } else {
-                // if music does not exist in DB ent
+                // if music does not exist / no permission
                 sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;", code);
                 return;
             }
