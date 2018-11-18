@@ -310,9 +310,13 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                 } else if (tokens[0].equals("download") && !email.equals("")) {
 
                     if (tokens.length >= 3) {
-
+                        String albumName, artistName;
                         String musicName = strCatSpaces(tokens, 2);
-                        String r = client.serverInterface.downloadMusic(musicName, tokens[1], email);
+                        System.out.print("Album name: ");
+                        albumName = sc.nextLine();
+                        System.out.print("Artist name: ");
+                        artistName = sc.nextLine();
+                        String r = client.serverInterface.downloadMusic(musicName, tokens[1], email, albumName, artistName);
                         if (!r.equals("Music file not found.")) {
 
                             String[] ipPort = r.split(" ");

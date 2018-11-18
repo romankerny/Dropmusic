@@ -400,7 +400,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @return
      */
 
-    public String downloadMusic(String title, String uploader, String email)  {
+    public String downloadMusic(String title, String uploader, String email, String albumName, String artistName)  {
 
 
         String uuid = UUID.randomUUID().toString();
@@ -420,7 +420,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         // send
         for(String hash: rmiServer.multicastHashes) {
-            sendUDPDatagramGeneral("flag|" + id + ";type|requestTCPConnection;operation|download;title|" + title + ";uploader|" + uploader + ";email|" + email + ";hash|" + hash + ";");
+            sendUDPDatagramGeneral("flag|" + id + ";type|requestTCPConnection;operation|download;title|" + title + ";uploader|" + uploader + ";email|" + email + ";albumName|" + albumName + ";artistName|" + artistName + ";hash|" + hash + ";");
             System.out.println("asking multicasts to search music " + hash);
         }
 
