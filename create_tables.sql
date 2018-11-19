@@ -42,7 +42,7 @@ CREATE TABLE music (
 	lyrics	 varchar(5000),
 	album_id bigint NOT NULL,
 	PRIMARY KEY(id),
-  UNIQUE KEY(track, album_id)
+  UNIQUE KEY(track, title)
 );
 
 CREATE TABLE notification (

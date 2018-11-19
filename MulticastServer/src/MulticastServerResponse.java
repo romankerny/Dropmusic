@@ -140,15 +140,15 @@ public class MulticastServerResponse extends Thread {
      * email of the uploader.
      *
      * @param id Packet's unique ID
-     * @param track Music's track # in album
+     * @param title Music's track # in album
      * @param email Email of the user that requested an upload
      * @param code Multicast server's hash, this method is only run if hash send by RMIServer matches Multicast's hash.
      * @see #getSocket()
      * @see #sendResponseMulticast(String, String)
      */
 
-    public void uploadMusic(String id, String artistName, String albumName, String track, String email, String code) throws IOException {
-        // Request  -> flag | id; type | requestTCPConnection; operation | upload; artist | name; album | name; track | n; uploader | uuuu; email | eeee
+    public void uploadMusic(String id, String artistName, String albumName, String title, String email, String code) throws IOException {
+        // Request  -> flag | id; type | requestTCPConnection; operation | upload; artist | name; album | name; title | name; uploader | uuuu; email | eeee
         // Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | y; ip| iiii; port | pppp;
         // Response -> flag | id; type | requestTCPConnection; operation | upload; email | eeee; result | n; msg | mmmmmmmmm;
 
@@ -160,10 +160,10 @@ public class MulticastServerResponse extends Thread {
             try {
                 pstmt = con.prepareStatement("select music.id " +
                         "from music, (select id from album where title = ? and artist_name = ?) as alb " +
-                        "where music.album_id = alb.id and music.track = ?");
+                        "where music.album_id = alb.id and music.title = ?");
                 pstmt.setString(1, albumName);
                 pstmt.setString(2, artistName);
-                pstmt.setInt(3, Integer.parseInt(track));
+                pstmt.setString(3, title);
                 rs = pstmt.executeQuery();
 
                 if (rs.next()) {
@@ -183,7 +183,7 @@ public class MulticastServerResponse extends Thread {
                     // Create unique path artist/album/track/email/filename.mp3
                     char ps = File.separatorChar;
                     String filename = in.readUTF();
-                    String uploadedPath = "uploads/"+artistName+ps+albumName+ps+track+ps+email+ps;
+                    String uploadedPath = "uploads"+ps+artistName+ps+albumName+ps+title+ps+email+ps;
 
                     File directory = new File(uploadedPath);
                     directory.mkdirs();
@@ -232,7 +232,7 @@ public class MulticastServerResponse extends Thread {
                     pstmt.close();
 
                 } else {
-                    String errorMsg = "msg|Couldn't find track #"+track+" in `"+albumName+"` by "+artistName+" in database;";
+                    String errorMsg = "msg|Couldn't find `"+title+"` in "+albumName+" by "+artistName+" in database;";
                     sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|upload;email|"+email+";result|n;"+errorMsg, code);
                 }
 
@@ -473,20 +473,20 @@ public class MulticastServerResponse extends Thread {
      * if found then the user is now allowed to download from uploader and a result|y answer is sent.
      *
      * @param id Packet's unique ID
-     * @param track Music's track #
+     * @param title Music's name
      * @param shareTo User that the uploader want's to share
      * @param uploader The uploader himself
      * @param code Hash sent by RMIServer
      * @see #sendResponseMulticast(String, String)
      */
 
-    public void share(String id, String artist, String album, String track, String shareTo, String uploader, String code) {
-        // Request  -> flag | id; type | share; artist | name; album | name; track | n; shareTo | sssss; uploader | uuuuuu;
+    public void share(String id, String artist, String album, String title, String shareTo, String uploader, String code) {
+        // Request  -> flag | id; type | share; artist | name; album | name; title | name; shareTo | sssss; uploader | uuuuuu;
         // Response -> flag | id; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu; msg | mmmmmm;
 
         // ----------- BD
 
-        String rsp = "flag|"+id+";type|share;result|n;track|"+track+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find upload file;";
+        String rsp = "flag|"+id+";type|share;result|n;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find upload file;";
         PreparedStatement pstmt;
         int rs;
         try {
@@ -496,18 +496,18 @@ public class MulticastServerResponse extends Thread {
                                                               "from music, (select id " +
                                                                            "from album " +
                                                                            "where album.title = ? and album.artist_name = ?) alb " +
-                                                              "where alb.id = music.album_id and music.track = ? ) mus " +
+                                                              "where alb.id = music.album_id and music.title = ? ) mus " +
                                                  "where upload.music_id = mus.id and upload.user_email = ?;");
 
             pstmt.setString(1, shareTo);
             pstmt.setString(2, album);
             pstmt.setString(3, artist);
-            pstmt.setInt(4, Integer.parseInt(track));
+            pstmt.setString(4, title);
             pstmt.setString(5, uploader);
             rs = pstmt.executeUpdate();
 
             if (rs == 1)
-                rsp = "flag|"+id+";type|share;result|y;track|"+track+";shareTo|"+shareTo+";uploader|"+uploader+";";
+                rsp = "flag|"+id+";type|share;result|y;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";";
 
             pstmt.close();
 
@@ -515,14 +515,14 @@ public class MulticastServerResponse extends Thread {
             switch (e.getErrorCode()) {
                 case 1452: // Foreign key violation
                     System.out.println("Wrong user_email");
-                    rsp = "flag|"+id+";type|share;result|n;track|"+track+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find user;";
+                    rsp = "flag|"+id+";type|share;result|n;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find user;";
                     break;
                 case 1048: // Can't be null (means select failed, user didn't upload that song)
                     System.out.println("Wrong upload_music_id");
-                    rsp = "flag|"+id+";type|share;result|n;track|"+track+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find your upload;";
+                    rsp = "flag|"+id+";type|share;result|n;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find your upload of `"+title+"` in "+album+" by "+artist+";";
                     break;
                 case 1062: // Duplicate entry
-                    rsp = "flag|"+id+";type|share;result|n;track|"+track+";shareTo|"+shareTo+";uploader|"+uploader+";msg|You already shared this;";
+                    rsp = "flag|"+id+";type|share;result|n;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";msg|You already shared this;";
 
             }
         }
