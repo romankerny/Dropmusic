@@ -1,12 +1,10 @@
 import java.io.*;
 import java.net.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.Iterator;
@@ -652,37 +650,6 @@ public class MulticastServerResponse extends Thread {
             try { rs.close(); pstmt.close(); } catch (SQLException e) { System.out.println(e); }
         }
 
-
-        /* ------------ Classes
-
-        String rsp = "flag|"+id+";type|login;result|n;email|" + email + ";password|" + password + ";msg|Incorrect user/password;";
-
-        Iterator iUsers = users.iterator();
-        User u = null;
-        boolean found = false;
-
-        while (iUsers.hasNext() && !found) {
-            u = (User) iUsers.next();
-            if (u.email.equals((email)) && u.password.equals(password)) {
-                found = true;
-            }
-        }
-
-        if (found) {
-            rsp = "flag|"+id+";type|login;result|y;email|" + email + ";password|" + password + ";";
-
-            // Concatenate notifications to `rsp` if they exist
-            rsp += "notification_count|"+u.notifications.size()+";";
-
-            Iterator iMessages = u.notifications.iterator();
-            while(iMessages.hasNext()) {
-                rsp += "notif|" + (String) iMessages.next() + ";";
-
-            }
-            u.notifications.clear();
-
-            System.out.println(email + " logged in");
-        }*/
         sendResponseMulticast(rsp, code);
     }
 
@@ -730,42 +697,6 @@ public class MulticastServerResponse extends Thread {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
-        /* --------------- Classes
-        String rsp = "flag|"+id+";type|privilege;result|n;user1|" + user1 +";user2|" + user2 + ";";
-
-        Iterator iUsers1 = users.iterator();
-        Iterator iUsers2 = users.iterator();
-        boolean isEditor = false;
-        boolean found2 = false;
-
-        // Find editor and check if he is actually an editor
-        while (iUsers1.hasNext() && !isEditor) {
-            User s = (User) iUsers1.next();
-            if(s.email.equals(user1) && s.isEditor())
-                isEditor = true;
-
-        }
-        if (isEditor) {
-            // Find regular user
-            while (iUsers2.hasNext() && !found2) {
-                User s = (User) iUsers2.next();
-                if (s.email.equals(user2)) {
-                    System.out.println(s);
-                    s.becomeEditor();
-                    System.out.println(s);
-                    found2 = true;
-                    rsp = "flag|"+id+";type|privilege;result|y;user1|" + user1 +";user2|" + user2 + ";";
-                }
-            }
-            if (!found2)
-                rsp += "msg|Couldn't find user to promote;";
-        } else {
-            rsp += "msg|You have to be an Editor to use /promote;";
-        }
-
-        ObjectFiles.writeUsersToDisk(users); */
 
         sendResponseMulticast(rsp, code); // -> RMIServer
     }
@@ -822,31 +753,6 @@ public class MulticastServerResponse extends Thread {
             }
         }
 
-        /* ------------ Classes
-
-        Iterator iArtists = artists.iterator();
-        boolean found = false;
-        String rsp;
-
-        while (iArtists.hasNext() & !found) {
-            Artist a = (Artist) iArtists.next();
-            Iterator iAlbum = a.albums.iterator();
-
-            while(iAlbum.hasNext()) {
-                Album al = (Album) iAlbum.next();
-                if(al.title.equals(albumName)) {
-                    al.addCritic(critic, Integer.parseInt(rate), email);
-                    found = true;
-                }
-            }
-        }
-        if (found)
-            rsp = "flag|"+id+";type|critic;result|y;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";";
-        else
-            rsp = "flag|"+id+";type|critic;result|n;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";"+"msg|Couldn't find album `"+albumName+"`;";
-
-        ObjectFiles.writeArtistsToDisk(artists); */
-
         sendResponseMulticast(rsp, code);
     }
 
@@ -880,11 +786,6 @@ public class MulticastServerResponse extends Thread {
             e.printStackTrace();
         }
 
-        /* ------------ Classes
-        for (User u : users)
-            if(u.email.equals(email))
-                u.addNotification(message);
-        ObjectFiles.writeUsersToDisk(users); */
     }
 
     /**
@@ -901,35 +802,55 @@ public class MulticastServerResponse extends Thread {
         // Request  -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk;
         // Response -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk; item_count | n; item_x_name | name; [...] msg | mmmmmm;
 
-        String rsp, response = "";
-        String message= " ";
-        boolean found = false;
-        char result = 'n';
+        PreparedStatement pstmt = null;
+        ResultSet rs;
+        String response = "", rsp = "", result = "", message = "";
+        int a = 0;
 
-        if (type.equals("art")) {
-            for (Artist a : artists) {
-                if (a.name.equals(keyword)) {
-                    found = true;
-                    response = a.toString();
-                    result = 'y';
-                }
+        try {
+
+            if (type.equals("art")) {
+                pstmt = con.prepareStatement("SELECT * from artist where name = ?");
+
+            } else if (type.equals("alb")) {
+                pstmt = con.prepareStatement("SELECT * from album where title = ?");
+
             }
-        } else if (type.equals("alb") || type.equals("gen")) {
-            for (Artist a : artists) {
-                for (Album al : a.albums) {
-                    if (al.title.equals(keyword) || al.genre.equals(keyword)) {
-                        found = true;
-                        response += al.toString();
-                        result = 'y';
-                    }
+
+            pstmt.setString(1, keyword);
+            rs = pstmt.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+
+            String aux = "";
+            while (rs.next()) {
+
+                aux += "item_"+ a +"_name|";
+                for (int i = 1; i <= columnsNumber; i++) {
+                    String columnValue = rs.getString(i);
+                    aux +=  columnValue + " ";
                 }
+                aux += "\n;";
+                a++;
+
+                response += aux;
+                aux = "";
             }
+
+            if(a > 0) {
+                result = "y";
+            } else {
+                result = "n";
+                message = "Unable to find " + keyword + " in DB";
+            }
+
+
+        } catch (SQLException e) {
+            result = "n";
+            message = "Couldn't find `"+keyword+"` in database";
         }
 
-        if (!found)
-            message = "Couldn't find `"+keyword+"` in database";
-
-        rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";item_count|1;item_x_name|"+response+";msg|"+message+";";
+        rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";item_count|"+ a +";"+response+";msg|"+message+";";
         sendResponseMulticast(rsp, code);
 
     }
@@ -1044,11 +965,6 @@ public class MulticastServerResponse extends Thread {
         String usrIsEditor = "", bfNot = "";
         int rs, notifCount = 0;
         ResultSet qSet;
-
-        System.out.println("launch date " + launchDate);
-        System.out.println("editor Label " + editorLabel);
-        System.out.println("description " + description);
-
 
         try {
 
@@ -1239,7 +1155,6 @@ public class MulticastServerResponse extends Thread {
                 // user is not editor
                 rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Only an Editor can add a new music;";
             }
-
 
         } catch (SQLException e) {
             rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Something went wrong adding music;";

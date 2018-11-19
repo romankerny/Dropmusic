@@ -569,8 +569,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if (cleanMessage.get(0)[1].equals(id)) {
                 if (cleanMessage.get(2)[1].equals("y")) {
                     int numItems = Integer.parseInt(cleanMessage.get(5)[1]);
+                    System.out.println("numItems " + numItems);
                     for (int i = 0; i < numItems; i++) {
-                        rspToClient += cleanMessage.get(6 + i)[1];
+                        rspToClient += cleanMessage.get(6 + i)[1] + "\n";
+                        System.out.println(" --- " + rspToClient);
                     }
                 } else {
                     rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
