@@ -123,9 +123,9 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- logout (no arguments)\n\n"+
                     "- search {art, alb} keyword\n"+
                     "- rate [1-5]\n\n"+
-                    "- upload [track #]\n"+
+                    "- upload [track title]\n"+
                     "- download [user] [music title]\n"+
-                    "- share [user] [music title]"+
+                    "- share [user]"+
                     "  \nEditor-specific:\n"+
                     "- promote [email]\n"+
                     "- add {art, alb, mus} [name]\n";
@@ -268,16 +268,16 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
                 } else if (tokens[0].equals("upload") && !email.equals("")) {
 
-                    if (tokens.length == 2) {
+                    if (tokens.length >= 2) {
                         int port;
-                        int trackNumber = Integer.parseInt(tokens[1]);
+                        String musicTitle = strCatSpaces(tokens, 1);
                         System.out.print("Path/to/file: ");
                         String path = sc.nextLine();
                         System.out.print("Artist's name: ");
                         String artistName = sc.nextLine();
                         System.out.print(artistName +"'s album name: ");
                         String albumName = sc.nextLine();
-                        String ipport = client.serverInterface.uploadMusic(artistName, albumName, Integer.toString(trackNumber), email);
+                        String ipport = client.serverInterface.uploadMusic(artistName, albumName, musicTitle, email);
 
                         // If first char is a number then we received an IP:Port, if not then it's an error message
                         if (Character.isDigit(ipport.charAt(0))) {
@@ -351,11 +351,18 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
                 } else if (tokens[0].equals("share") && !email.equals("")) {
 
-                    if (tokens.length >= 3) {
-                        String musicName = strCatSpaces(tokens, 2);
-                        System.out.println(client.serverInterface.share(musicName, tokens[1], email));
+                    if (tokens.length == 2) {
+                        System.out.print("Artist's name: ");
+                        String artistName = sc.nextLine();
+                        System.out.print(artistName +"'s album name: ");
+                        String albumName = sc.nextLine();
+                        System.out.print(albumName +"'s track title: ");
+                        String musicTitle = sc.nextLine();
+
+
+                        System.out.println(client.serverInterface.share(artistName, albumName, musicTitle, tokens[1], email));
                     } else {
-                        System.out.println("Usage: share [user] [music name]");
+                        System.out.println("Usage: share [user]");
                     }
                 } else if (tokens[0].equals("help")) {
                     System.out.println(help);
