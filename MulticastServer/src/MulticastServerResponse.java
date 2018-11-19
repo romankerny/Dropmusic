@@ -239,54 +239,6 @@ public class MulticastServerResponse extends Thread {
             }
         }
 
-        // ---------- Classes
-
-        /*
-
-        if(this.hashCode.equals(code)) {
-
-            Music song = null;
-
-            for (Artist a : artists)
-                for (Album al : a.albums)
-                    for (Music m : al.tracks)
-                        if (m.title.equals(title)) {
-                            song = m;
-                        }
-
-            if (song != null) {
-                ServerSocket serverSocket = getSocket();
-                Socket client = null;
-                String ip = InetAddress.getLocalHost().getHostAddress();
-                int port = serverSocket.getLocalPort();
-
-                System.out.println("A dar upload de musica " + title);
-                sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|upload;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
-
-                System.out.println("socket is bound");
-                client = serverSocket.accept();
-
-                DataInputStream in = new DataInputStream(client.getInputStream());
-
-                // Filename and size first
-                String filename = in.readUTF();
-                long size = in.readLong();
-
-                byte[] rawData = new byte[(int) size];
-                // Ler todos os bytes
-                in.readFully(rawData);
-
-                song.musicFiles.put(email, new MusicFile(filename, rawData));
-                song.musicFiles.get(email).emails.add(email);
-
-                in.close();
-                serverSocket.close();
-                ObjectFiles.writeArtistsToDisk(artists);
-                System.out.println("Upload of " + title+ " done" );
-            } else {
-                sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|upload;email|"+email+";result|n;msg|Couldn't find `"+title+"` in database;", code);
-            }
-        }*/
 
     }
 
@@ -381,88 +333,13 @@ public class MulticastServerResponse extends Thread {
                 sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;", code);
                 return;
             }
-            /*
-            if (c > 0) {
-                // if music is fond then proceed to download
 
-                // fetch musicFileName
-                ServerSocket serverSocket = getSocket();
-                String ip = InetAddress.getLocalHost().getHostAddress();
-                int port = serverSocket.getLocalPort();
-                Socket client = null;
-                sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
-
-                client = serverSocket.accept();
-                DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                // MusicFile mf = song.musicFiles.get(uploader);
-
-                // Send filename before raw data
-                out.writeUTF(mf.filename);
-                out.write(mf.rawData);
-                out.close();
-                serverSocket.close();
-                System.out.println(" a bazar do download ");
-
-
-            } else {
-
-            }
-            */
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
 
-
-
-
-
-
-
-
-        // if the music isn't found then the server will send a packet to RMI w/ result|n
-        // then returns; ending the method
-        // if music is fond then proceed to download
-        /*
-        Music song = null;
-        if(this.hashCode.equals(code)) {
-            for (Artist a : artists)
-                for (Album al : a.albums)
-                    for (Music m : al.tracks)
-                        if (m.title.equals(title))
-                            song = m;
-
-            if (song != null) { // It was found
-                if (song.musicFiles.get(uploader).emails.contains(email)) { // Allowed to download
-                    ServerSocket serverSocket = getSocket();
-                    String ip = InetAddress.getLocalHost().getHostAddress();
-                    int port = serverSocket.getLocalPort();
-                    Socket client = null;
-
-                    sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
-
-                    client = serverSocket.accept();
-                    DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                    MusicFile mf = song.musicFiles.get(uploader);
-
-                    // Send filename before raw data
-                    out.writeUTF(mf.filename);
-                    out.write(mf.rawData);
-                    out.close();
-                    serverSocket.close();
-                    System.out.println(" a bazar do download ");
-
-                } else { // Not allowed
-                    sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;msg|You're not allowed to download this song;", code);
-                }
-            } else { // Not found
-                sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;msg|Couldn't find `"+title+"` in database;", code);
-            }
-        }
-
-        ObjectFiles.writeArtistsToDisk(artists);
-        */
     }
 
     /**
@@ -526,43 +403,6 @@ public class MulticastServerResponse extends Thread {
         }
 
 
-
-        /* ----------- Classes
-
-        String rsp;
-        boolean found = false;
-        Iterator iArtists = artists.iterator();
-
-        while(iArtists.hasNext()) {
-            Artist a = (Artist) iArtists.next();
-            Iterator iAlbum = a.albums.iterator();
-
-            while(iAlbum.hasNext()) {
-                Album alb = (Album) iAlbum.next();
-                Iterator iMusic = alb.tracks.iterator();
-
-                while(iMusic.hasNext()) {
-                    Music m = (Music) iMusic.next();
-                    if(m.title.equals(title)) {
-
-                        if(m.musicFiles.containsKey(uploader)) {
-                            found = true;
-                            m.musicFiles.get(uploader).shareWith(shareTo);
-                            //System.out.println(m.musicFiles.get(uploader).emails.size());
-                        }
-
-                    }
-                }
-            }
-        }
-        ObjectFiles.writeArtistsToDisk(artists);
-        ObjectFiles.writeUsersToDisk(users);
-
-        if (found) {
-            rsp = "flag|"+id+";type|share;result|y;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";";
-        } else {
-            rsp = "flag|"+id+";type|share;result|n;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find upload file;";
-        }*/
         sendResponseMulticast(rsp, code);
     }
 
@@ -608,33 +448,6 @@ public class MulticastServerResponse extends Thread {
 
         }
 
-
-        /* ----------- Classes
-        String message;
-        // Verificar se existe
-
-        String rsp;
-        boolean found = false;
-        Iterator iUser = users.iterator();
-
-        while(iUser.hasNext()) {
-            User s = (User) iUser.next();
-            if(s.email.equals(email)) {
-                found = true;
-            }
-        }
-
-        if(found) {
-            message = "User "+email+" is already registered";
-            rsp = "flag|"+id+";type|register;result|n;username|" + email + ";password|" + password + ";"+"msg|"+message+";";
-            System.out.println("User " + email + " already has an acc.");
-        } else {
-            // Fazer registo e adicionar a BD o novo user
-            User s = new User(email, password);
-            users.add(s);
-            rsp = "flag|"+id+";type|register;result|y;username|" + email + ";password|" + password + ";";
-            ObjectFiles.writeUsersToDisk(users);
-        } */
         sendResponseMulticast(rsp, code);
     }
 
