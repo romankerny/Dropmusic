@@ -260,46 +260,38 @@ public class MulticastServerResponse extends Thread {
         // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | y; ip| iiii; port | pppp;
         // Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | n; msg | mmmmmmmmm;
 
-
-        // server tries to find the music w/ the given uploader
-        // Music msc = searchMusic(title, uploader);
         ResultSet rs;
-        PreparedStatement pstmt = null, pstmt1 = null;
+        PreparedStatement pstmt = null;
         String path;
-        int c = 0;
+        Socket client;
 
-        try {
-            // check if user with email can downlaoad
+        if(code.equals(this.hashCode)) {
 
-            System.out.println("Figuring out if user with ´email´ can download the given music. . .");
-            pstmt = con.prepareStatement("SELECT DISTINCT m.id FROM music m, artist a, album alb, allowed up " +
-                    "                          WHERE up.allowed_email = ? AND up.user_email = ? AND up.upload_music_id = m.id" +
-                    "                          AND m.title = ? AND alb.title = ? AND a.name = ?" +
-                    "                          AND alb.artist_name = a.name AND m.album_id = alb.id");
-            pstmt.setString(1, uploader);
-            pstmt.setString(2, email);
-            pstmt.setString(3, title);
-            pstmt.setString(4, albumName);
-            pstmt.setString(5, artistName);
+            try {
 
-            rs = pstmt.executeQuery();
-
-            if ((rs.next())) {
                 System.out.println("Fetching file path in DB");
-                String musicID = rs.getString("id");
-                pstmt1 = con.prepareStatement("SELECT musicfilename FROM upload WHERE music_id = ? AND user_email = ?");
-                pstmt1.setString(1, musicID);
-                pstmt1.setString(2, uploader);
-                rs = pstmt1.executeQuery();
+                pstmt = con.prepareStatement("SELECT musicfilename FROM upload ," +
+                        "                        (SELECT DISTINCT m.id FROM music m, artist a, album alb, allowed up" +
+                        "                        WHERE up.allowed_email = ? AND up.user_email = ? AND up.upload_music_id = m.id" +
+                        "                        AND m.title = ? AND alb.title = ? AND a.name = ?\n" +
+                        "                        AND alb.artist_name = a.name AND m.album_id = alb.id) AS musicID" +
+                        "                        WHERE music_id = musicID.id AND user_email = ?");
 
-                if(rs.next()) {
+                pstmt.setString(1, uploader);
+                pstmt.setString(2, email);
+                pstmt.setString(3, title);
+                pstmt.setString(4, albumName);
+                pstmt.setString(5, artistName);
+                pstmt.setString(6, uploader);
+                rs = pstmt.executeQuery();
+
+                if (rs.next()) {
                     System.out.println("Starting Download . . .");
                     path = rs.getString("musicfilename");
                     System.out.println("Path : " + path);
                     ServerSocket serverSocket = getSocket();
                     String ip = InetAddress.getLocalHost().getHostAddress();
                     int port = serverSocket.getLocalPort();
-                    Socket client;
                     sendResponseMulticast("flag|" + id + ";type|requestTCPConnection;operation|download;email|" + email + ";result|y;ip|" + ip + ";port|" + port + ";", code);
                     client = serverSocket.accept();
                     System.out.println("Accepted client socket");
@@ -317,20 +309,16 @@ public class MulticastServerResponse extends Thread {
                     }
                     out.close();
                 } else {
-                    sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;msg|Could not file File in DB;", code);
+                    System.out.println("Didn't find music in DB");
+                    sendResponseMulticast("flag|" + id + ";type|requestTCPConnection;operation|download;email|" + email + ";result|n;msg|Unable to complete download operation;", code);
+
                 }
 
-            } else {
-                // if music does not exist / no permission
-                sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;", code);
-                return;
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
 
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-
 
     }
 
