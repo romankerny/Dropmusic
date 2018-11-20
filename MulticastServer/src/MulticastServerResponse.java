@@ -952,24 +952,17 @@ public class MulticastServerResponse extends Thread {
 
             if(usrIsEditor.equals("1")) {
 
-                // fetch album ID
-                pstmtAlb = con.prepareStatement("SELECT id FROM album WHERE title = ? AND artist_name = ?");
-                pstmtAlb.setString(1, albName);
-                pstmtAlb.setString(2, artiName);
-                qSet = pstmtAlb.executeQuery();
-                while(qSet.next()) {
-                    albID = qSet.getString("id");
-                }
 
-                pstmt1 = con.prepareStatement("INSERT INTO music (track, title, lyrics, album_id) VALUES (?, ?, ?, ?)" +
-                        "ON DUPLICATE KEY UPDATE lyrics = ?, title = ?");
+                pstmt1 = con.prepareStatement("INSERT INTO music (track, title, lyrics, album_id) VALUES (?, ?, ?, (SELECT id FROM album WHERE title = ? AND artist_name = ?)) " +
+                                                   "ON DUPLICATE KEY UPDATE lyrics = ?, title = ?");
                 pstmt1.setString(1, track);
                 pstmt1.setString(2, title);
                 pstmt1.setString(3, lyrics);
-                pstmt1.setString(4, albID);
+                pstmt1.setString(4, albName);
+                pstmt1.setString(5, artiName);
 
-                pstmt1.setString(5, lyrics);
-                pstmt1.setString(6, title);
+                pstmt1.setString(6, lyrics);
+                pstmt1.setString(7, title);
 
                 rs = pstmt1.executeUpdate();
 
