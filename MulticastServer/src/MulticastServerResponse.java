@@ -25,17 +25,13 @@ public class MulticastServerResponse extends Thread {
     private MulticastSocket sendSocket = null; // socket to respond to Multicast group
     private int SEND_PORT = 5214;
     private String MULTICAST_ADDRESS;
-    private CopyOnWriteArrayList<User> users;
-    private CopyOnWriteArrayList<Artist> artists;
     private Connection con;
 
 
-    MulticastServerResponse(DatagramPacket packet, String ip, CopyOnWriteArrayList<User> users, CopyOnWriteArrayList<Artist> artists, String code, Connection con) {
+    MulticastServerResponse(DatagramPacket packet, String ip, String code, Connection con) {
 
         this.packet = packet;
         MULTICAST_ADDRESS = ip;
-        this.users = users;
-        this.artists = artists;
         this.hashCode = code;
         this.con = con;
     }
@@ -929,8 +925,6 @@ public class MulticastServerResponse extends Thread {
         boolean found = false;
         boolean alreadyExists = false;
         String notify = "", artName = null;
-
-        User editor = null;
 
         // BD
 
