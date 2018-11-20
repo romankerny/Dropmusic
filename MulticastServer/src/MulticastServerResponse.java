@@ -4,11 +4,8 @@ import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.Iterator;
-
 /**
  *
  * MulticastServerResponse is a Thread that is created by MulticastServer every time a new packet arrives for processing.
@@ -50,6 +47,7 @@ public class MulticastServerResponse extends Thread {
         if(this.hashCode.equals(code)) {
             // only the designated Multicast Server will respond to RMIServer
             try {
+
                 MulticastSocket socket = new MulticastSocket();
                 byte[] buffer = (resp+"hash|" + hashCode + ";").getBytes();
                 InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
