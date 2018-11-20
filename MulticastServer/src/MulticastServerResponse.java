@@ -619,7 +619,6 @@ public class MulticastServerResponse extends Thread {
 
     public void offUserNotified(String id, String email, String message) {
 
-        // ------------ BD
         PreparedStatement pstmt;
         int rs;
 
@@ -954,12 +953,9 @@ public class MulticastServerResponse extends Thread {
                 pstmt1.setString(3, lyrics);
                 pstmt1.setString(4, albName);
                 pstmt1.setString(5, artiName);
-
                 pstmt1.setString(6, lyrics);
                 pstmt1.setString(7, title);
-
                 rs = pstmt1.executeUpdate();
-
 
                 // notify editors of that album
                 pstmtNot = con.prepareStatement("SELECT user_email FROM artist_user WHERE artist_name = ?");
@@ -1023,7 +1019,6 @@ public class MulticastServerResponse extends Thread {
      */
 
     public void run() {
-
 
 
         String message = new String(packet.getData(), 0, packet.getLength());
