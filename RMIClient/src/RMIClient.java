@@ -118,8 +118,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
 
         String help = "Commands:\n"+
-                    "- register [email] [password]\n"+
-                    "- login [email] [password]\n"+
+                    "- register [email]\n"+
+                    "- login [email]\n"+
                     "- logout (no arguments)\n\n"+
                     "- search {art, alb} keyword\n"+
                     "- rate [1-5]\n\n"+
@@ -161,19 +161,28 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                 }
 
                 if (tokens[0].equals("register")) {
-                    if (tokens.length == 3) {
-                        System.out.println(client.serverInterface.register(tokens[1], tokens[2]));
+                    if (tokens.length == 2) {
+                        System.out.print("Password: ");
+                        String pw = sc.nextLine();
+                        System.out.println(client.serverInterface.register(tokens[1], pw));
                     } else {
-                        System.out.println("Usage: register [email] [password]");
+                        System.out.println("Usage: register [email]");
                     }
 
                 } else if (tokens[0].equals("login")) {
 
-                    if (tokens.length == 3) {
-                        System.out.println(client.serverInterface.login(tokens[1], tokens[2], client));
-                        email = tokens[1];
+                    if (tokens.length == 2) {
+                        String login = strCatSpaces(tokens, 1);
+                        System.out.print("Password: ");
+                        String pw = sc.nextLine();
+
+                        String result = client.serverInterface.login(login, pw, client);
+                        System.out.println(result);
+
+                        if (!result.equals("Incorrect user/password"))
+                            email = tokens[1];
                     } else {
-                        System.out.println("Usage: login [email] [password]");
+                        System.out.println("Usage: login [email]");
                     }
 
 

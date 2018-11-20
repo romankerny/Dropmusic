@@ -149,9 +149,8 @@ public class MulticastServerResponse extends Thread {
             PreparedStatement pstmt;
             ResultSet rs;
             try {
-                pstmt = con.prepareStatement("select music.id " +
-                        "from music, (select id from album where title = ? and artist_name = ?) as alb " +
-                        "where music.album_id = alb.id and music.title = ?");
+                pstmt = con.prepareStatement("select m.id " +
+                        "from music m, album a where m.album_id = a.id and a.title = ? and a.artist_name= ? and m.title = ?");
                 pstmt.setString(1, albumName);
                 pstmt.setString(2, artistName);
                 pstmt.setString(3, title);
@@ -348,12 +347,12 @@ public class MulticastServerResponse extends Thread {
         try {
             pstmt = con.prepareStatement("INSERT INTO allowed (upload_music_id, allowed_email, user_email) " +
                                                 "select upload.music_id, upload.user_email, ? " +
-                                                "from upload, (select music.id " +
-                                                              "from music, (select id " +
-                                                                           "from album " +
-                                                                           "where album.title = ? and album.artist_name = ?) alb " +
-                                                              "where alb.id = music.album_id and music.title = ? ) mus " +
-                                                 "where upload.music_id = mus.id and upload.user_email = ?;");
+                                                "from upload, album a, music m " +
+                                                "where upload.music_id = m.id " +
+                                                "and a.title = ? " +
+                                                "and a.artist_name = ? " +
+                                                "and m.title = ?"+
+                                                "and upload.user_email = ?;");
 
             pstmt.setString(1, shareTo);
             pstmt.setString(2, album);
