@@ -405,14 +405,17 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
-
+        System.out.println("A iniciar download");
         try {
             // refresh rmiServer.multicastHashes bc there is the possibility that a server died in the past
             // if that happens we need to "clean" our set of Hashes
             refreshMulticastHashes();
+
+            System.out.println(multicastHashes);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("AQUI");
 
         boolean exit = false;
         int n_responses = 0;
