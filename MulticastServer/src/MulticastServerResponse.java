@@ -5,7 +5,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
-import java.util.Iterator;
 /**
  *
  * MulticastServerResponse is a Thread that is created by MulticastServer every time a new packet arrives for processing.
@@ -301,7 +300,7 @@ public class MulticastServerResponse extends Thread {
                     ServerSocket serverSocket = getSocket();
                     String ip = InetAddress.getLocalHost().getHostAddress();
                     int port = serverSocket.getLocalPort();
-                    Socket client = null;
+                    Socket client;
                     sendResponseMulticast("flag|" + id + ";type|requestTCPConnection;operation|download;email|" + email + ";result|y;ip|" + ip + ";port|" + port + ";", code);
                     client = serverSocket.accept();
                     System.out.println("Accepted client socket");
