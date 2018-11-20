@@ -13,18 +13,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  */
 
-
 public class MulticastServer {
     private static String MULTICAST_ADDRESS = "224.3.2.2";
     private static int RECV_PORT = 5213;
     private static MulticastSocket socket = null;
-    private static CopyOnWriteArrayList<User> users = new CopyOnWriteArrayList<>();
-    private static CopyOnWriteArrayList<Artist> artists = new CopyOnWriteArrayList<>();
 
     /**
      *  Creates a multicastSocket and sends a Datagram packet with
      *  some protocol instruction.
-     *
      * @param resp - protocol instruction to send
      */
 
@@ -47,21 +43,11 @@ public class MulticastServer {
     /**
      *  Main loop of Multicast, starts by reading users.obj and artists.obj,
      *  then proceeds to create a new MulticastSocket, joins the group and sends an `ack` to RMIServer.
-     *
      *  Finally enters the loop of receiving a packet and creating a new MulticastServerResponse Thread to deal with it.
      *
      */
 
     public static void main(String[] args) {
-        // Read from memory
-        users = ObjectFiles.readUsersFromDisk();
-        artists = ObjectFiles.readArtistsFromDisk();
-        /*
-        for (User u : users)
-            System.out.println(u);
-
-        for (Artist a : artists)
-            System.out.println(a);*/
 
         try {
             // Sending HASH-code to Main RMI
@@ -83,7 +69,7 @@ public class MulticastServer {
                 byte[] buffer = new byte[65536];
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
-                MulticastServerResponse threadToResolvePacket = new MulticastServerResponse(packet, MULTICAST_ADDRESS, users, artists, code, con);
+                MulticastServerResponse threadToResolvePacket = new MulticastServerResponse(packet, MULTICAST_ADDRESS, code, con);
                 threadToResolvePacket.start();
 
 

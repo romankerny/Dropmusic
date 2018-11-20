@@ -1,16 +1,11 @@
 import java.io.*;
 import java.net.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.Iterator;
-
 /**
  *
  * MulticastServerResponse is a Thread that is created by MulticastServer every time a new packet arrives for processing.
@@ -27,17 +22,13 @@ public class MulticastServerResponse extends Thread {
     private MulticastSocket sendSocket = null; // socket to respond to Multicast group
     private int SEND_PORT = 5214;
     private String MULTICAST_ADDRESS;
-    private CopyOnWriteArrayList<User> users;
-    private CopyOnWriteArrayList<Artist> artists;
     private Connection con;
 
 
-    MulticastServerResponse(DatagramPacket packet, String ip, CopyOnWriteArrayList<User> users, CopyOnWriteArrayList<Artist> artists, String code, Connection con) {
+    MulticastServerResponse(DatagramPacket packet, String ip, String code, Connection con) {
 
         this.packet = packet;
         MULTICAST_ADDRESS = ip;
-        this.users = users;
-        this.artists = artists;
         this.hashCode = code;
         this.con = con;
     }
@@ -56,6 +47,7 @@ public class MulticastServerResponse extends Thread {
         if(this.hashCode.equals(code)) {
             // only the designated Multicast Server will respond to RMIServer
             try {
+
                 MulticastSocket socket = new MulticastSocket();
                 byte[] buffer = (resp+"hash|" + hashCode + ";").getBytes();
                 InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
@@ -241,54 +233,6 @@ public class MulticastServerResponse extends Thread {
             }
         }
 
-        // ---------- Classes
-
-        /*
-
-        if(this.hashCode.equals(code)) {
-
-            Music song = null;
-
-            for (Artist a : artists)
-                for (Album al : a.albums)
-                    for (Music m : al.tracks)
-                        if (m.title.equals(title)) {
-                            song = m;
-                        }
-
-            if (song != null) {
-                ServerSocket serverSocket = getSocket();
-                Socket client = null;
-                String ip = InetAddress.getLocalHost().getHostAddress();
-                int port = serverSocket.getLocalPort();
-
-                System.out.println("A dar upload de musica " + title);
-                sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|upload;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
-
-                System.out.println("socket is bound");
-                client = serverSocket.accept();
-
-                DataInputStream in = new DataInputStream(client.getInputStream());
-
-                // Filename and size first
-                String filename = in.readUTF();
-                long size = in.readLong();
-
-                byte[] rawData = new byte[(int) size];
-                // Ler todos os bytes
-                in.readFully(rawData);
-
-                song.musicFiles.put(email, new MusicFile(filename, rawData));
-                song.musicFiles.get(email).emails.add(email);
-
-                in.close();
-                serverSocket.close();
-                ObjectFiles.writeArtistsToDisk(artists);
-                System.out.println("Upload of " + title+ " done" );
-            } else {
-                sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|upload;email|"+email+";result|n;msg|Couldn't find `"+title+"` in database;", code);
-            }
-        }*/
 
     }
 
@@ -383,88 +327,13 @@ public class MulticastServerResponse extends Thread {
                 sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;", code);
                 return;
             }
-            /*
-            if (c > 0) {
-                // if music is fond then proceed to download
 
-                // fetch musicFileName
-                ServerSocket serverSocket = getSocket();
-                String ip = InetAddress.getLocalHost().getHostAddress();
-                int port = serverSocket.getLocalPort();
-                Socket client = null;
-                sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
-
-                client = serverSocket.accept();
-                DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                // MusicFile mf = song.musicFiles.get(uploader);
-
-                // Send filename before raw data
-                out.writeUTF(mf.filename);
-                out.write(mf.rawData);
-                out.close();
-                serverSocket.close();
-                System.out.println(" a bazar do download ");
-
-
-            } else {
-
-            }
-            */
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
 
-
-
-
-
-
-
-
-        // if the music isn't found then the server will send a packet to RMI w/ result|n
-        // then returns; ending the method
-        // if music is fond then proceed to download
-        /*
-        Music song = null;
-        if(this.hashCode.equals(code)) {
-            for (Artist a : artists)
-                for (Album al : a.albums)
-                    for (Music m : al.tracks)
-                        if (m.title.equals(title))
-                            song = m;
-
-            if (song != null) { // It was found
-                if (song.musicFiles.get(uploader).emails.contains(email)) { // Allowed to download
-                    ServerSocket serverSocket = getSocket();
-                    String ip = InetAddress.getLocalHost().getHostAddress();
-                    int port = serverSocket.getLocalPort();
-                    Socket client = null;
-
-                    sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|y;ip|"+ip+";port|"+port+";", code);
-
-                    client = serverSocket.accept();
-                    DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                    MusicFile mf = song.musicFiles.get(uploader);
-
-                    // Send filename before raw data
-                    out.writeUTF(mf.filename);
-                    out.write(mf.rawData);
-                    out.close();
-                    serverSocket.close();
-                    System.out.println(" a bazar do download ");
-
-                } else { // Not allowed
-                    sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;msg|You're not allowed to download this song;", code);
-                }
-            } else { // Not found
-                sendResponseMulticast("flag|"+id+";type|requestTCPConnection;operation|download;email|"+email+";result|n;msg|Couldn't find `"+title+"` in database;", code);
-            }
-        }
-
-        ObjectFiles.writeArtistsToDisk(artists);
-        */
     }
 
     /**
@@ -528,43 +397,6 @@ public class MulticastServerResponse extends Thread {
         }
 
 
-
-        /* ----------- Classes
-
-        String rsp;
-        boolean found = false;
-        Iterator iArtists = artists.iterator();
-
-        while(iArtists.hasNext()) {
-            Artist a = (Artist) iArtists.next();
-            Iterator iAlbum = a.albums.iterator();
-
-            while(iAlbum.hasNext()) {
-                Album alb = (Album) iAlbum.next();
-                Iterator iMusic = alb.tracks.iterator();
-
-                while(iMusic.hasNext()) {
-                    Music m = (Music) iMusic.next();
-                    if(m.title.equals(title)) {
-
-                        if(m.musicFiles.containsKey(uploader)) {
-                            found = true;
-                            m.musicFiles.get(uploader).shareWith(shareTo);
-                            //System.out.println(m.musicFiles.get(uploader).emails.size());
-                        }
-
-                    }
-                }
-            }
-        }
-        ObjectFiles.writeArtistsToDisk(artists);
-        ObjectFiles.writeUsersToDisk(users);
-
-        if (found) {
-            rsp = "flag|"+id+";type|share;result|y;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";";
-        } else {
-            rsp = "flag|"+id+";type|share;result|n;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find upload file;";
-        }*/
         sendResponseMulticast(rsp, code);
     }
 
@@ -610,33 +442,6 @@ public class MulticastServerResponse extends Thread {
 
         }
 
-
-        /* ----------- Classes
-        String message;
-        // Verificar se existe
-
-        String rsp;
-        boolean found = false;
-        Iterator iUser = users.iterator();
-
-        while(iUser.hasNext()) {
-            User s = (User) iUser.next();
-            if(s.email.equals(email)) {
-                found = true;
-            }
-        }
-
-        if(found) {
-            message = "User "+email+" is already registered";
-            rsp = "flag|"+id+";type|register;result|n;username|" + email + ";password|" + password + ";"+"msg|"+message+";";
-            System.out.println("User " + email + " already has an acc.");
-        } else {
-            // Fazer registo e adicionar a BD o novo user
-            User s = new User(email, password);
-            users.add(s);
-            rsp = "flag|"+id+";type|register;result|y;username|" + email + ";password|" + password + ";";
-            ObjectFiles.writeUsersToDisk(users);
-        } */
         sendResponseMulticast(rsp, code);
     }
 
@@ -698,37 +503,6 @@ public class MulticastServerResponse extends Thread {
             try { rs.close(); pstmt.close(); } catch (SQLException e) { System.out.println(e); }
         }
 
-
-        /* ------------ Classes
-
-        String rsp = "flag|"+id+";type|login;result|n;email|" + email + ";password|" + password + ";msg|Incorrect user/password;";
-
-        Iterator iUsers = users.iterator();
-        User u = null;
-        boolean found = false;
-
-        while (iUsers.hasNext() && !found) {
-            u = (User) iUsers.next();
-            if (u.email.equals((email)) && u.password.equals(password)) {
-                found = true;
-            }
-        }
-
-        if (found) {
-            rsp = "flag|"+id+";type|login;result|y;email|" + email + ";password|" + password + ";";
-
-            // Concatenate notifications to `rsp` if they exist
-            rsp += "notification_count|"+u.notifications.size()+";";
-
-            Iterator iMessages = u.notifications.iterator();
-            while(iMessages.hasNext()) {
-                rsp += "notif|" + (String) iMessages.next() + ";";
-
-            }
-            u.notifications.clear();
-
-            System.out.println(email + " logged in");
-        }*/
         sendResponseMulticast(rsp, code);
     }
 
@@ -776,42 +550,6 @@ public class MulticastServerResponse extends Thread {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
-        /* --------------- Classes
-        String rsp = "flag|"+id+";type|privilege;result|n;user1|" + user1 +";user2|" + user2 + ";";
-
-        Iterator iUsers1 = users.iterator();
-        Iterator iUsers2 = users.iterator();
-        boolean isEditor = false;
-        boolean found2 = false;
-
-        // Find editor and check if he is actually an editor
-        while (iUsers1.hasNext() && !isEditor) {
-            User s = (User) iUsers1.next();
-            if(s.email.equals(user1) && s.isEditor())
-                isEditor = true;
-
-        }
-        if (isEditor) {
-            // Find regular user
-            while (iUsers2.hasNext() && !found2) {
-                User s = (User) iUsers2.next();
-                if (s.email.equals(user2)) {
-                    System.out.println(s);
-                    s.becomeEditor();
-                    System.out.println(s);
-                    found2 = true;
-                    rsp = "flag|"+id+";type|privilege;result|y;user1|" + user1 +";user2|" + user2 + ";";
-                }
-            }
-            if (!found2)
-                rsp += "msg|Couldn't find user to promote;";
-        } else {
-            rsp += "msg|You have to be an Editor to use /promote;";
-        }
-
-        ObjectFiles.writeUsersToDisk(users); */
 
         sendResponseMulticast(rsp, code); // -> RMIServer
     }
@@ -868,31 +606,6 @@ public class MulticastServerResponse extends Thread {
             }
         }
 
-        /* ------------ Classes
-
-        Iterator iArtists = artists.iterator();
-        boolean found = false;
-        String rsp;
-
-        while (iArtists.hasNext() & !found) {
-            Artist a = (Artist) iArtists.next();
-            Iterator iAlbum = a.albums.iterator();
-
-            while(iAlbum.hasNext()) {
-                Album al = (Album) iAlbum.next();
-                if(al.title.equals(albumName)) {
-                    al.addCritic(critic, Integer.parseInt(rate), email);
-                    found = true;
-                }
-            }
-        }
-        if (found)
-            rsp = "flag|"+id+";type|critic;result|y;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";";
-        else
-            rsp = "flag|"+id+";type|critic;result|n;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";"+"msg|Couldn't find album `"+albumName+"`;";
-
-        ObjectFiles.writeArtistsToDisk(artists); */
-
         sendResponseMulticast(rsp, code);
     }
 
@@ -904,7 +617,6 @@ public class MulticastServerResponse extends Thread {
 
     public void offUserNotified(String id, String email, String message) {
 
-        // ------------ BD
         PreparedStatement pstmt;
         int rs;
 
@@ -926,11 +638,6 @@ public class MulticastServerResponse extends Thread {
             e.printStackTrace();
         }
 
-        /* ------------ Classes
-        for (User u : users)
-            if(u.email.equals(email))
-                u.addNotification(message);
-        ObjectFiles.writeUsersToDisk(users); */
     }
 
     /**
@@ -947,35 +654,55 @@ public class MulticastServerResponse extends Thread {
         // Request  -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk;
         // Response -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk; item_count | n; item_x_name | name; [...] msg | mmmmmm;
 
-        String rsp, response = "";
-        String message= " ";
-        boolean found = false;
-        char result = 'n';
+        PreparedStatement pstmt = null;
+        ResultSet rs;
+        String response = "", rsp = "", result = "", message = "";
+        int a = 0;
 
-        if (type.equals("art")) {
-            for (Artist a : artists) {
-                if (a.name.equals(keyword)) {
-                    found = true;
-                    response = a.toString();
-                    result = 'y';
-                }
+        try {
+
+            if (type.equals("art")) {
+                pstmt = con.prepareStatement("SELECT * from artist where name = ?");
+
+            } else if (type.equals("alb")) {
+                pstmt = con.prepareStatement("SELECT * from album where title = ?");
+
             }
-        } else if (type.equals("alb") || type.equals("gen")) {
-            for (Artist a : artists) {
-                for (Album al : a.albums) {
-                    if (al.title.equals(keyword) || al.genre.equals(keyword)) {
-                        found = true;
-                        response += al.toString();
-                        result = 'y';
-                    }
+
+            pstmt.setString(1, keyword);
+            rs = pstmt.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+
+            String aux = "";
+            while (rs.next()) {
+
+                aux += "item_"+ a +"_name|";
+                for (int i = 1; i <= columnsNumber; i++) {
+                    String columnValue = rs.getString(i);
+                    aux +=  columnValue + " ";
                 }
+                aux += "\n;";
+                a++;
+
+                response += aux;
+                aux = "";
             }
+
+            if(a > 0) {
+                result = "y";
+            } else {
+                result = "n";
+                message = "Unable to find " + keyword + " in DB";
+            }
+
+
+        } catch (SQLException e) {
+            result = "n";
+            message = "Couldn't find `"+keyword+"` in database";
         }
 
-        if (!found)
-            message = "Couldn't find `"+keyword+"` in database";
-
-        rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";item_count|1;item_x_name|"+response+";msg|"+message+";";
+        rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";item_count|"+ a +";"+response+";msg|"+message+";";
         sendResponseMulticast(rsp, code);
 
     }
@@ -1091,11 +818,6 @@ public class MulticastServerResponse extends Thread {
         int rs, notifCount = 0;
         ResultSet qSet;
 
-        System.out.println("launch date " + launchDate);
-        System.out.println("editor Label " + editorLabel);
-        System.out.println("description " + description);
-
-
         try {
 
             // check if user is editor
@@ -1201,8 +923,6 @@ public class MulticastServerResponse extends Thread {
         boolean alreadyExists = false;
         String notify = "", artName = null;
 
-        User editor = null;
-
         // BD
 
         PreparedStatement pstmt1 = null, pstmt2 = null, pstmtNot = null, pstmtAlb = null, pstmtEd = null;
@@ -1223,27 +943,17 @@ public class MulticastServerResponse extends Thread {
 
             if(usrIsEditor.equals("1")) {
 
-                // fetch album ID
-                pstmtAlb = con.prepareStatement("SELECT id FROM album WHERE title = ? AND artist_name = ?");
-                pstmtAlb.setString(1, albName);
-                pstmtAlb.setString(2, artiName);
-                qSet = pstmtAlb.executeQuery();
-                while(qSet.next()) {
-                    albID = qSet.getString("id");
-                }
 
-                pstmt1 = con.prepareStatement("INSERT INTO music (track, title, lyrics, album_id) VALUES (?, ?, ?, ?)" +
-                        "ON DUPLICATE KEY UPDATE lyrics = ?, title = ?");
+                pstmt1 = con.prepareStatement("INSERT INTO music (track, title, lyrics, album_id) VALUES (?, ?, ?, (SELECT id FROM album WHERE title = ? AND artist_name = ?)) " +
+                                                   "ON DUPLICATE KEY UPDATE lyrics = ?, title = ?");
                 pstmt1.setString(1, track);
                 pstmt1.setString(2, title);
                 pstmt1.setString(3, lyrics);
-                pstmt1.setString(4, albID);
-
-                pstmt1.setString(5, lyrics);
-                pstmt1.setString(6, title);
-
+                pstmt1.setString(4, albName);
+                pstmt1.setString(5, artiName);
+                pstmt1.setString(6, lyrics);
+                pstmt1.setString(7, title);
                 rs = pstmt1.executeUpdate();
-
 
                 // notify editors of that album
                 pstmtNot = con.prepareStatement("SELECT user_email FROM editor WHERE artist_name = ?");
@@ -1286,7 +996,6 @@ public class MulticastServerResponse extends Thread {
                 rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Only an Editor can add a new music;";
             }
 
-
         } catch (SQLException e) {
             rsp = "flag|"+id+";type|addmusic;title|"+title+";email|"+email+";result|n;msg|Something went wrong adding music;";
             switch (e.getErrorCode()) {
@@ -1308,7 +1017,6 @@ public class MulticastServerResponse extends Thread {
      */
 
     public void run() {
-
 
 
         String message = new String(packet.getData(), 0, packet.getLength());
