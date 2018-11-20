@@ -4,7 +4,6 @@ import java.net.InetAddress;
 import java.io.IOException;
 import java.sql.*;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * MulticastServer initializes the server and database. Creates a new Thread every time a new packet is received
