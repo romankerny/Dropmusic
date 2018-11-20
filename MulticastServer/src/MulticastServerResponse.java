@@ -609,7 +609,7 @@ public class MulticastServerResponse extends Thread {
 
         try {
             pstmt = con.prepareStatement("INSERT into notification (notification, user_email) " +
-                                        "VALUES (?, ?)");
+                                              "VALUES (?, ?)");
 
             pstmt.setString(1, message);
             pstmt.setString(2, email);
@@ -929,7 +929,6 @@ public class MulticastServerResponse extends Thread {
 
 
             if(usrIsEditor.equals("1")) {
-
 
                 pstmt1 = con.prepareStatement("INSERT INTO music (track, title, lyrics, album_id) VALUES (?, ?, ?, (SELECT id FROM album WHERE title = ? AND artist_name = ?)) " +
                                                    "ON DUPLICATE KEY UPDATE lyrics = ?, title = ?");
