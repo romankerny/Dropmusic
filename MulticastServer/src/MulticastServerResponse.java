@@ -149,7 +149,7 @@ public class MulticastServerResponse extends Thread {
             PreparedStatement pstmt;
             ResultSet rs;
             try {
-                pstmt = con.prepareStatement("select music.id " +
+                pstmt = con.prepareStatement("select m.id " +
                         "from music m, album a where m.album_id = a.id and a.title = ? and a.artist_name= ? and m.title = ?");
                 pstmt.setString(1, albumName);
                 pstmt.setString(2, artistName);
