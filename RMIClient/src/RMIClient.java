@@ -126,6 +126,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     "- upload [track title]\n"+
                     "- download [user] [music title]\n"+
                     "- share [user]"+
+                    "- help (no arguments)"+
                     "  \nEditor-specific:\n"+
                     "- promote [email]\n"+
                     "- add {art, alb, mus} [name]\n";

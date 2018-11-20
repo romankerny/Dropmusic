@@ -206,7 +206,7 @@ public class MulticastServerResponse extends Thread {
                         System.out.println("Failed to add upload to DB");
 
                     // Add uploader as allowed to download
-                    pstmt = con.prepareStatement("INSERT into upload_user (upload_music_id, upload_user_email, user_email)" +
+                    pstmt = con.prepareStatement("INSERT into allowed (upload_music_id, allowed_email, user_email)" +
                             "VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE user_email=?");
                     pstmt.setInt(1, musicID);
                     pstmt.setString(2, email);
@@ -273,8 +273,8 @@ public class MulticastServerResponse extends Thread {
             // check if user with email can downlaoad
 
             System.out.println("Figuring out if user with ´email´ can download the given music. . .");
-            pstmt = con.prepareStatement("SELECT DISTINCT m.id FROM music m, artist a, album alb, upload_user up " +
-                    "                          WHERE up.upload_user_email = ? AND up.user_email = ? AND up.upload_music_id = m.id" +
+            pstmt = con.prepareStatement("SELECT DISTINCT m.id FROM music m, artist a, album alb, allowed up " +
+                    "                          WHERE up.allowed_email = ? AND up.user_email = ? AND up.upload_music_id = m.id" +
                     "                          AND m.title = ? AND alb.title = ? AND a.name = ?" +
                     "                          AND alb.artist_name = a.name AND m.album_id = alb.id");
             pstmt.setString(1, uploader);
@@ -358,7 +358,7 @@ public class MulticastServerResponse extends Thread {
         PreparedStatement pstmt;
         int rs;
         try {
-            pstmt = con.prepareStatement("INSERT INTO upload_user (upload_music_id, upload_user_email, user_email) " +
+            pstmt = con.prepareStatement("INSERT INTO allowed (upload_music_id, allowed_email, user_email) " +
                                                 "select upload.music_id, upload.user_email, ? " +
                                                 "from upload, (select music.id " +
                                                               "from music, (select id " +
@@ -748,7 +748,7 @@ public class MulticastServerResponse extends Thread {
                 rs = pstmt.executeUpdate();
 
                 // notify Editors
-                pstmtNot = con.prepareStatement("SELECT user_email FROM artist_user WHERE artist_name = ?");
+                pstmtNot = con.prepareStatement("SELECT user_email FROM editor WHERE artist_name = ?");
                 pstmtNot.setString(1, name);
                 qSet = pstmtNot.executeQuery();
                 while(qSet.next()) {
@@ -846,7 +846,7 @@ public class MulticastServerResponse extends Thread {
                 rs = pstmt1.executeUpdate();
 
                 // notify editors
-                pstmtNot = con.prepareStatement("SELECT user_email FROM artist_user WHERE artist_name = ?");
+                pstmtNot = con.prepareStatement("SELECT user_email FROM editor WHERE artist_name = ?");
                 pstmtNot.setString(1, artName);
                 qSet = pstmtNot.executeQuery();
                 while (qSet.next()) {
@@ -859,7 +859,7 @@ public class MulticastServerResponse extends Thread {
 
                 // user_email = email will ignore the duplicate key
                 // the user will only have 1 instance in the table of Editors
-                pstmt2 = con.prepareStatement("INSERT INTO artist_user (user_email, artist_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE user_email = ?");
+                pstmt2 = con.prepareStatement("INSERT INTO editor (user_email, artist_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE user_email = ?");
                 pstmt2.setString(1, email);
                 pstmt2.setString(2, albName);
                 pstmt2.setString(3, email);
@@ -955,7 +955,7 @@ public class MulticastServerResponse extends Thread {
                 rs = pstmt1.executeUpdate();
 
                 // notify editors of that album
-                pstmtNot = con.prepareStatement("SELECT user_email FROM artist_user WHERE artist_name = ?");
+                pstmtNot = con.prepareStatement("SELECT user_email FROM editor WHERE artist_name = ?");
                 pstmtNot.setString(1, artiName);
                 qSet = pstmtNot.executeQuery();
                 while (qSet.next()) {
@@ -971,7 +971,7 @@ public class MulticastServerResponse extends Thread {
                 // add editor
                 // user_email = email will ignore the duplicate key
                 // the user will only have 1 instance in the table of Editors
-                pstmt2 = con.prepareStatement("INSERT INTO artist_user (user_email, artist_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE user_email = ?");
+                pstmt2 = con.prepareStatement("INSERT INTO editor (user_email, artist_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE user_email = ?");
 
                 pstmt2.setString(1, email);
                 pstmt2.setString(2, albName);
