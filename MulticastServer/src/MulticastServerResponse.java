@@ -670,6 +670,8 @@ public class MulticastServerResponse extends Thread {
 
                 int columNumberAlbumInfo = rsmdAlbInfo.getColumnCount();
 
+                String aux = "";
+
 
                 while(rsAlbInfo.next()) {
 
@@ -684,6 +686,7 @@ public class MulticastServerResponse extends Thread {
 
             }
 
+            /*
 
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
@@ -709,6 +712,7 @@ public class MulticastServerResponse extends Thread {
                 result = "n";
                 message = "Unable to find " + keyword + " in DB";
             }
+            */
 
 
         } catch (SQLException e) {
@@ -716,8 +720,8 @@ public class MulticastServerResponse extends Thread {
             message = "Couldn't find `"+keyword+"` in database";
         }
 
-        rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";item_count|"+ a +";"+response+";msg|"+message+";";
-        sendResponseMulticast(rsp, code);
+       // rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";item_count|"+ a +";"+response+";msg|"+message+";";
+        //sendResponseMulticast(rsp, code);
 
     }
 
