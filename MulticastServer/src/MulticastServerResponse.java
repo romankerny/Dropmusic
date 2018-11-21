@@ -641,9 +641,9 @@ public class MulticastServerResponse extends Thread {
         // Request  -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk;
         // Response -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk; item_count | n; item_x_name | name; [...] msg | mmmmmm;
 
-        PreparedStatement pstmtCritics = null, pstmtAlbInfo = null;
+        PreparedStatement pstmtAlbInfo = null;
         ResultSet rsCritics, rsAlbInfo;
-        String response = "", message = "", rsp, result;
+        String response = "", message = "", rsp = "", result = "n";
         int a = 0;
 
         try {
@@ -678,39 +678,59 @@ public class MulticastServerResponse extends Thread {
 
 
             } else if (type.equals("alb")) {
-                // pstmt = con.prepareStatement("SELECT * from album where title = ?");
+                pstmtAlbInfo = con.prepareStatement("select a.id, a.title, a.description, a.genre, a.launch_date, a.editor_label, IFNULL(avgRates.avgrating, 0) " +
+                        "from album a " +
+                        "left join (select album_id, avg(rating) as avgrating from review group by album_id) as avgRates on a.id = avgRates.album_id " +
+                        "where a.title = ? or a.genre = ? or a.editor_label = ?;");
 
-                // pstmtCritics = con.prepareStatement("select user_email, rating, critic from review where album_id IN (select id from album where artist_name = ?);");
+                pstmtAlbInfo.setString(1, keyword);
+                pstmtAlbInfo.setString(2, keyword);
+                pstmtAlbInfo.setString(3, keyword);
 
-            }
+                rsAlbInfo = pstmtAlbInfo.executeQuery();
 
-            /*
+                if (rsAlbInfo.next()) {
+                    int nAlbums = 0; // Used to print `Found n items`
+                    result = "y";
+                    ResultSetMetaData albumsMD = rsAlbInfo.getMetaData();
+                    ResultSet rsSongs;
+                    ResultSetMetaData songsMD;
 
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnsNumber = rsmd.getColumnCount();
+                    do {
+                        nAlbums++;
 
-            String aux = "";
-            while (rs.next()) {
+                        int albumID = rsAlbInfo.getInt("id");
 
-                aux += "item_"+ a +"_name|";
-                for (int i = 1; i <= columnsNumber; i++) {
-                    String columnValue = rs.getString(i);
-                    aux +=  columnValue + " ";
+                        for (int i = 2; i < albumsMD.getColumnCount(); i++) {
+                            message += albumsMD.getColumnLabel(i)+": "+rsAlbInfo.getString(i) + "\n";
+                        }
+                        PreparedStatement songsStatement = con.prepareStatement("select m.track, m.title, m.lyrics " +
+                                "from music m " +
+                                "inner join album a on a.id = m.album_id " +
+                                "where m.album_id = ?;");
+                        songsStatement.setInt(1, albumID);
+
+                        rsSongs = songsStatement.executeQuery();
+
+                        if (rsSongs.next()) {
+                            songsMD = rsSongs.getMetaData();
+                            message += "Tracklist:\n";
+                            do {
+                                for (int i = 1; i < songsMD.getColumnCount(); i++) {
+                                    message += songsMD.getColumnLabel(i) + ": "+ rsSongs.getString(i) +'\n';
+                                }
+                            } while (rsSongs.next());
+                        }
+                        message = "Found "+nAlbums+" albums matching `"+keyword+"`\n" + message;
+
+
+                    } while (rsAlbInfo.next());
+                } else {
+                    // No album found
+                    message = "Couldn't find any album by `"+keyword+"`";
                 }
-                aux += "\n;";
-                a++;
 
-                response += aux;
-                aux = "";
             }
-
-            if(a > 0) {
-                result = "y";
-            } else {
-                result = "n";
-                message = "Unable to find " + keyword + " in DB";
-            }
-            */
 
 
         } catch (SQLException e) {
@@ -718,8 +738,8 @@ public class MulticastServerResponse extends Thread {
             message = "Couldn't find `"+keyword+"` in database";
         }
 
-       // rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";item_count|"+ a +";"+response+";msg|"+message+";";
-        //sendResponseMulticast(rsp, code);
+        rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";msg|"+message+";";
+        sendResponseMulticast(rsp, code);
 
     }
 

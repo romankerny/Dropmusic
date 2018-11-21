@@ -132,6 +132,9 @@ VALUES ('Tool', 'Tool is an American rock band from Los Angeles, California. For
 insert into album (title, description, genre, launch_date, editor_label, artist_name)
 VALUES ('Lateralus', 'Lateralus is the third studio album by American rock band Tool. It was released on May 15, 2001 through Volcano Entertainment. The album was recorded at Cello Studios in Hollywood and The Hook, Big Empty Space, and The Lodge, in North Hollywood, between October 2000 and January 2001. David Bottrill, who had produced the band''s two previous releases Ænima and Salival, produced the album along with the band. On August 23, 2005, Lateralus was released as a limited edition two-picture-disc vinyl LP in a holographic gatefold package.', 'Progressive Metal', '2001-05-15', 'Volcano Entertainment', 'Tool');
 
+insert into review (critic, rating, user_email, album_id) values ('Very nice', 5, 'roman', 1);
+insert into review (critic, rating, user_email, album_id) values ('wtf is this?', 3, 'diogo', 1);
+
 insert into music (track, title, album_id, lyrics)
 VALUES (1, 'The Grudge', 1, 'Wear the grudge like a crown of negativity
 Calculate what we will or will not tolerate
@@ -202,6 +205,9 @@ Lamar has received many accolades over the course of his career, including twelv
 INSERT INTO album (title, description, genre, launch_date, editor_label, artist_name)
 VALUES ('To Pimp a Butterfly', 'o Pimp a Butterfly is the third studio album by American rapper Kendrick Lamar. It was released on March 15, 2015, by Aftermath Entertainment, Interscope Records and Top Dawg Entertainment.
 The album was recorded in studios throughout the United States, with production from Sounwave, Terrace Martin, Taz "Tisa" Arnold, Thundercat, Rahki, LoveDragon, Flying Lotus, Pharrell Williams, Boi-1da, knxwledge, and several other high-profile hip hop producers, as well as executive production from Dr. Dre and Anthony "Top Dawg" Tiffith. The album incorporates elements of jazz, funk, soul, spoken word, and avant-garde music and explores a variety of political and personal themes concerning African-American culture, racial inequality, depression, and institutional discrimination.', 'Hip-Hop', '2015-03-15', 'Aftermath Entertainment' , 'Kendrick Lamar');
+
+insert into review (critic, rating, user_email, album_id) VALUES ('Best album ever', 5, 'diogo', 2);
+insert into review (critic, rating, user_email, album_id) VALUES ('I''ve seen better', 4, 'roman', 2);
 
 INSERT INTO music (track, title, album_id, lyrics)
 VALUES (1 , '"Wesley''s Theory" (featuring George Clinton and Thundercat)', 2, 'When the four corners of this cocoon collide
