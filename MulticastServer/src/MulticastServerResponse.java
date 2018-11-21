@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+
 /**
  *
  * MulticastServerResponse is a Thread that is created by MulticastServer every time a new packet arrives for processing.
@@ -346,13 +347,13 @@ public class MulticastServerResponse extends Thread {
         int rs;
         try {
             pstmt = con.prepareStatement("INSERT INTO allowed (upload_music_id, allowed_email, user_email) " +
-                                                "select upload.music_id, upload.user_email, ? " +
-                                                "from upload, album a, music m " +
-                                                "where upload.music_id = m.id " +
-                                                "and a.title = ? " +
-                                                "and a.artist_name = ? " +
-                                                "and m.title = ?"+
-                                                "and upload.user_email = ?;");
+                                                "SELECT upload.music_id, upload.user_email, ? " +
+                                                "FROM upload, album a, music m " +
+                                                "WHERE upload.music_id = m.id " +
+                                                "AND a.title = ? " +
+                                                "AND a.artist_name = ? " +
+                                                "AND m.title = ?"+
+                                                "AND upload.user_email = ?;");
 
             pstmt.setString(1, shareTo);
             pstmt.setString(2, album);
@@ -516,9 +517,9 @@ public class MulticastServerResponse extends Thread {
         int rs;
 
         try {
-            pstmt = con.prepareStatement("update user as u, (select editor from user where email = ? ) as p "+
-                    "set u.editor = true " +
-                    "where p.editor = true and u.email = ?");
+            pstmt = con.prepareStatement("UPDATE user AS u, (SELECT editor FROM user WHERE email = ? ) AS p "+
+                    "SET u.editor = true " +
+                    "WHERE p.editor = true and u.email = ?");
             pstmt.setString(1, user1);
             pstmt.setString(2, user2);
 
@@ -553,7 +554,7 @@ public class MulticastServerResponse extends Thread {
      * @see #sendResponseMulticast(String, String)
      */
 
-    public void writeCritic(String id, String artistName, String albumName, String critic, String rate, String email, String code) {
+    private void writeCritic(String id, String artistName, String albumName, String critic, String rate, String email, String code) {
 
         // flag | id; type | critic; album | name; critic | blabla; rate | n email | eeee;
         // flag | id; type | critic; result | (y/n); album | name; critic | blabla; rate | n; msg | mmmmm;
@@ -601,7 +602,7 @@ public class MulticastServerResponse extends Thread {
      * @param message Missed notification
      */
 
-    public void offUserNotified(String id, String email, String message) {
+    private void offUserNotified(String id, String email, String message) {
 
         PreparedStatement pstmt;
         int rs;
