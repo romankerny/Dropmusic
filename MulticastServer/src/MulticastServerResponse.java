@@ -641,23 +641,50 @@ public class MulticastServerResponse extends Thread {
         // Request  -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk;
         // Response -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk; item_count | n; item_x_name | name; [...] msg | mmmmmm;
 
-        PreparedStatement pstmt = null;
-        ResultSet rs;
-        String response = "", rsp = "", result = "", message = "";
+        PreparedStatement pstmtCritics = null, pstmtAlbInfo = null;
+        ResultSet rsCritics, rsAlbInfo;
+        String response = "", message = "", rsp, result;
         int a = 0;
 
         try {
 
             if (type.equals("art")) {
-                pstmt = con.prepareStatement("SELECT * from artist where name = ?");
+
+                pstmtCritics = con.prepareStatement("select user_email, rating, critic from review where album_id IN (select id from album where artist_name = ?);");
+
+                pstmtAlbInfo = con.prepareStatement("SELECT title, description, genre, launch_date, editor_label, albrate.rat \"rating\"\n" +
+                        "FROM album AS alb, (select album_id, avg(rating) AS rat\n" +
+                        "                    from review\n" +
+                        "                    group by album_id\n" +
+                        "                    having album_id IN (select id from album\n" +
+                        "                                        where artist_name = ?)) AS albrate\n" +
+                        "WHERE albrate.album_id = alb.id;");
+
+                pstmtCritics.setString(1, keyword);
+                pstmtAlbInfo.setString(1,keyword);
+                rsCritics = pstmtCritics.executeQuery();
+                rsAlbInfo = pstmtAlbInfo.executeQuery();
+
+                ResultSetMetaData rsmdCritics = rsCritics.getMetaData();
+                ResultSetMetaData rsmdAlbInfo = rsAlbInfo.getMetaData();
+
+                int columNumberAlbumInfo = rsmdAlbInfo.getColumnCount();
+
+
+                while(rsAlbInfo.next()) {
+
+
+
+                }
+
+
 
             } else if (type.equals("alb")) {
-                pstmt = con.prepareStatement("SELECT * from album where title = ?");
+                // pstmt = con.prepareStatement("SELECT * from album where title = ?");
 
             }
 
-            pstmt.setString(1, keyword);
-            rs = pstmt.executeQuery();
+
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
 
