@@ -171,7 +171,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
                 } else if (tokens[0].equals("login")) {
 
-                    if (tokens.length == 2) {
+                    if (tokens.length >= 2) {
                         String login = strCatSpaces(tokens, 1);
                         System.out.print("Password: ");
                         String pw = sc.nextLine();
@@ -192,7 +192,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     email = "";
 
                 } else if (!email.equals("") && tokens[0].equals("search")
-                        && (tokens[1].equals("art") || tokens[1].equals("alb") || tokens[1].equals("gen"))) {
+                        && (tokens[1].equals("art") || tokens[1].equals("alb") || tokens[1].equals("mus"))) {
 
                     if (tokens.length >= 3) {
                         String keyword = strCatSpaces(tokens, 2);

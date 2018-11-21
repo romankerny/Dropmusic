@@ -641,10 +641,9 @@ public class MulticastServerResponse extends Thread {
         // Request  -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk;
         // Response -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk; item_count | n; item_x_name | name; [...] msg | mmmmmm;
 
-        PreparedStatement pstmtCritics = null, pstmtAlbInfo = null, pstmtArtInfo = null;
-        ResultSet rsCritics, rsAlbInfo, rsArtInfo;
+        PreparedStatement pstmtCritics = null, pstmtAlbInfo = null, pstmtArtInfo = null, pstmtMus = null;
+        ResultSet rsCritics, rsAlbInfo, rsArtInfo, rsMus;
         String response = "", message = "", rsp, result = "n", aux = "";
-        int a = 0;
 
         try {
 
@@ -741,6 +740,25 @@ public class MulticastServerResponse extends Thread {
                     // No album found
                     message = "Couldn't find any album by `"+keyword+"`";
                 }
+
+            } else if(type.equals("mus")) {
+
+                pstmtMus = con.prepareStatement("select m.track, m.title, m.lyrics" +
+                        "                from music m" +
+                        "                inner join album a on a.id = m.album_id" +
+                        "                where m.title = ?;");
+                pstmtMus.setString(1, keyword);
+                rsMus = pstmtMus.executeQuery();
+
+                ResultSetMetaData rsmdMus = rsMus.getMetaData();
+                int columNumberMus = rsmdMus.getColumnCount();
+
+                while(rsMus.next()) {
+                    for (int i =1 ; i < columNumberMus + 1; i++)
+                        message += rsmdMus.getColumnLabel(i) + ":" + rsMus.getString(i) + "\n";
+                }
+
+
 
             }
 
