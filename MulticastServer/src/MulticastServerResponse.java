@@ -641,39 +641,51 @@ public class MulticastServerResponse extends Thread {
         // Request  -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk;
         // Response -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk; item_count | n; item_x_name | name; [...] msg | mmmmmm;
 
-        PreparedStatement pstmtAlbInfo = null;
-        ResultSet rsCritics, rsAlbInfo;
-        String response = "", message = "", rsp = "", result = "n";
+        PreparedStatement pstmtCritics = null, pstmtAlbInfo = null, pstmtArtInfo = null;
+        ResultSet rsCritics, rsAlbInfo, rsArtInfo;
+        String response = "", message = "", rsp, result = "n", aux = "";
         int a = 0;
 
         try {
 
             if (type.equals("art")) {
 
+                pstmtArtInfo = con.prepareStatement("SELECT name 'Name', details 'Details' FROM artist WHERE name = ?;");
 
+                pstmtAlbInfo = con.prepareStatement("SELECT title 'Title', description 'Description', genre 'Genre', launch_date 'Launch-date', editor_label 'Editor label', IFNULL(albrate.rat,0) 'Rating'" +
+                        "                        FROM album AS alb" +
+                        "                        LEFT JOIN (select album_id, avg(rating) AS rat" +
+                        "                                            from review" +
+                        "                                            group by album_id" +
+                        "                                            having album_id IN (select id from album" +
+                        "                                                                where artist_name = ?)) AS albrate ON albrate.album_id = alb.id" +
+                        "                        WHERE alb.artist_name = ?;");
 
-                pstmtAlbInfo = con.prepareStatement("SELECT title, description, genre, launch_date, editor_label, albrate.rat \"rating\"\n" +
-                        "FROM album AS alb, (select album_id, avg(rating) AS rat\n" +
-                        "                    from review\n" +
-                        "                    group by album_id\n" +
-                        "                    having album_id IN (select id from album\n" +
-                        "                                        where artist_name = ?)) AS albrate\n" +
-                        "WHERE albrate.album_id = alb.id;");
+                pstmtAlbInfo.setString(1, keyword);
+                pstmtAlbInfo.setString(2, keyword);
 
-                pstmtAlbInfo.setString(1,keyword);
+                pstmtArtInfo.setString(1, keyword);
                 rsAlbInfo = pstmtAlbInfo.executeQuery();
+                rsArtInfo = pstmtArtInfo.executeQuery();
+
+                ResultSetMetaData rsmdArtInfo = rsArtInfo.getMetaData();
+                int columNumberArtistInfo = rsmdArtInfo.getColumnCount();
+
+                while(rsArtInfo.next()) {
+                    for (int i =1 ; i < columNumberArtistInfo + 1; i++)
+                        aux += rsmdArtInfo.getColumnLabel(i) + ":" + rsArtInfo.getString(i) + "\n";
+                }
 
                 ResultSetMetaData rsmdAlbInfo = rsAlbInfo.getMetaData();
-
                 int columNumberAlbumInfo = rsmdAlbInfo.getColumnCount();
 
-                String aux = "Artist info: \n";
-
-
+                aux += "Discography: \n";
                 while(rsAlbInfo.next()) {
-                    for (int i = 0; i < columNumberAlbumInfo; i++)
-                        aux += rsAlbInfo.getString(i);
+                    for (int i = 1; i < columNumberAlbumInfo + 1; i++)
+                        aux += rsmdAlbInfo.getColumnLabel(i) + ":" + rsAlbInfo.getString(i) + "\n";
                 }
+                result = "y";
+                message = aux;
 
 
 
