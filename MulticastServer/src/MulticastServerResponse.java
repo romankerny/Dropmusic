@@ -150,7 +150,7 @@ public class MulticastServerResponse extends Thread {
             ResultSet rs;
             try {
                 pstmt = con.prepareStatement("select m.id " +
-                        "from music m, album a where m.album_id = a.id and a.title = ? and a.artist_name= ? and m.title = ?");
+                        "from music m, album a where m.album_id = a.id and a.title = ? and a.artist_name= ? and m.title = ?;");
                 pstmt.setString(1, albumName);
                 pstmt.setString(2, artistName);
                 pstmt.setString(3, title);
@@ -192,7 +192,7 @@ public class MulticastServerResponse extends Thread {
                     // Add to DB
                     int rsl;
                     pstmt = con.prepareStatement("INSERT into upload (musicfilename, music_id, user_email) " +
-                                        "VALUES (?,?,?) ON DUPLICATE KEY UPDATE musicfilename = ?");
+                                        "VALUES (?,?,?) ON DUPLICATE KEY UPDATE musicfilename = ?;");
                     pstmt.setString(1, uploadedPath+filename);
                     pstmt.setInt(2, musicID);
                     pstmt.setString(3, email);
@@ -206,7 +206,7 @@ public class MulticastServerResponse extends Thread {
 
                     // Add uploader as allowed to download
                     pstmt = con.prepareStatement("INSERT into allowed (upload_music_id, allowed_email, user_email)" +
-                            "VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE user_email=?");
+                            "VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE user_email=?;");
                     pstmt.setInt(1, musicID);
                     pstmt.setString(2, email);
                     pstmt.setString(3, email);
@@ -273,7 +273,7 @@ public class MulticastServerResponse extends Thread {
                 pstmt = con.prepareStatement("SELECT musicfilename FROM upload ," +
                         "                        (SELECT DISTINCT m.id FROM music m, artist a, album alb, allowed up" +
                         "                        WHERE up.allowed_email = ? AND up.user_email = ? AND up.upload_music_id = m.id" +
-                        "                        AND m.title = ? AND alb.title = ? AND a.name = ?\n" +
+                        "                        AND m.title = ? AND alb.title = ? AND a.name = ?" +
                         "                        AND alb.artist_name = a.name AND m.album_id = alb.id) AS musicID" +
                         "                        WHERE music_id = musicID.id AND user_email = ?");
 
