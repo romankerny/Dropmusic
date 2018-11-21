@@ -650,7 +650,7 @@ public class MulticastServerResponse extends Thread {
 
             if (type.equals("art")) {
 
-                pstmtCritics = con.prepareStatement("select user_email, rating, critic from review where album_id IN (select id from album where artist_name = ?);");
+
 
                 pstmtAlbInfo = con.prepareStatement("SELECT title, description, genre, launch_date, editor_label, albrate.rat \"rating\"\n" +
                         "FROM album AS alb, (select album_id, avg(rating) AS rat\n" +
@@ -660,29 +660,27 @@ public class MulticastServerResponse extends Thread {
                         "                                        where artist_name = ?)) AS albrate\n" +
                         "WHERE albrate.album_id = alb.id;");
 
-                pstmtCritics.setString(1, keyword);
                 pstmtAlbInfo.setString(1,keyword);
-                rsCritics = pstmtCritics.executeQuery();
                 rsAlbInfo = pstmtAlbInfo.executeQuery();
 
-                ResultSetMetaData rsmdCritics = rsCritics.getMetaData();
                 ResultSetMetaData rsmdAlbInfo = rsAlbInfo.getMetaData();
 
                 int columNumberAlbumInfo = rsmdAlbInfo.getColumnCount();
 
-                String aux = "";
+                String aux = "Artist info: \n";
 
 
                 while(rsAlbInfo.next()) {
-
-
-
+                    for (int i = 0; i < columNumberAlbumInfo; i++)
+                        aux += rsAlbInfo.getString(i);
                 }
 
 
 
             } else if (type.equals("alb")) {
                 // pstmt = con.prepareStatement("SELECT * from album where title = ?");
+
+                // pstmtCritics = con.prepareStatement("select user_email, rating, critic from review where album_id IN (select id from album where artist_name = ?);");
 
             }
 
