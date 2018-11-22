@@ -651,7 +651,7 @@ public class MulticastServerResponse extends Thread {
 
                 pstmtArtInfo = con.prepareStatement("SELECT name 'Name', details 'Details' FROM artist WHERE name = ?;");
 
-                pstmtAlbInfo = con.prepareStatement("SELECT title 'Title', description 'Description', genre 'Genre', launch_date 'Launch-date', editor_label 'Editor label', IFNULL(albrate.rat,0) 'Rating'" +
+                pstmtAlbInfo = con.prepareStatement("SELECT title 'Title', description 'Description', genre 'Genre', launch_date 'Launch date', editor_label 'Editor label', IFNULL(albrate.rat,0) 'Rating'" +
                         "                        FROM album AS alb" +
                         "                        LEFT JOIN (select album_id, avg(rating) AS rat" +
                         "                                            from review" +
@@ -753,16 +753,17 @@ public class MulticastServerResponse extends Thread {
                 ResultSetMetaData rsmdMus = rsMus.getMetaData();
                 int columNumberMus = rsmdMus.getColumnCount();
 
-                while(rsMus.next()) {
-                    for (int i =1 ; i < columNumberMus + 1; i++)
-                        message += rsmdMus.getColumnLabel(i) + ":" + rsMus.getString(i) + "\n";
+                if (rsMus.next()) {
+                    result = "y";
+                    do {
+                        for (int i =1 ; i < columNumberMus + 1; i++)
+                            message += rsmdMus.getColumnLabel(i) + ":" + rsMus.getString(i) + "\n";
+                    } while (rsMus.next());
+                } else {
+                    result = "n";
+                    message = "Couldn't find song `"+keyword+"`";
                 }
-
-
-
             }
-
-
         } catch (SQLException e) {
             result = "n";
             message = "Couldn't find `"+keyword+"` in database";
