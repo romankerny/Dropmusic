@@ -89,8 +89,7 @@ CREATE TABLE editor (
 CREATE TABLE music_playlist (
 	music_id		 bigint,
 	playlist_name	 varchar(512),
-	playlist_user_email varchar(200),
-	PRIMARY KEY(music_id,playlist_name,playlist_user_email)
+	PRIMARY KEY(music_id, playlist_name)
 );
 
 CREATE TABLE shows_artist (
@@ -114,7 +113,6 @@ ALTER TABLE editor ADD CONSTRAINT editor_fk1 FOREIGN KEY (artist_name) REFERENCE
 ALTER TABLE editor ADD CONSTRAINT editor_fk2 FOREIGN KEY (user_email) REFERENCES user(email) ON DELETE CASCADE;
 ALTER TABLE music_playlist ADD CONSTRAINT music_playlist_fk1 FOREIGN KEY (music_id) REFERENCES music(id) ON DELETE CASCADE;
 ALTER TABLE music_playlist ADD CONSTRAINT music_playlist_fk2 FOREIGN KEY (playlist_name) REFERENCES playlist(name) ON DELETE CASCADE;
-ALTER TABLE music_playlist ADD CONSTRAINT music_playlist_fk3 FOREIGN KEY (playlist_user_email) REFERENCES playlist(user_email) ON DELETE CASCADE;
 ALTER TABLE shows_artist ADD CONSTRAINT shows_artist_fk1 FOREIGN KEY (shows_id) REFERENCES shows(id) ON DELETE CASCADE;
 ALTER TABLE shows_artist ADD CONSTRAINT shows_artist_fk2 FOREIGN KEY (artist_name) REFERENCES artist(name) ON DELETE CASCADE;
 
@@ -355,6 +353,22 @@ One time for 40
 One time for Drake
 Another one
 Bless up');
+
+
+insert into playlist (name, public, user_email) VALUES ("Funk ao Jantar", 0, "diogo");
+insert into playlist (name, public, user_email) VALUES ("Funk ao Almoço", 1, "roman");
+
+insert into music_playlist (music_id, playlist_name)
+VALUES (1, "Funk ao Jantar");
+
+
+insert into music_playlist (music_id, playlist_name)
+VALUES (2, "Funk ao Jantar");
+
+
+insert into music_playlist (music_id, playlist_name)
+VALUES (1, "Funk ao Almoço");
+
 
 
 
