@@ -1923,8 +1923,14 @@ insert into artist (name, details)
 values ('YOB', 'Yob is an American doom metal band from Eugene, Oregon, composed of singer/guitarist Mike Scheidt, bassist Aaron Rieseberg, and drummer Travis Foster. Their most recent album Our Raw Heart was released in June 2018.
 ');
 
+insert into artist (name, details)
+values ('Jakob', 'Jakob is a New Zealand post-rock band, based in the Hawkes Bay city of Napier.[1] The band consists of guitarist Jeff Boyle, bassist Maurice Beckett, and drummer Jason Johnston.[1] They have been compared to such bands as Mogwai, Sonic Youth, and High Dependency Unit, though they largely eschew any vocals or samples in their songs.');
+
 insert into shows (place, show_date)
 values ('Reno Events Center', '2012-01-14');
+
+insert into shows (place, show_date)
+values ('Makuhari Messe', '2013-05-12');
 
 insert into shows_artist (shows_id, artist_name)
 values (1, 'Tool');
@@ -1932,6 +1938,11 @@ insert into shows_artist (shows_id, artist_name)
 values (1, 'Intronaut');
 insert into shows_artist (shows_id, artist_name)
 values (1, 'YOB');
+
+insert into shows_artist (shows_id, artist_name)
+values (2, 'Tool');
+insert into shows_artist (shows_id, artist_name)
+values (2, 'Jakob');
 
 insert into playlist (name, public, user_email) VALUES ("Funk ao Jantar", 0, "diogo");
 insert into playlist (name, public, user_email) VALUES ("Funk ao Almoço", 1, "roman");
