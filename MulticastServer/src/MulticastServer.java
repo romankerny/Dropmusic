@@ -1,5 +1,3 @@
-import com.mysql.jdbc.CommunicationsException;
-
 import java.io.*;
 import java.net.*;
 import java.sql.*;

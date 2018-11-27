@@ -6,6 +6,7 @@
         <element id="file-copy" path="$PROJECT_DIR$/MulticastServer/resources/META-INF/MANIFEST.MF" />
       </element>
       <element id="module-output" name="MulticastServer" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/mysql-connector-java-5.1.46.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
