@@ -726,6 +726,8 @@ public class MulticastServer extends Thread {
                     ResultSetMetaData albumsMD = rsAlbInfo.getMetaData();
                     ResultSet rsSongs;
                     ResultSetMetaData songsMD;
+                    ResultSet rsReviews;
+                    ResultSetMetaData reviewsMD;
 
                     do {
                         nAlbums++;
@@ -735,6 +737,26 @@ public class MulticastServer extends Thread {
                         for (int i = 2; i <= albumsMD.getColumnCount(); i++) {
                             message += albumsMD.getColumnLabel(i)+": "+rsAlbInfo.getString(i) + "\n";
                         }
+
+                        // Reviews
+                        PreparedStatement reviewsStatement = con.prepareStatement("select r.rating, r.critic " +
+                                "from review r where r.album_id = ?");
+
+                        reviewsStatement.setInt(1, albumID);
+                        rsReviews = reviewsStatement.executeQuery();
+
+                        if (rsReviews.next()) {
+                            reviewsMD = rsReviews.getMetaData();
+                            message += "Reviews:\n";
+                            do {
+                                for (int i = 1; i <= reviewsMD.getColumnCount(); i++)
+                                    message += reviewsMD.getColumnLabel(i) + ": "+rsReviews.getString(i) +'\n';
+
+                            } while (rsReviews.next());
+                        }
+
+
+                        // Songs
                         PreparedStatement songsStatement = con.prepareStatement("select m.track, m.title " +
                                 "from music m " +
                                 "inner join album a on a.id = m.album_id " +
