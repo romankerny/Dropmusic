@@ -12,7 +12,7 @@
   <s:text name="Username:" />
   <s:textfield name="username" /><br>
   <s:text name="Password:" />
-  <s:textfield name="password" /><br>
+  <s:password name="password" /><br>
   <s:submit />
 </s:form>
 </body>

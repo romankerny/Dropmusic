@@ -18,12 +18,11 @@ public class LoginAction extends ActionSupport implements SessionAware {
 	@Override
 	public String execute() {
 		// any username is accepted without confirmation (should check using RMI)
-        System.out.println("Executing LoginAction");
 		if(this.username != null && !username.equals("")) {
 
 			this.getLoginBean().setUsername(this.username);
 			this.getLoginBean().setPassword(this.password);
-            System.out.println(this.getLoginBean());
+
 			try {
 				if(this.getLoginBean().getUserMatchesPassword()) {
 
