@@ -48,8 +48,6 @@
 
 
 
-
-
         <!-- 'login' action calls 'execute' in 'LoginAction' -->
         <action name="login" class="webserver.action.LoginAction" method="execute">
             <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
