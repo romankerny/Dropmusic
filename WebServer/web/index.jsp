@@ -10,7 +10,7 @@
 <body>
 <s:form action="login" method="post">
   <s:text name="Username:" />
-  <s:textfield name="username" /><br>
+  <s:textfield name="email" /><br>
   <s:text name="Password:" />
   <s:password name="password" /><br>
   <s:submit />
