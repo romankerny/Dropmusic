@@ -1,6 +1,4 @@
-/**
- * Raul Barbosa 2014-11-07
- */
+
 package webserver.action;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -13,20 +11,20 @@ import java.util.Map;
 public class LoginAction extends ActionSupport implements SessionAware {
 	private static final long serialVersionUID = 4L;
 	private Map<String, Object> session;
-	private String username = null, password = null;
+	private String email = null, password = null;
 
 	@Override
 	public String execute() {
 		// any username is accepted without confirmation (should check using RMI)
-		if(this.username != null && !username.equals("")) {
+		if(this.email != null && !email.equals("")) {
 
-			this.getLoginBean().setUsername(this.username);
+			this.getLoginBean().setEmail(this.email);
 			this.getLoginBean().setPassword(this.password);
 
 			try {
 				if(this.getLoginBean().getUserMatchesPassword()) {
 
-					session.put("username", username);
+					session.put("username", email);
 					session.put("loggedin", true); // this marks the user as logged in
 					return SUCCESS;
 
@@ -40,8 +38,8 @@ public class LoginAction extends ActionSupport implements SessionAware {
 		return INPUT;
 	}
 	
-	public void setUsername(String username) {
-		this.username = username; // will you sanitize this input? maybe use a prepared statement?
+	public void setEmail(String email) {
+		this.email = email; // will you sanitize this input? maybe use a prepared statement?
 	}
 
 	public void setPassword(String password) {

@@ -1,6 +1,4 @@
-/**
- * Raul Barbosa 2014-11-07
- */
+
 package webserver.model;
 import rmiserver.RMIServerInterface;
 
@@ -11,7 +9,7 @@ import java.rmi.registry.LocateRegistry;
 
 public class LoginBean {
 	private RMIServerInterface server;
-	private String username; // username and password supplied by the user
+	private String email; // email and password supplied by the user
 	private String password;
 
 	public LoginBean() {
@@ -28,9 +26,9 @@ public class LoginBean {
 	public boolean getUserMatchesPassword() throws RemoteException {
 
 		boolean r;
-		String rsp = server.login(username, password);
+		String rsp = server.login(email, password);
 
-		if (rsp.equals("Logged in successfully " + username))
+		if (rsp.equals("Logged in successfully " + email))
 		{
 			r = true;
 		} else
@@ -41,8 +39,8 @@ public class LoginBean {
 		return r;
 	}
 	
-	public void setUsername(String username) {
-		this.username = username;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	public void setPassword(String password) {

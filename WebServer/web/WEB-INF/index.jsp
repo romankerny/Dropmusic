@@ -5,15 +5,23 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-  <title>Hey!</title>
+  <title>Login</title>
+  <!-- Required meta tags -->
 </head>
 <body>
 <s:form action="login" method="post">
   <s:text name="Username:" />
-  <s:textfield name="username" /><br>
+  <s:textfield name="email" /><br>
   <s:text name="Password:" />
   <s:password name="password" /><br>
   <s:submit />
 </s:form>
+
+<s:form action="register-direct" method="post">
+<s:submit value="Sign Up"/>
+</s:form>
+
+
+
 </body>
 </html>
