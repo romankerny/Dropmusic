@@ -850,8 +850,8 @@ If these walls could talk [x6]
 [Anna Wise:]
 Sex, she just want to close her eyes and sway
 If you, if you, if you exercise your right to work it out
-Its true, its true, its true, shout out to the birthday girls say hey
-Say hey, everyone deserves a night to play
+Its true, its true, its true, shout out to the birthday girls say webserver
+Say webserver, everyone deserves a night to play
 And shes plays only when you tell her no
 
 [Hook - Bilal:]
@@ -1625,7 +1625,7 @@ Hey, y''all close that front door, ya''ll let flies in this motherfucker
 Close that door!
 My OG up in this motherfucker right now
 My pops man with the bottle in his hand, actin'' a fool
-Hey, hey, babe check it out, Imma tell you what my mama had said, she like:
+Hey, webserver, babe check it out, Imma tell you what my mama had said, she like:
 
 I could spot you a mile away
 I could see your insecurities written all on your face

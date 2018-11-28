@@ -5,4 +5,57 @@
         "http://struts.apache.org/dtds/struts-2.5.dtd">
 
 <struts>
+
+    <!-- devMode equals debug information and reload everything for every request -->
+    <constant name="struts.devMode" value="true" />
+    <constant name="struts.ui.theme" value="simple" />
+
+    <package name="webserver" extends="struts-default">
+
+
+    <interceptors>
+        <interceptor name="LoginInterceptor" class="webserver.interceptor.LoginInterceptor" />
+        <interceptor-stack name="loginStack">
+            <interceptor-ref name="LoginInterceptor" />
+            <interceptor-ref name="defaultStack" /> <!-- pelo q percebi é 1 interceptor da framework -->
+        </interceptor-stack>
+    </interceptors>
+
+    <default-interceptor-ref name="loginStack"></default-interceptor-ref>
+
+        <default-action-ref name="index"/>
+
+        <global-results>
+            <result name="error">/error.jsp</result>
+            <result name="login">/index.jsp</result>
+        </global-results>
+
+
+        <!-- all exceptions not caught by the application will lead to error.jsp -->
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception" result="error" />
+        </global-exception-mappings>
+
+        <!-- 'index' action leads to the view provided by index.jsp -->
+        <action name="index">
+            <result>/index.jsp</result>
+        </action>
+
+        <action name="dropmusic">
+            <result>/dropmusic.jsp</result>
+        </action>
+
+
+        <!-- 'login' action calls 'execute' in 'LoginAction' -->
+        <action name="login" class="webserver.action.LoginAction" method="execute">
+            <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
+            <result name="success">/dropmusic.jsp</result>
+            <result name="input">/index.jsp</result>
+        </action>
+
+
+
+    </package>
+
+
 </struts>
