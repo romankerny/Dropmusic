@@ -2,36 +2,44 @@
  * Raul Barbosa 2014-11-07
  */
 package webserver.model;
-
 import rmiserver.RMIServerInterface;
-
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.rmi.registry.LocateRegistry;
 
-public class HeyBean {
+
+public class LoginBean {
 	private RMIServerInterface server;
 	private String username; // username and password supplied by the user
 	private String password;
 
-	public HeyBean() {
+	public LoginBean() {
 		try {
-			server = (RMIServerInterface) Naming.lookup("server");
+			server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
 		}
-		catch(NotBoundException|MalformedURLException|RemoteException e) {
+		catch(NotBoundException|RemoteException e) {
 			e.printStackTrace(); // what happens *after* we reach this line?
 		}
 	}
 
 
-	public ArrayList<String> getAllUsers() throws RemoteException {
-		return server.getAllUsers(); // are you going to throw all exceptions?
-	}
 
 	public boolean getUserMatchesPassword() throws RemoteException {
-		return server.userMatchesPassword(this.username, this.password);
+
+		boolean r;
+		String rsp = server.login(username, password);
+
+		if (rsp.equals("Logged in successfully " + username))
+		{
+			r = true;
+		} else
+		{
+			r = false;
+		}
+
+		return r;
 	}
 	
 	public void setUsername(String username) {

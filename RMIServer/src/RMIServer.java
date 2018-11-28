@@ -285,6 +285,42 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
+    public String login(String email, String password) {
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|login;email|" + email + ";password|" + password + ";";
+        boolean exit = false;
+        String rspToClient = "Failed to login";
+        sendUDPDatagram(msg);
+
+        while (!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals(id)) {
+                if (cleanMessage.get(2)[1].equals("y")) {
+                    int numNotifications = Integer.parseInt(cleanMessage.get(5)[1]);
+
+                    rspToClient = "Logged in successfully " + email;
+                    // subscribe(email, client);
+
+                    if (numNotifications > 0) {
+                        rspToClient += "\nMissed notifications:\n";
+                        for (int i = 0; i < numNotifications; i++) {
+                            rspToClient += cleanMessage.get(6 + i)[1] + "\n";
+                        }
+                    }
+                } else {
+                    // result | n
+                    rspToClient = cleanMessage.get(cleanMessage.size()-2)[1]; // Error message comes penultima
+                }
+                exit = true;
+            }
+        }
+        return rspToClient;
+    }
+
     /**
      * Request  -> flag | id; type | privilege; user1 | username; user2; username;
      * Response -> flag | id; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
@@ -849,11 +885,15 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         socket.joinGroup(group);
 
 
+
         try {
             int failCount = 0;
             boolean failedLastTime = false, takeOver = false;
             Registry r = null;
             rmiServer = new RMIServer();
+
+            System.getProperties().put("java.security.policy", "policy.all");
+            System.setSecurityManager(new RMISecurityManager());
 
 
             try {

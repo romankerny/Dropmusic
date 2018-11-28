@@ -4,7 +4,7 @@
 package webserver.action;
 
 import com.opensymphony.xwork2.ActionSupport;
-import webserver.model.HeyBean;
+import webserver.model.LoginBean;
 import org.apache.struts2.interceptor.SessionAware;
 
 import java.rmi.RemoteException;
@@ -21,10 +21,11 @@ public class LoginAction extends ActionSupport implements SessionAware {
         System.out.println("Executing LoginAction");
 		if(this.username != null && !username.equals("")) {
 
-			this.getHeyBean().setUsername(this.username);
-			this.getHeyBean().setPassword(this.password);
+			this.getLoginBean().setUsername(this.username);
+			this.getLoginBean().setPassword(this.password);
+            System.out.println(this.getLoginBean());
 			try {
-				if(this.getHeyBean().getUserMatchesPassword()) {
+				if(this.getLoginBean().getUserMatchesPassword()) {
 
 					session.put("username", username);
 					session.put("loggedin", true); // this marks the user as logged in
@@ -48,14 +49,14 @@ public class LoginAction extends ActionSupport implements SessionAware {
 		this.password = password; // what about this input? 
 	}
 	
-	public HeyBean getHeyBean() {
-		if(!session.containsKey("heyBean"))
-			this.setHeyBean(new HeyBean());
-		return (HeyBean) session.get("heyBean");
+	public LoginBean getLoginBean() {
+		if(!session.containsKey("loginBean"))
+			this.setLoginBean(new LoginBean());
+		return (LoginBean) session.get("loginBean");
 	}
 
-	public void setHeyBean(HeyBean heyBean) {
-		this.session.put("heyBean", heyBean);
+	public void setLoginBean(LoginBean loginBean) {
+		this.session.put("loginBean", loginBean);
 	}
 
 	@Override
