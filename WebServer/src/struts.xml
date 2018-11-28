@@ -26,8 +26,8 @@
         <default-action-ref name="index"/>
 
         <global-results>
-            <result name="error">/error.jsp</result>
-            <result name="login">/index.jsp</result>
+            <result name="error">/WEB-INF/error.jsp</result>
+            <result name="login">/WEB-INF/index.jsp</result>
         </global-results>
 
 
@@ -38,20 +38,35 @@
 
         <!-- 'index' action leads to the view provided by index.jsp -->
         <action name="index">
-            <result>/index.jsp</result>
+            <interceptor-ref name="defaultStack"></interceptor-ref>
+            <result>/WEB-INF/index.jsp</result>
         </action>
 
         <action name="dropmusic">
-            <result>/dropmusic.jsp</result>
+            <result>/WEB-INF/dropmusic.jsp</result>
         </action>
+
+
 
 
 
         <!-- 'login' action calls 'execute' in 'LoginAction' -->
         <action name="login" class="webserver.action.LoginAction" method="execute">
             <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
-            <result name="success">/dropmusic.jsp</result>
-            <result name="input">/index.jsp</result>
+            <result name="success">/WEB-INF/dropmusic.jsp</result>
+            <result name="input">/WEB-INF/index.jsp</result>
+        </action>
+
+        <action name="register-direct">
+            <interceptor-ref name="defaultStack"></interceptor-ref>
+            <result>/WEB-INF/register.jsp</result>
+        </action>
+
+
+        <action name="register" class="webserver.action.RegisterAction" method="execute">
+            <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
+            <result name="success">/WEB-INF/index.jsp</result>
+            <result name="input">/WEB-INF/register.jsp</result>
         </action>
 
 

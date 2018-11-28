@@ -1,6 +1,4 @@
-/**
- * Raul Barbosa 2014-11-07
- */
+
 package webserver.action;
 
 import com.opensymphony.xwork2.ActionSupport;
