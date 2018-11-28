@@ -72,12 +72,12 @@
 </a>
 <h2 class="title">R</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="../RMIServer.html#rateAlbum-int-java.lang.String-java.lang.String-java.lang.String-">rateAlbum(int, String, String, String)</a></span> - Method in class <a href="../RMIServer.html" title="class in &lt;Unnamed&gt;">RMIServer</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServer.html#rateAlbum-int-java.lang.String-java.lang.String-java.lang.String-">rateAlbum(int, String, String, String)</a></span> - Method in class <a href="../rmiserver.RMIServer.html" title="class in &lt;Unnamed&gt;">rmiserver.RMIServer</a></dt>
 <dd>
 <div class="block">flag | id; type | critic; album | name; critic | blabla; rate | n; email | eeee;
  flag | id; type | critic; result | (y/n); album | name; critic | blabla; rate | n; msg | mmmmm;</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../RMIServerInterface.html#rateAlbum-int-java.lang.String-java.lang.String-java.lang.String-">rateAlbum(int, String, String, String)</a></span> - Method in interface <a href="../RMIServerInterface.html" title="interface in &lt;Unnamed&gt;">RMIServerInterface</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServerInterface.html#rateAlbum-int-java.lang.String-java.lang.String-java.lang.String-">rateAlbum(int, String, String, String)</a></span> - Method in interface <a href="../rmiserver.RMIServerInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIServerInterface</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../Review.html#rating">rating</a></span> - Variable in class <a href="../Review.html" title="class in &lt;Unnamed&gt;">Review</a></dt>
 <dd>&nbsp;</dd>
@@ -87,13 +87,13 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../ObjectFiles.html#readUsersFromDisk--">readUsersFromDisk()</a></span> - Static method in class <a href="../ObjectFiles.html" title="class in &lt;Unnamed&gt;">ObjectFiles</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../RMIServer.html#receiveUDPDatagram-java.lang.String-">receiveUDPDatagram(String)</a></span> - Method in class <a href="../RMIServer.html" title="class in &lt;Unnamed&gt;">RMIServer</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServer.html#receiveUDPDatagram-java.lang.String-">receiveUDPDatagram(String)</a></span> - Method in class <a href="../rmiserver.RMIServer.html" title="class in &lt;Unnamed&gt;">rmiserver.RMIServer</a></dt>
 <dd>
 <div class="block">Try's to receive a Datagram via Multicast
  If socket is activated for + than 5 seconds without getting an answer form Multicast the setSoTimeout() creates an exception
  that re-sends the Datagram to Multicast that was supposed to generate the response.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../RMIServer.html#refreshMulticastHashes--">refreshMulticastHashes()</a></span> - Method in class <a href="../RMIServer.html" title="class in &lt;Unnamed&gt;">RMIServer</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServer.html#refreshMulticastHashes--">refreshMulticastHashes()</a></span> - Method in class <a href="../rmiserver.RMIServer.html" title="class in &lt;Unnamed&gt;">rmiserver.RMIServer</a></dt>
 <dd>
 <div class="block">RMI sends:
  Request  -> flag | id; type | connectionrequest;
@@ -105,7 +105,7 @@
 <dd>
 <div class="block">Method to register a new user.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../RMIServer.html#register-java.lang.String-java.lang.String-">register(String, String)</a></span> - Method in class <a href="../RMIServer.html" title="class in &lt;Unnamed&gt;">RMIServer</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServer.html#register-java.lang.String-java.lang.String-">register(String, String)</a></span> - Method in class <a href="../rmiserver.RMIServer.html" title="class in &lt;Unnamed&gt;">rmiserver.RMIServer</a></dt>
 <dd>
 <div class="block">Receives a name and password
  creates datagram with the following protocol:
@@ -119,9 +119,9 @@
  If result | y -> successes
  If result | n -> failed, returns an error message to RMIClient</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../RMIServerInterface.html#register-java.lang.String-java.lang.String-">register(String, String)</a></span> - Method in interface <a href="../RMIServerInterface.html" title="interface in &lt;Unnamed&gt;">RMIServerInterface</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServerInterface.html#register-java.lang.String-java.lang.String-">register(String, String)</a></span> - Method in interface <a href="../rmiserver.RMIServerInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIServerInterface</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../RMIServer.html#regularToEditor-java.lang.String-java.lang.String-">regularToEditor(String, String)</a></span> - Method in class <a href="../RMIServer.html" title="class in &lt;Unnamed&gt;">RMIServer</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServer.html#regularToEditor-java.lang.String-java.lang.String-">regularToEditor(String, String)</a></span> - Method in class <a href="../rmiserver.RMIServer.html" title="class in &lt;Unnamed&gt;">rmiserver.RMIServer</a></dt>
 <dd>
 <div class="block">Request  -> flag | id; type | privilege; user1 | username; user2; username;
  Response -> flag | id; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
@@ -131,7 +131,7 @@
 
  the client with email == @param editor in clients concurrentHashMap gets printed w/ printOnClient() method</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../RMIServerInterface.html#regularToEditor-java.lang.String-java.lang.String-">regularToEditor(String, String)</a></span> - Method in interface <a href="../RMIServerInterface.html" title="interface in &lt;Unnamed&gt;">RMIServerInterface</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServerInterface.html#regularToEditor-java.lang.String-java.lang.String-">regularToEditor(String, String)</a></span> - Method in interface <a href="../rmiserver.RMIServerInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIServerInterface</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../User.html#removeNotification-java.lang.String-">removeNotification(String)</a></span> - Method in class <a href="../User.html" title="class in &lt;Unnamed&gt;">User</a></dt>
 <dd>&nbsp;</dd>
@@ -145,26 +145,26 @@
 <dd>
 <div class="block">This class will be runned in the Client's machine.</div>
 </dd>
-<dt><a href="../RMIClientInterface.html" title="interface in &lt;Unnamed&gt;"><span class="typeNameLink">RMIClientInterface</span></a> - Interface in <a href="../package-summary.html">&lt;Unnamed&gt;</a></dt>
+<dt><a href="../rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;"><span class="typeNameLink">rmiserver.RMIClientInterface</span></a> - Interface in <a href="../package-summary.html">&lt;Unnamed&gt;</a></dt>
 <dd>
 <div class="block">Remote Interface of client
  getEmail() was used for debugging only
- printOnClient() is used by the RMIServer to print notifications in the clients command line.</div>
+ printOnClient() is used by the rmiserver.RMIServer to print notifications in the clients command line.</div>
 </dd>
-<dt><a href="../RMIServer.html" title="class in &lt;Unnamed&gt;"><span class="typeNameLink">RMIServer</span></a> - Class in <a href="../package-summary.html">&lt;Unnamed&gt;</a></dt>
+<dt><a href="../rmiserver.RMIServer.html" title="class in &lt;Unnamed&gt;"><span class="typeNameLink">rmiserver.RMIServer</span></a> - Class in <a href="../package-summary.html">&lt;Unnamed&gt;</a></dt>
 <dd>
-<div class="block">RMIServer contains all methods that RMI Client can call via remote interface.</div>
+<div class="block">rmiserver.RMIServer contains all methods that RMI Client can call via remote interface.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../RMIServer.html#RMIServer--">RMIServer()</a></span> - Constructor for class <a href="../RMIServer.html" title="class in &lt;Unnamed&gt;">RMIServer</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServer.html#rmiserver.RMIServer--">rmiserver.RMIServer()</a></span> - Constructor for class <a href="../rmiserver.RMIServer.html" title="class in &lt;Unnamed&gt;">rmiserver.RMIServer</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="../RMIServerInterface.html" title="interface in &lt;Unnamed&gt;"><span class="typeNameLink">RMIServerInterface</span></a> - Interface in <a href="../package-summary.html">&lt;Unnamed&gt;</a></dt>
+<dt><a href="../rmiserver.RMIServerInterface.html" title="interface in &lt;Unnamed&gt;"><span class="typeNameLink">rmiserver.RMIServerInterface</span></a> - Interface in <a href="../package-summary.html">&lt;Unnamed&gt;</a></dt>
 <dd>
-<div class="block">This class contains all remote methods from RMIServer class.</div>
+<div class="block">This class contains all remote methods from rmiserver.RMIServer class.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../MulticastServer.html#run--">run()</a></span> - Method in class <a href="../MulticastServer.html" title="class in &lt;Unnamed&gt;">MulticastServer</a></dt>
 <dd>
 <div class="block">Main loop of Multicast, starts by reading users.obj and artists.obj,
-  then proceeds to create a new MulticastSocket, joins the group and sends an `ack` to RMIServer.</div>
+  then proceeds to create a new MulticastSocket, joins the group and sends an `ack` to rmiserver.RMIServer.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../MulticastServerResponse.html#run--">run()</a></span> - Method in class <a href="../MulticastServerResponse.html" title="class in &lt;Unnamed&gt;">MulticastServerResponse</a></dt>
 <dd>

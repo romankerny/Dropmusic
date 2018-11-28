@@ -1,9 +1,9 @@
+package rmiserver;
+
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.*;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
-import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -17,8 +17,8 @@ import static java.lang.Thread.sleep;
 
 /**
  *
- * RMIServer contains all methods that RMI Client can call via remote interface.
- * The RMIServer interface is named 'rmiserver' and the registry runs on port 1099.
+ * rmiserver.RMIServer contains all methods that RMI Client can call via remote interface.
+ * The rmiserver.RMIServer interface is named 'rmiserver' and the registry runs on port 1099.
  *
  * This class contains a concurrentHaspMap that holds the correspondence between client's emails and the corresponding
  * RMI Interfaces. It's mainly used to control which users are logged to the Server and comes in hand when the server
@@ -41,8 +41,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     private static final long serialVersionUID = 1L;
     private static String MULTICAST_ADDRESS = "224.3.2.2";
     private static int SEND_PORT = 5213, RCV_PORT = 5214;
-    static RMIServer rmiServer;
-    public ArrayList<String> multicastHashes = new ArrayList<>();
+    private static RMIServerInterface rmiServer;
+    public static ArrayList<String> multicastHashes = new ArrayList<>();
     public static int globalCounter = 0;
 
 
@@ -57,7 +57,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @param resp - protocol instruction to send
      */
 
-    public void sendUDPDatagram(String resp) {
+    public static void sendUDPDatagram(String resp) {
 
 
         if (globalCounter == multicastHashes.size()) globalCounter = 0;
@@ -76,7 +76,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @param resp - protocol instruction to send
      */
 
-    public void sendUDPDatagramGeneral(String resp) {
+    public static void sendUDPDatagramGeneral(String resp) {
 
         // - sends all kinds of packets when it's called by sendUDPDatagram()
         // - sends requestsTCPConnection packets / download packets when called by download() or when creating
@@ -108,7 +108,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @return received Datagram
      */
 
-    public String receiveUDPDatagram(String rspToRetry) {
+    public static String receiveUDPDatagram(String rspToRetry) {
 
         String message = null;
         boolean exit = false;
@@ -148,7 +148,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @param msg
      * @return ArrayList of tokens example: (id, 54fsdsf4), (type, login) , ....
      */
-    ArrayList<String[]> cleanTokens(String msg) {
+    static ArrayList<String[]> cleanTokens(String msg) {
 
         String[] tokens = msg.split(";");
         String[] p;
@@ -458,7 +458,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         exit = false;
 
         // send
-        for(String hash: rmiServer.multicastHashes) {
+        for(String hash: RMIServer.multicastHashes) {
             sendUDPDatagramGeneral("flag|" + id + ";type|requestTCPConnection;operation|download;title|" + title + ";uploader|" + uploader + ";email|" + email + ";albumName|" + albumName + ";artistName|" + artistName + ";hash|" + hash + ";");
             System.out.println("asking multicasts to search music " + hash);
         }
@@ -831,8 +831,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         boolean exit = false;
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
-        rmiServer.sendUDPDatagramGeneral("flag|"+id+";type|connectionrequest;");
-        rmiServer.multicastHashes.clear();
+        RMIServer.sendUDPDatagramGeneral("flag|"+id+";type|connectionrequest;");
+        RMIServer.multicastHashes.clear();
         MulticastSocket socket = new MulticastSocket(RCV_PORT);  // create socket and bind it
         InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
         socket.joinGroup(group);
@@ -850,14 +850,14 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                 String message = new String(packet.getData(), 0, packet.getLength());
                 System.out.println("Received packet in refreshMulticast(): " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message: " + message);
-                ArrayList<String[]> cleanMessage = rmiServer.cleanTokens(message);
+                ArrayList<String[]> cleanMessage = RMIServer.cleanTokens(message);
 
 
                 if (cleanMessage.get(0)[1].equals(id)) {
-                    rmiServer.multicastHashes.add(cleanMessage.get(2)[1]);
+                    RMIServer.multicastHashes.add(cleanMessage.get(2)[1]);
                 }
 
-                System.out.println("no fim deste método " + rmiServer.multicastHashes);
+                System.out.println("no fim deste método " + RMIServer.multicastHashes);
             } catch (SocketTimeoutException yo) {
                 exit = true;
             } catch (UnknownHostException e) {
@@ -893,11 +893,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             rmiServer = new RMIServer();
 
             System.getProperties().put("java.security.policy", "policy.all");
-            System.setSecurityManager(new RMISecurityManager());
+            System.setSecurityManager(new SecurityManager());
 
 
             try {
-                // try to bind, if it fails that means that an RMIServer is already running
+                // try to bind, if it fails that means that an rmiserver.RMIServer is already running
                 r = LocateRegistry.createRegistry(1099);
                 r.bind("rmiserver", rmiServer);
 
@@ -953,11 +953,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             // the multicast send a packet with their Hash-code
             // Request  -> flag | id; type | connectionrequest;
             q = "flag|s;type|connectionrequest;";
-            rmiServer.sendUDPDatagramGeneral(q);
+            RMIServer.sendUDPDatagramGeneral(q);
 
 
         } catch (RemoteException re) {
-            System.out.println("Exception in RMIServer.main: " + re);
+            System.out.println("Exception in rmiserver.RMIServer.main: " + re);
         }
 
         while(true) {
@@ -970,11 +970,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             socket.receive(packet);
             String message = new String(packet.getData(), 0, packet.getLength());
             System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message: " + message);
-            ArrayList<String[]> cleanMessage = rmiServer.cleanTokens(message);
+            ArrayList<String[]> cleanMessage = RMIServer.cleanTokens(message);
 
             if (cleanMessage.get(0)[1].equals("r") && cleanMessage.get(1)[1].equals("ack"))
-                if (!rmiServer.multicastHashes.contains(cleanMessage.get(2)[1]))
-                    rmiServer.multicastHashes.add(cleanMessage.get(2)[1]);
+                if (!RMIServer.multicastHashes.contains(cleanMessage.get(2)[1]))
+                    RMIServer.multicastHashes.add(cleanMessage.get(2)[1]);
 
 
         }

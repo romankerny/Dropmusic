@@ -120,7 +120,7 @@ extends java.lang.Thread</pre>
 <div class="block">MulticastServerResponse is a Thread that is created by MulticastServer every time a new packet arrives for processing.
  It received the packet, Multicast's IP, users and artists array and it's hashCode.
 
- This thread contains all methods to deal with all kinds of packets send by the RMIServer.</div>
+ This thread contains all methods to deal with all kinds of packets send by the rmiserver.RMIServer.</div>
 </li>
 </ul>
 </div>
@@ -352,7 +352,7 @@ extends java.lang.Thread</pre>
 <pre>public&nbsp;void&nbsp;sendResponseMulticast(java.lang.String&nbsp;resp,
                                   java.lang.String&nbsp;code)</pre>
 <div class="block">Creates a MulticastSocket and sends a Datagram packet with
-  some protocol instruction. This method is only run if Multicast's hash matches RMIServer's requested hash.</div>
+  some protocol instruction. This method is only run if Multicast's hash matches rmiserver.RMIServer's requested hash.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>resp</code> - - protocol instruction to send</dd>
@@ -398,7 +398,7 @@ extends java.lang.Thread</pre>
 <dd><code>id</code> - Packet's unique ID</dd>
 <dd><code>title</code> - Music's title</dd>
 <dd><code>email</code> - Email of the user that requested an upload</dd>
-<dd><code>code</code> - Multicast server's hash, this method is only run if hash send by RMIServer matches Multicast's hash.</dd>
+<dd><code>code</code> - Multicast server's hash, this method is only run if hash send by rmiserver.RMIServer matches Multicast's hash.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.io.IOException</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -434,7 +434,7 @@ extends java.lang.Thread</pre>
 <dd><code>title</code> - Music's title</dd>
 <dd><code>uploader</code> - Email from whom the user is trying to download</dd>
 <dd><code>email</code> - Requesting user's email</dd>
-<dd><code>code</code> - Hash sent by RMIServer</dd>
+<dd><code>code</code> - Hash sent by rmiserver.RMIServer</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.io.IOException</code></dd>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -464,7 +464,7 @@ extends java.lang.Thread</pre>
 <dd><code>title</code> - Music's title</dd>
 <dd><code>shareTo</code> - User that the uploader want's to share</dd>
 <dd><code>uploader</code> - The uploader himself</dd>
-<dd><code>code</code> - Hash sent by RMIServer</dd>
+<dd><code>code</code> - Hash sent by rmiserver.RMIServer</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="MulticastServerResponse.html#getSocket--"><code>getSocket()</code></a>, 
 <a href="MulticastServerResponse.html#sendResponseMulticast-java.lang.String-java.lang.String-"><code>sendResponseMulticast(String, String)</code></a></dd>
@@ -488,7 +488,7 @@ extends java.lang.Thread</pre>
 <dd><code>id</code> - Packet's unique ID</dd>
 <dd><code>email</code> - User's new email</dd>
 <dd><code>password</code> - User's password</dd>
-<dd><code>code</code> - Hash sent by RMIServer</dd>
+<dd><code>code</code> - Hash sent by rmiserver.RMIServer</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="MulticastServerResponse.html#sendResponseMulticast-java.lang.String-java.lang.String-"><code>sendResponseMulticast(String, String)</code></a></dd>
 </dl>
@@ -511,7 +511,7 @@ extends java.lang.Thread</pre>
 <dd><code>id</code> - Packet's unique ID</dd>
 <dd><code>email</code> - User's email</dd>
 <dd><code>password</code> - User's password</dd>
-<dd><code>code</code> - Hash sent by RMIServer</dd>
+<dd><code>code</code> - Hash sent by rmiserver.RMIServer</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="MulticastServerResponse.html#sendResponseMulticast-java.lang.String-java.lang.String-"><code>sendResponseMulticast(String, String)</code></a></dd>
 </dl>
@@ -536,7 +536,7 @@ extends java.lang.Thread</pre>
 <dd><code>id</code> - </dd>
 <dd><code>user1</code> - The promoter</dd>
 <dd><code>user2</code> - The promotee</dd>
-<dd><code>code</code> - Hash sent by RMIServer</dd>
+<dd><code>code</code> - Hash sent by rmiserver.RMIServer</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="MulticastServerResponse.html#sendResponseMulticast-java.lang.String-java.lang.String-"><code>sendResponseMulticast(String, String)</code></a></dd>
 </dl>
@@ -564,7 +564,7 @@ extends java.lang.Thread</pre>
 <dd><code>critic</code> - The review itself</dd>
 <dd><code>rate</code> - 1-5 rating</dd>
 <dd><code>email</code> - User's email that rated</dd>
-<dd><code>code</code> - Hash sent by RMIServer</dd>
+<dd><code>code</code> - Hash sent by rmiserver.RMIServer</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="MulticastServerResponse.html#sendResponseMulticast-java.lang.String-java.lang.String-"><code>sendResponseMulticast(String, String)</code></a></dd>
 </dl>
@@ -605,7 +605,7 @@ extends java.lang.Thread</pre>
 <dd><code>id</code> - Packet's unique ID</dd>
 <dd><code>type</code> - Either 'art', 'alb' or 'gen' for artist, album and genre respectively</dd>
 <dd><code>keyword</code> - Keyword used for the search query</dd>
-<dd><code>code</code> - Hash sent by RMIServer</dd>
+<dd><code>code</code> - Hash sent by rmiserver.RMIServer</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="MulticastServerResponse.html#sendResponseMulticast-java.lang.String-java.lang.String-"><code>sendResponseMulticast(String, String)</code></a></dd>
 </dl>
@@ -651,7 +651,7 @@ extends java.lang.Thread</pre>
 <dd><code>name</code> - Artist's name</dd>
 <dd><code>details</code> - Artist's description</dd>
 <dd><code>email</code> - Requesting</dd>
-<dd><code>code</code> - Hash sent by RMIServer</dd>
+<dd><code>code</code> - Hash sent by rmiserver.RMIServer</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="MulticastServerResponse.html#sendResponseMulticast-java.lang.String-java.lang.String-"><code>sendResponseMulticast(String, String)</code></a></dd>
 </dl>
@@ -681,7 +681,7 @@ extends java.lang.Thread</pre>
 <dd><code>description</code> - Album's description</dd>
 <dd><code>genre</code> - Album's genre</dd>
 <dd><code>email</code> - User's email</dd>
-<dd><code>code</code> - Hash sent by RMIServer</dd>
+<dd><code>code</code> - Hash sent by rmiserver.RMIServer</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="MulticastServerResponse.html#sendResponseMulticast-java.lang.String-java.lang.String-"><code>sendResponseMulticast(String, String)</code></a></dd>
 </dl>
@@ -709,7 +709,7 @@ extends java.lang.Thread</pre>
 <dd><code>title</code> - Track's title</dd>
 <dd><code>track</code> - Track number</dd>
 <dd><code>email</code> - User's email</dd>
-<dd><code>code</code> - Hash sent by RMIServer</dd>
+<dd><code>code</code> - Hash sent by rmiserver.RMIServer</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="MulticastServerResponse.html#sendResponseMulticast-java.lang.String-java.lang.String-"><code>sendResponseMulticast(String, String)</code></a></dd>
 </dl>

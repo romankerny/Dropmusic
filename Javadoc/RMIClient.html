@@ -48,7 +48,7 @@ var activeTableTab = "activeTableTab";
 <div class="subNav">
 <ul class="navList">
 <li><a href="Review.html" title="class in &lt;Unnamed&gt;"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="RMIClientInterface.html" title="interface in &lt;Unnamed&gt;"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="index.html?RMIClient.html" target="_top">Frames</a></li>
@@ -121,18 +121,18 @@ var activeTableTab = "activeTableTab";
 <li class="blockList">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd>java.io.Serializable, java.rmi.Remote, <a href="RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">RMIClientInterface</a></dd>
+<dd>java.io.Serializable, java.rmi.Remote, <a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIClientInterface</a></dd>
 </dl>
 <hr>
 <br>
 <pre>public class <span class="typeNameLabel">RMIClient</span>
 extends java.rmi.server.UnicastRemoteObject
-implements <a href="RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">RMIClientInterface</a></pre>
+implements <a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIClientInterface</a></pre>
 <div class="block">This class will be runned in the Client's machine.
- It basically gets user strings via command line, parses them, and then makes remote invocations on the RMIServer
+ It basically gets user strings via command line, parses them, and then makes remote invocations on the rmiserver.RMIServer
  via it's interface based on them.
- It connects to the RMIServer with the IP provided in the args array when starting the program
- If for some reason RMIServers go off during the execution of a RMIServer method the client will hold and wait
+ It connects to the rmiserver.RMIServer with the IP provided in the args array when starting the program
+ If for some reason RMIServers go off during the execution of a rmiserver.RMIServer method the client will hold and wait
  for the reconection - this happens in the method waitForServer()
  and then retry to call the method.</div>
 <dl>
@@ -175,7 +175,7 @@ implements <a href="RMIClientInterface.html" title="interface in &lt;Unnamed&gt;
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="RMIClient.html#getEmail--">getEmail</a></span>()</code>
-<div class="block">called by RMIServer, simply returns the email of the Client</div>
+<div class="block">called by rmiserver.RMIServer, simply returns the email of the Client</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
@@ -239,7 +239,7 @@ implements <a href="RMIClientInterface.html" title="interface in &lt;Unnamed&gt;
                    throws java.rmi.RemoteException</pre>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="RMIClientInterface.html#printOnClient-java.lang.String-">printOnClient</a></code>&nbsp;in interface&nbsp;<code><a href="RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">RMIClientInterface</a></code></dd>
+<dd><code><a href="rmiserver.RMIClientInterface.html#printOnClient-java.lang.String-">printOnClient</a></code>&nbsp;in interface&nbsp;<code><a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIClientInterface</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.rmi.RemoteException</code></dd>
 </dl>
@@ -253,10 +253,10 @@ implements <a href="RMIClientInterface.html" title="interface in &lt;Unnamed&gt;
 <h4>getEmail</h4>
 <pre>public&nbsp;java.lang.String&nbsp;getEmail()
                           throws java.rmi.RemoteException</pre>
-<div class="block">called by RMIServer, simply returns the email of the Client</div>
+<div class="block">called by rmiserver.RMIServer, simply returns the email of the Client</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="RMIClientInterface.html#getEmail--">getEmail</a></code>&nbsp;in interface&nbsp;<code><a href="RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">RMIClientInterface</a></code></dd>
+<dd><code><a href="rmiserver.RMIClientInterface.html#getEmail--">getEmail</a></code>&nbsp;in interface&nbsp;<code><a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIClientInterface</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.rmi.RemoteException</code></dd>
@@ -306,7 +306,7 @@ implements <a href="RMIClientInterface.html" title="interface in &lt;Unnamed&gt;
 <div class="subNav">
 <ul class="navList">
 <li><a href="Review.html" title="class in &lt;Unnamed&gt;"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="RMIClientInterface.html" title="interface in &lt;Unnamed&gt;"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="index.html?RMIClient.html" target="_top">Frames</a></li>

@@ -1,20 +1,22 @@
+import rmiserver.RMIClientInterface;
+import rmiserver.RMIServerInterface;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.SQLOutput;
 import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
 
 /**
  * This class will be runned in the Client's machine.
- * It basically gets user strings via command line, parses them, and then makes remote invocations on the RMIServer
+ * It basically gets user strings via command line, parses them, and then makes remote invocations on the rmiserver.RMIServer
  * via it's interface based on them.
- * It connects to the RMIServer with the IP provided in the args array when starting the program
- * If for some reason RMIServers go off during the execution of a RMIServer method the client will hold and wait
+ * It connects to the rmiserver.RMIServer with the IP provided in the args array when starting the program
+ * If for some reason RMIServers go off during the execution of a rmiserver.RMIServer method the client will hold and wait
  * for the reconection - this happens in the method waitForServer()
  * and then retry to call the method.
  *
@@ -34,7 +36,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
     }
 
     /**
-     * called by RMIServer, simply returns the email of the Client
+     * called by rmiserver.RMIServer, simply returns the email of the Client
      * @return
      * @throws RemoteException
      */
@@ -59,11 +61,11 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
     }
 
     /**
-     * In main when an RMIServer method call throws an RemoteExeption this method is called in the handling of the
+     * In main when an rmiserver.RMIServer method call throws an RemoteExeption this method is called in the handling of the
      * throw
-     * The method sleeps for 1 sec and then try's to lookup the registry of the RMIServer
+     * The method sleeps for 1 sec and then try's to lookup the registry of the rmiserver.RMIServer
      * this happens mostly when an RMI Server goes down
-     * if the lookup happens w/ successes than the client also call's subscribe to send it's interface to the new RMIServer
+     * if the lookup happens w/ successes than the client also call's subscribe to send it's interface to the new rmiserver.RMIServer
      *
      * @param client
      */
@@ -96,7 +98,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
     public static void main(String args[]) throws IOException, NotBoundException {
 
 
-        // read RMIServer's IP from the args array
+        // read rmiserver.RMIServer's IP from the args array
         if (args.length != 1) {
             System.out.println("Missing IP argument");
             System.exit(0);
@@ -134,7 +136,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
 
         System.out.println("Connecting to: " + ip);
 
-        // connects to RMIServer when the Client first runs, if it fails the code won't exit the while loop
+        // connects to rmiserver.RMIServer when the Client first runs, if it fails the code won't exit the while loop
         while (!rmiConnected)
             try {
                 client.serverInterface = (RMIServerInterface) LocateRegistry.getRegistry(ip, 1099).lookup("rmiserver");
@@ -182,8 +184,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                         if (!result.equals("Incorrect user/password"))
                             email = tokens[1];
                     } else {
-                        System.out.println("Usage: login [email]");
-                    }
+                        System.out.println("Usage: login [email]");                    }
 
 
                 } else if (tokens[0].equals("logout")) {

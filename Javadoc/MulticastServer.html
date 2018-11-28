@@ -193,7 +193,7 @@ extends java.lang.Thread</pre>
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="MulticastServer.html#run--">run</a></span>()</code>
 <div class="block">Main loop of Multicast, starts by reading users.obj and artists.obj,
-  then proceeds to create a new MulticastSocket, joins the group and sends an `ack` to RMIServer.</div>
+  then proceeds to create a new MulticastSocket, joins the group and sends an `ack` to rmiserver.RMIServer.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
@@ -281,7 +281,7 @@ extends java.lang.Thread</pre>
 <h4>run</h4>
 <pre>public&nbsp;void&nbsp;run()</pre>
 <div class="block">Main loop of Multicast, starts by reading users.obj and artists.obj,
-  then proceeds to create a new MulticastSocket, joins the group and sends an `ack` to RMIServer.
+  then proceeds to create a new MulticastSocket, joins the group and sends an `ack` to rmiserver.RMIServer.
 
   Finally enters the loop of receiving a packet and creating a new MulticastServerResponse Thread to deal with it.</div>
 <dl>

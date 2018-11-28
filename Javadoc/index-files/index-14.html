@@ -72,12 +72,12 @@
 </a>
 <h2 class="title">S</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="../RMIServer.html#search-java.lang.String-java.lang.String-">search(String, String)</a></span> - Method in class <a href="../RMIServer.html" title="class in &lt;Unnamed&gt;">RMIServer</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServer.html#search-java.lang.String-java.lang.String-">search(String, String)</a></span> - Method in class <a href="../rmiserver.RMIServer.html" title="class in &lt;Unnamed&gt;">rmiserver.RMIServer</a></dt>
 <dd>
 <div class="block">Request  -> flag | id; type | details; param | (art, gen, tit); keyword | kkkk;
  Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../RMIServerInterface.html#search-java.lang.String-java.lang.String-">search(String, String)</a></span> - Method in interface <a href="../RMIServerInterface.html" title="interface in &lt;Unnamed&gt;">RMIServerInterface</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServerInterface.html#search-java.lang.String-java.lang.String-">search(String, String)</a></span> - Method in interface <a href="../rmiserver.RMIServerInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIServerInterface</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../MulticastServerResponse.html#searchMusic-java.lang.String-java.lang.String-">searchMusic(String, String)</a></span> - Method in class <a href="../MulticastServerResponse.html" title="class in &lt;Unnamed&gt;">MulticastServerResponse</a></dt>
 <dd>
@@ -93,12 +93,12 @@
 <div class="block">Creates a MulticastSocket and sends a Datagram packet with
   some protocol instruction.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../RMIServer.html#sendUDPDatagram-java.lang.String-">sendUDPDatagram(String)</a></span> - Method in class <a href="../RMIServer.html" title="class in &lt;Unnamed&gt;">RMIServer</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServer.html#sendUDPDatagram-java.lang.String-">sendUDPDatagram(String)</a></span> - Method in class <a href="../rmiserver.RMIServer.html" title="class in &lt;Unnamed&gt;">rmiserver.RMIServer</a></dt>
 <dd>
 <div class="block">Using round-robin algorithm picks an hash code to concatenate with the @param resp
  then calls sendUDPDatagramGeneral() to send the protocol message.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../RMIServer.html#sendUDPDatagramGeneral-java.lang.String-">sendUDPDatagramGeneral(String)</a></span> - Method in class <a href="../RMIServer.html" title="class in &lt;Unnamed&gt;">RMIServer</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServer.html#sendUDPDatagramGeneral-java.lang.String-">sendUDPDatagramGeneral(String)</a></span> - Method in class <a href="../rmiserver.RMIServer.html" title="class in &lt;Unnamed&gt;">rmiserver.RMIServer</a></dt>
 <dd>
 <div class="block">Creates a multicastSocket and sends a Datagram packet with
   some protocol instruction.</div>
@@ -113,21 +113,21 @@
 <dd>
 <div class="block">Method to share an uploaded music with another user.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../RMIServer.html#share-java.lang.String-java.lang.String-java.lang.String-">share(String, String, String)</a></span> - Method in class <a href="../RMIServer.html" title="class in &lt;Unnamed&gt;">RMIServer</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServer.html#share-java.lang.String-java.lang.String-java.lang.String-">share(String, String, String)</a></span> - Method in class <a href="../rmiserver.RMIServer.html" title="class in &lt;Unnamed&gt;">rmiserver.RMIServer</a></dt>
 <dd>
 <div class="block">Request  -> flag | id; type | share; title | tttt; shareTo | sssss; uploader | uuuuuu;
  Response -> flag | id; type | share; result | (y/n): title | ttttt; shareTo | ssssss; uploader | uuuuuu; msg | mmmmmm;
 
  shares a music with the user with the email == shareTo</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../RMIServerInterface.html#share-java.lang.String-java.lang.String-java.lang.String-">share(String, String, String)</a></span> - Method in interface <a href="../RMIServerInterface.html" title="interface in &lt;Unnamed&gt;">RMIServerInterface</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServerInterface.html#share-java.lang.String-java.lang.String-java.lang.String-">share(String, String, String)</a></span> - Method in interface <a href="../rmiserver.RMIServerInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIServerInterface</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../RMIServer.html#subscribe-java.lang.String-RMIClientInterface-">subscribe(String, RMIClientInterface)</a></span> - Method in class <a href="../RMIServer.html" title="class in &lt;Unnamed&gt;">RMIServer</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServer.html#subscribe-java.lang.String-rmiserver.RMIClientInterface-">subscribe(String, rmiserver.RMIClientInterface)</a></span> - Method in class <a href="../rmiserver.RMIServer.html" title="class in &lt;Unnamed&gt;">rmiserver.RMIServer</a></dt>
 <dd>
 <div class="block">When a user calls login() w/ success
  It's @param clientInterface is added to the clients concurrentHashMap</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../RMIServerInterface.html#subscribe-java.lang.String-RMIClientInterface-">subscribe(String, RMIClientInterface)</a></span> - Method in interface <a href="../RMIServerInterface.html" title="interface in &lt;Unnamed&gt;">RMIServerInterface</a></dt>
+<dt><span class="memberNameLink"><a href="../rmiserver.RMIServerInterface.html#subscribe-java.lang.String-rmiserver.RMIClientInterface-">subscribe(String, rmiserver.RMIClientInterface)</a></span> - Method in interface <a href="../rmiserver.RMIServerInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIServerInterface</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <a href="index-1.html">A</a>&nbsp;<a href="index-2.html">B</a>&nbsp;<a href="index-3.html">C</a>&nbsp;<a href="index-4.html">D</a>&nbsp;<a href="index-5.html">E</a>&nbsp;<a href="index-6.html">G</a>&nbsp;<a href="index-7.html">I</a>&nbsp;<a href="index-8.html">L</a>&nbsp;<a href="index-9.html">M</a>&nbsp;<a href="index-10.html">N</a>&nbsp;<a href="index-11.html">O</a>&nbsp;<a href="index-12.html">P</a>&nbsp;<a href="index-13.html">R</a>&nbsp;<a href="index-14.html">S</a>&nbsp;<a href="index-15.html">T</a>&nbsp;<a href="index-16.html">U</a>&nbsp;<a href="index-17.html">W</a>&nbsp;</div>
