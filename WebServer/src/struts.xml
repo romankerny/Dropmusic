@@ -45,6 +45,10 @@
             <result>/dropmusic.jsp</result>
         </action>
 
+        <action name="search" class="webserver.action.SearchAction" method="execute">
+            <result>/search.jsp</result>
+        </action>
+
 
         <!-- 'login' action calls 'execute' in 'LoginAction' -->
         <action name="login" class="webserver.action.LoginAction" method="execute">

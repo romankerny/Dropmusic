@@ -1,3 +1,4 @@
+<%@ taglib prefix="s" uri="/struts-tags" %>
 <%--
   Created by IntelliJ IDEA.
   User: diogo
@@ -11,6 +12,11 @@
     <title>Drop Music</title>
 </head>
 <body>
-<p>homepage crl</p>
+<h1>DropMusic</h1>
+<p>
+    <s:form action="search" method="GET">
+        <s:textfield name="keyword" />
+    </s:form>
+</p>
 </body>
 </html>
