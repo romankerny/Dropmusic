@@ -14,7 +14,7 @@
 
 
     <interceptors>
-        <interceptor name="LoginInterceptor" class="webserver.interceptor.LoginInterceptor" />
+        <interceptor name="LoginInterceptor" class="webserver.interceptor.LoginInterceptors" />
         <interceptor-stack name="loginStack">
             <interceptor-ref name="LoginInterceptor" />
             <interceptor-ref name="defaultStack" /> <!-- pelo q percebi é 1 interceptor da framework -->
@@ -36,7 +36,7 @@
             <exception-mapping exception="java.lang.Exception" result="error" />
         </global-exception-mappings>
 
-        <!-- 'index' action leads to the view provided by index.jsp -->
+        <!-- 'index' actions leads to the view provided by index.jsp -->
         <action name="index">
             <interceptor-ref name="defaultStack"></interceptor-ref>
             <result>/WEB-INF/index.jsp</result>
@@ -46,14 +46,14 @@
             <result>/WEB-INF/dropmusic.jsp</result>
         </action>
 
-        <action name="search" class="webserver.action.SearchAction" method="execute">
+        <action name="search" class="webserver.actions.SearchAction" method="execute">
             <result>/search.jsp</result>
         </action>
 
 
 
-        <!-- 'login' action calls 'execute' in 'LoginAction' -->
-        <action name="login" class="webserver.action.LoginAction" method="execute">
+        <!-- 'login' actions calls 'execute' in 'LoginAction' -->
+        <action name="loginAction" class="webserver.actions.LoginAction" method="execute">
             <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
             <result name="success">/WEB-INF/dropmusic.jsp</result>
             <result name="input">/WEB-INF/index.jsp</result>
@@ -65,10 +65,10 @@
         </action>
 
 
-        <action name="register" class="webserver.action.RegisterAction" method="execute">
+        <action name="register" class="webserver.actions.RegisterAction" method="execute">
             <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
             <result name="success">/WEB-INF/index.jsp</result>
-            <result name="input">/WEB-INF/register.jsp</result>
+            <result name="login">/WEB-INF/register.jsp</result>
         </action>
 
 

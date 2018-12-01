@@ -1,4 +1,4 @@
-package webserver.model;
+package webserver.models;
 
 import rmiserver.RMIServerInterface;
 

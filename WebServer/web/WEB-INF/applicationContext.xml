@@ -1,0 +1,26 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+
+    <!-- Models -->
+    <bean id="loginModel" class="webserver.models.LoginModel" scope="prototype"/>
+
+
+    <!-- Services -->
+    <bean id="loginService" class="webserver.services.LoginService" >
+    </bean>
+
+    <!-- Actions -->
+    <bean id="loginAction" class="webserver.actions.LoginAction" scope="prototype">
+        <property name="loginService" ref="loginService" />
+        <property name="inputObject" ref="loginModel" />
+    </bean>
+
+
+
+</beans>
+
+
+

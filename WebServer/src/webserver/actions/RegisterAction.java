@@ -1,8 +1,8 @@
 
-package webserver.action;
+package webserver.actions;
 
 import com.opensymphony.xwork2.ActionSupport;
-import webserver.model.RegisterBean;
+import webserver.models.RegisterBean;
 import org.apache.struts2.interceptor.SessionAware;
 
 import java.rmi.RemoteException;

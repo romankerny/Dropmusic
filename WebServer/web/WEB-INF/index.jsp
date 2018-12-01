@@ -9,12 +9,10 @@
   <!-- Required meta tags -->
 </head>
 <body>
-<s:form action="login" method="post">
-  <s:text name="Username:" />
-  <s:textfield name="email" /><br>
-  <s:text name="Password:" />
-  <s:password name="password" /><br>
-  <s:submit />
+<s:form action="loginAction" method="GET">
+  <s:textfield name="inputObject.email" label="Email" />
+  <s:textfield name="inputObject.password" label="Password" />
+  <s:submit label="Log in" />
 </s:form>
 
 <s:form action="register-direct" method="post">

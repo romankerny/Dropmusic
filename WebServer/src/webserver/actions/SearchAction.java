@@ -1,9 +1,9 @@
-package webserver.action;
+package webserver.actions;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
-import webserver.model.SearchBean;
+import webserver.models.SearchBean;
 
 import java.rmi.RemoteException;
 import java.util.Map;
