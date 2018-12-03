@@ -29,7 +29,10 @@ public class LoginAction extends ActionSupport implements SessionAware {
 		System.out.println("Executing LoginAction - execute()");
 		try {
 			if(getLoginService().login(getInputObject()))
-			{ // if true then user can log
+			{   // if true then user can log
+				// set session parameters
+				session.put("email", getInputObject().getEmail());
+				session.put("loggedin", true);
 				r = "success";
 			}
 			else
@@ -54,13 +57,6 @@ public class LoginAction extends ActionSupport implements SessionAware {
 
 
 	public LoginModel getInputObject() {
-		/*
-		System.out.println("No getInputObject");
-
-		if(!session.containsKey("loginModel"))
-			this.setInputObject(new LoginModel());
-		return (LoginModel) session.get("loginModel");
-		*/
 		return inputObject;
 	}
 

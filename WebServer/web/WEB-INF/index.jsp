@@ -9,9 +9,9 @@
   <!-- Required meta tags -->
 </head>
 <body>
-<s:form action="loginAction" method="GET">
+<s:form action="loginAction" method="POST">
   <s:textfield name="inputObject.email" label="Email" />
-  <s:textfield name="inputObject.password" label="Password" />
+  <s:password name="inputObject.password" label="Password" />
   <s:submit label="Log in" />
 </s:form>
 

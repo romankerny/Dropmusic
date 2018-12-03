@@ -9,9 +9,9 @@
 </head>
 <body>
 
-<s:form action="registerAction" method="GET">
+<s:form action="registerAction" method="POST">
     <s:textfield name="inputObject.email" label="Email" />
-    <s:textfield name="inputObject.password" label="Password" />
+    <s:password name="inputObject.password" label="Password" />
     <s:submit label="Sign up" />
 </s:form>
 
