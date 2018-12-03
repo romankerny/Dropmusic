@@ -2,7 +2,6 @@ package webserver.services;
 
 import rmiserver.RMIServerInterface;
 import webserver.models.LoginModel;
-import webserver.models.RegisterModel;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -14,7 +13,7 @@ public class RegisterService {
         System.out.println("Starting RegisterService()");
     }
 
-    public boolean register(RegisterModel registerModel) throws RemoteException {
+    public boolean register(LoginModel loginModel) throws RemoteException {
 
         boolean r;
         RMIServerInterface server = null;
@@ -28,9 +27,9 @@ public class RegisterService {
             e.printStackTrace();
         }
 
-        rsp = server.register(registerModel.getEmail(), registerModel.getPassword());
+        rsp = server.register(loginModel.getEmail(), loginModel.getPassword());
 
-        if (rsp.equals("User " + registerModel.getEmail() + " registered successfully"))
+        if (rsp.equals("User " + loginModel.getEmail() + " registered successfully"))
         {
             r = true;
         }

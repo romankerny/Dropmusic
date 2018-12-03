@@ -15,7 +15,7 @@ public class LoginAction extends ActionSupport implements SessionAware {
 
 	private LoginService loginService;
 
-	private LoginModel inputObject;
+	private LoginModel inputObject = new LoginModel();
 
 	public LoginAction() {
 

@@ -3,7 +3,7 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
-import webserver.models.RegisterModel;
+import webserver.models.LoginModel;
 import webserver.services.RegisterService;
 
 
@@ -17,7 +17,7 @@ public class RegisterAction extends ActionSupport implements SessionAware {
 
     private RegisterService registerService;
 
-    private RegisterModel inputObject;
+    private LoginModel inputObject = new LoginModel();
 
     @Override
     public String execute() {
@@ -43,7 +43,6 @@ public class RegisterAction extends ActionSupport implements SessionAware {
         return r;
     }
 
-
     public RegisterService getRegisterService() {
         return registerService;
     }
@@ -52,16 +51,12 @@ public class RegisterAction extends ActionSupport implements SessionAware {
         this.registerService = registerService;
     }
 
-    public RegisterModel getInputObject() {
+    public LoginModel getInputObject() {
         return inputObject;
     }
 
-    public void setInputObject(RegisterModel inputObject) {
+    public void setInputObject(LoginModel inputObject) {
         this.inputObject = inputObject;
-    }
-
-    public void setRegisterBean(RegisterModel RegisterModel) {
-        this.session.put("RegisterModel", RegisterModel);
     }
 
     @Override
