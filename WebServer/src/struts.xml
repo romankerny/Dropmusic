@@ -56,7 +56,7 @@
         <action name="loginAction" class="webserver.actions.LoginAction" method="execute">
             <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
             <result name="success">/WEB-INF/dropmusic.jsp</result>
-            <result name="input">/WEB-INF/index.jsp</result>
+            <result name="login">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="register-direct">
@@ -64,11 +64,10 @@
             <result>/WEB-INF/register.jsp</result>
         </action>
 
-
-        <action name="register" class="webserver.actions.RegisterAction" method="execute">
+        <action name="registerAction" class="webserver.actions.RegisterAction" method="execute">
             <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
             <result name="success">/WEB-INF/index.jsp</result>
-            <result name="login">/WEB-INF/register.jsp</result>
+            <result name="register">/WEB-INF/register.jsp</result>
         </action>
 
 

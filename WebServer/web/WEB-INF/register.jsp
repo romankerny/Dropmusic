@@ -9,12 +9,10 @@
 </head>
 <body>
 
-<s:form action="register" method="post">
-    <s:text name="Username:" />
-    <s:textfield name="email" /><br>
-    <s:text name="Password:" />
-    <s:password name="password" /><br>
-    <s:submit />
+<s:form action="registerAction" method="GET">
+    <s:textfield name="inputObject.email" label="Email" />
+    <s:textfield name="inputObject.password" label="Password" />
+    <s:submit label="Sign up" />
 </s:form>
 
 </body>

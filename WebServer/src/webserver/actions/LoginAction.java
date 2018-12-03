@@ -18,7 +18,7 @@ public class LoginAction extends ActionSupport implements SessionAware {
 	private LoginModel inputObject;
 
 	public LoginAction() {
-		System.out.println("no construtor da login action..");
+
 	}
 
 
@@ -26,18 +26,15 @@ public class LoginAction extends ActionSupport implements SessionAware {
 	public String execute() {
 		String r = "";
 
-		System.out.println("Login Action");
+		System.out.println("Executing LoginAction - execute()");
 		try {
 			if(getLoginService().login(getInputObject()))
 			{ // if true then user can log
-				r = SUCCESS;
-				System.out.printf("sucess");
-
+				r = "success";
 			}
 			else
 			{// if false make user log
-				System.out.println("failed");
-				r = LOGIN;
+				r = "login";
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -48,21 +45,15 @@ public class LoginAction extends ActionSupport implements SessionAware {
 
 
 	public LoginService getLoginService() {
-		System.out.println("No get login service");
-		System.out.println(this.loginService);
 		return loginService;
 	}
 
 	public void setLoginService(LoginService loginService) {
 		this.loginService = loginService;
-		System.out.println("a dar set ao service");
-
 	}
 
 
 	public LoginModel getInputObject() {
-		System.out.println("no get input object");
-		System.out.println(inputObject);
 		/*
 		System.out.println("No getInputObject");
 
@@ -73,8 +64,8 @@ public class LoginAction extends ActionSupport implements SessionAware {
 		return inputObject;
 	}
 
+
 	public void setInputObject(LoginModel inputObject) {
-		System.out.println("no set input object");
 		this.inputObject = inputObject;
 	}
 

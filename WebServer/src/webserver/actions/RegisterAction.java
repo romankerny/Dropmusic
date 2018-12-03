@@ -2,8 +2,10 @@
 package webserver.actions;
 
 import com.opensymphony.xwork2.ActionSupport;
-import webserver.models.RegisterBean;
 import org.apache.struts2.interceptor.SessionAware;
+import webserver.models.RegisterModel;
+import webserver.services.RegisterService;
+
 
 import java.rmi.RemoteException;
 import java.util.Map;
@@ -11,56 +13,55 @@ import java.util.Map;
 public class RegisterAction extends ActionSupport implements SessionAware {
     private static final long serialVersionUID = 4L;
     private Map<String, Object> session;
-    private String email = null, password = null;
+
+
+    private RegisterService registerService;
+
+    private RegisterModel inputObject;
 
     @Override
     public String execute() {
-        // any username is accepted without confirmation (should check using RMI)
-        System.out.println("Executing RegisterAction");
 
-        if(this.email != null && !email.equals(""))
+        System.out.println("Executing RegisterAction - execute()");
+        String r = "";
+
+        try
         {
-
-            this.getRegisterBean().setEmail(this.email);
-            this.getRegisterBean().setPassword(this.password);
-
-            try
+            if(getRegisterService().register(getInputObject()))
             {
-                if(this.getRegisterBean().getRegister())
-                {
-                    //getRegister is the name of the register method
-                    System.out.println("Sign up user " + email);
-                    // session.put("username", email);
-                    // session.put("loggedin", true); // this marks the user as logged in
-                    return SUCCESS;
-
-                }
+                r = "success";
             }
-            catch (RemoteException e) {
-                e.printStackTrace();
+            else
+            {
+                r = "register";
             }
 
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
-        System.out.println("Failed to sign up " + email);
-        return INPUT;
+
+        return r;
     }
 
-    public void setEmail(String email) {
-        this.email = email; // will you sanitize this input? maybe use a prepared statement?
+
+    public RegisterService getRegisterService() {
+        return registerService;
     }
 
-    public void setPassword(String password) {
-        this.password = password; // what about this input?
+    public void setRegisterService(RegisterService registerService) {
+        this.registerService = registerService;
     }
 
-    public RegisterBean getRegisterBean() {
-        if(!session.containsKey("RegisterBean"))
-            this.setRegisterBean(new RegisterBean());
-        return (RegisterBean) session.get("RegisterBean");
+    public RegisterModel getInputObject() {
+        return inputObject;
     }
 
-    public void setRegisterBean(RegisterBean RegisterBean) {
-        this.session.put("RegisterBean", RegisterBean);
+    public void setInputObject(RegisterModel inputObject) {
+        this.inputObject = inputObject;
+    }
+
+    public void setRegisterBean(RegisterModel RegisterModel) {
+        this.session.put("RegisterModel", RegisterModel);
     }
 
     @Override

@@ -6,18 +6,22 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
     <!-- Models -->
     <bean id="loginModel" class="webserver.models.LoginModel" scope="prototype"/>
+    <bean id="registerModel" class="webserver.models.RegisterModel" scope="prototype"/>
 
 
     <!-- Services -->
-    <bean id="loginService" class="webserver.services.LoginService" >
-    </bean>
+    <bean id="loginService" class="webserver.services.LoginService" />
+    <bean id="registerService" class="webserver.services.RegisterService" />
 
     <!-- Actions -->
     <bean id="loginAction" class="webserver.actions.LoginAction" scope="prototype">
         <property name="loginService" ref="loginService" />
         <property name="inputObject" ref="loginModel" />
     </bean>
-
+    <bean id="registerAction" class="webserver.actions.RegisterAction" scope="prototype">
+        <property name="registerService" ref="registerService" />
+        <property name="inputObject" ref="registerModel" />
+    </bean>
 
 
 </beans>

@@ -1,18 +1,16 @@
 package webserver.models;
 
-import webserver.services.LoginService;
-
-public class LoginModel {
+public class RegisterModel {
 
     private String email; // email and password supplied by the user
     private String password;
 
-    public LoginModel(String email, String password) {
+    public RegisterModel(String email, String password) {
         setEmail(email);
         setPassword(password);
     }
 
-    public LoginModel()
+    public RegisterModel()
     {
         this(null, null);
     }
@@ -32,4 +30,5 @@ public class LoginModel {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }
