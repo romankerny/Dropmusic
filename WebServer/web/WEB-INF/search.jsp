@@ -14,7 +14,7 @@
 </head>
 <body>
 
-<c:out value="${searchBean.result}" />
+<c:out value="${results}" />
 
 </body>
 </html>

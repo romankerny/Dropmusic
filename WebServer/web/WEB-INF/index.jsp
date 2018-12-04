@@ -5,14 +5,14 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-  <title>Login</title>
+  <title>Loginada nesta merda</title>
   <!-- Required meta tags -->
 </head>
 <body>
 <s:form action="loginAction" method="POST">
   <s:textfield name="inputObject.email" label="Email" />
   <s:password name="inputObject.password" label="Password" />
-  <s:submit label="Log in" />
+  <s:submit label="Log in putas" />
 </s:form>
 
 <s:form action="register-direct" method="post">

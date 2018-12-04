@@ -46,10 +46,6 @@
             <result>/WEB-INF/dropmusic.jsp</result>
         </action>
 
-        <action name="search" class="webserver.actions.SearchAction" method="execute">
-            <result>/search.jsp</result>
-        </action>
-
 
 
         <!-- 'login' actions calls 'execute' in 'LoginAction' -->
@@ -68,6 +64,18 @@
             <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
             <result name="success">/WEB-INF/index.jsp</result>
             <result name="register">/WEB-INF/register.jsp</result>
+        </action>
+
+        <action name="artistSearch" class="artistSearchAction" method="execute">
+            <result name="success">/WEB-INF/search.jsp</result>
+        </action>
+
+        <action name="albumSearch" class="albumSearchAction" method="execute">
+            <result name="success">/WEB-INF/search.jsp</result>
+        </action>
+
+        <action name="musicSearch" class="musicSearchAction" method="execute">
+            <result name="success">/WEB-INF/search.jsp</result>
         </action>
 
 
