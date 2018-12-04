@@ -13,6 +13,7 @@
     <package name="webserver" extends="struts-default">
 
 
+
     <interceptors>
         <interceptor name="LoginInterceptor" class="webserver.interceptor.LoginInterceptors" />
         <interceptor-stack name="loginStack">

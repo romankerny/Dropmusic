@@ -1,5 +1,10 @@
 package rmiserver;
 
+import javax.websocket.server.ServerEndpoint;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+
+
 import java.io.IOException;
 import java.net.*;
 import java.rmi.AlreadyBoundException;
@@ -14,6 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import static java.lang.Thread.sleep;
+
 
 /**
  *
@@ -31,8 +37,6 @@ import static java.lang.Thread.sleep;
  *  The class also contains an array of Strings that has all the UUID hashes that identify MulticastServers in an
  *  unique way.
  *
- *
- *
  */
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface {
 
@@ -49,6 +53,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public RMIServer() throws RemoteException {
         super();
     }
+
 
     /**
      * Using round-robin algorithm picks an hash code to concatenate with the @param resp

@@ -9,14 +9,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
+
     <title>Drop Music</title>
 </head>
 <body>
+
+<%@ include file="header.jsp" %>
 <h1>DropMusic</h1>
-<p>
-    <s:form action="search" method="GET">
-        <s:textfield name="keyword" />
-    </s:form>
-</p>
+
 </body>
 </html>
