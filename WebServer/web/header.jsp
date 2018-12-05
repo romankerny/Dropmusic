@@ -4,8 +4,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <style><%@include file="/WEB-INF/css/header.css"%></style>
-    <script><%@include file="/WEB-INF/js/notification.js"%></script>
+    <style><%@include file="css/header.css"%></style>
+    <script><%@include file="js/notification.js"%></script>
     <script>setEmail("${session.email}")</script>
 </head>
 <body>

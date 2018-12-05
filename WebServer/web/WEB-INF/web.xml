@@ -19,6 +19,21 @@
         </listener-class>
     </listener>
 
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Deny Direct Access</web-resource-name>
+            <description></description>
+            <url-pattern>*.jsp</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>Denied</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-role>
+        <role-name>Denied</role-name>
+    </security-role>
+
 
 
 </web-app>
