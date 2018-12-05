@@ -660,7 +660,7 @@ public class MulticastServer extends Thread {
 
             if (type.equals("art")) {
 
-                pstmtArtInfo = con.prepareStatement("SELECT name 'Name', details 'Details' FROM artist WHERE name = ?;");
+                pstmtArtInfo = con.prepareStatement("SELECT name 'Name', details 'Details' FROM artist WHERE name like ?;");
 
                 pstmtAlbInfo = con.prepareStatement("SELECT title 'Title', description 'Description', genre 'Genre', launch_date 'Launch date', editor_label 'Editor label', IFNULL(albrate.rat,0) 'Rating'" +
                         "                        FROM album AS alb" +
@@ -674,7 +674,7 @@ public class MulticastServer extends Thread {
                 pstmtAlbInfo.setString(1, keyword);
                 pstmtAlbInfo.setString(2, keyword);
 
-                pstmtArtInfo.setString(1, keyword);
+                pstmtArtInfo.setString(1, "%" + keyword + "%");
                 rsAlbInfo = pstmtAlbInfo.executeQuery();
                 rsArtInfo = pstmtArtInfo.executeQuery();
 
@@ -986,6 +986,7 @@ public class MulticastServer extends Thread {
             }
 
         }
+
 
         sendResponseMulticast(rsp, code);
 
