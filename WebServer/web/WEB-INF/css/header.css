@@ -37,3 +37,9 @@ li a:hover {
     bottom:0;
     right:0;
 }
+
+#search-bar {
+    float: right;
+    padding-top: 7px;
+    padding-right: 10px;
+}

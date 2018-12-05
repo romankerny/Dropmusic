@@ -10,7 +10,7 @@ window.onload = function() { // URI = ws://10.16.0.165:8080/WebSocket/ws
 function setEmail(email) {
     this.email = email;
 }
-}
+
 
 function connect(host) { // connect to the host websocket
     if ('WebSocket' in window)
@@ -22,7 +22,6 @@ function connect(host) { // connect to the host websocket
         return;
     }
 
-    // websocket.onopen    = onOpen; // set the 4 event listeners below
     websocket.onclose   = onClose;
     websocket.onmessage = onMessage;
     websocket.onerror   = onError;
@@ -32,6 +31,7 @@ function connect(host) { // connect to the host websocket
 function onClose(event) {
     document.getElementById('chat').onkeydown = null;
 }
+
 
 function onMessage(message) { // print the received message
     writeNotification(message.data);

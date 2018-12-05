@@ -47,6 +47,10 @@
             <result>/WEB-INF/dropmusic.jsp</result>
         </action>
 
+        <action name="profile">
+            <result>/WEB-INF/profile.jsp</result>
+        </action>
+
         <action name="search" class="webserver.actions.SearchAction" method="execute">
             <result>/search.jsp</result>
         </action>
@@ -69,6 +73,12 @@
             <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
             <result name="success">/WEB-INF/index.jsp</result>
             <result name="register">/WEB-INF/register.jsp</result>
+        </action>
+
+
+        <action name="turnIntoEditorAction" class="webserver.actions.TurnIntoEditorAction" method="execute">
+           <result name="success">/WEB-INF/index.jsp</result>
+            <result name="failed">/WEB-INF/register.jsp</result>
         </action>
 
 

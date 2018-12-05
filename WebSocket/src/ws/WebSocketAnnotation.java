@@ -9,37 +9,49 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-class User {
-
-    User(Session s, String email) {
-        this.s = s;
-        this.email = email;
-    }
-
-    Session s;
-    String email;
-}
 
 @ServerEndpoint(value = "/ws/{email}")
 public class WebSocketAnnotation {
-    private static final Set<User> users = new CopyOnWriteArraySet<>();
+    String email;
+    Session session;
+
+
+    private static final Set<WebSocketAnnotation> users = new CopyOnWriteArraySet<>();
+
 
 
     @OnOpen
     public void start(@PathParam("email") String email, Session session) {
 
-        System.out.println(email);
         try {
             // Code to run when users connects to WebSocket
-            User u = new User(session, email);
-            users.add(u);
+            this.session = session;
+            this.email = email;
+            users.add(this);
 
-            session.getBasicRemote().sendText(u.email);
+
+            session.getBasicRemote().sendText(email);
+            System.out.println(users.size());
 
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
+    public static void sendNotification(String email, String notification) {
+
+        for(WebSocketAnnotation e : users)
+            if(e.email.equals(email)) {
+                try {
+                    e.session.getBasicRemote().sendText(notification);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
+    }
+
 
 }

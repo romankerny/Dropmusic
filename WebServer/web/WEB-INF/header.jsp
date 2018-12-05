@@ -1,11 +1,7 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: diogo
-  Date: 03-12-2018
-  Time: 16:59
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+         pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
     <style><%@include file="/WEB-INF/css/header.css"%></style>
@@ -15,12 +11,12 @@
 <body>
 
 <ul>
-    <li><a href="#home" class="active">Home</a></li>
+    <li><a href="dropmusic" class="active">Home</a></li>
     <li><a href="#artists">Artists</a></li>
     <li><a href="#contact">Albuns</a></li>
-    <li><a href="#users">Profile</a></li>
-    <li>
-        <s:form action="search" method="GET">
+    <li><a href="profile">Profile</a></li>
+    <li id ="search-bar">
+        <s:form action="search" method="get">
             <s:textfield name="keyword" />
         </s:form>
     </li>
