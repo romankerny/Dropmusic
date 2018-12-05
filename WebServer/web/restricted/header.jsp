@@ -4,15 +4,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <style><%@include file="css/header.css"%></style>
-    <script><%@include file="js/notification.js"%></script>
+    <style><%@include file="../css/header.css"%></style>
+    <script><%@include file="../js/notification.js"%></script>
     <script>setEmail("${session.email}")</script>
 </head>
 <body>
 
 <ul>
     <li><a href="dropmusic" class="active">Home</a></li>
-    <li><a href="artists.jsp">Artists</a></li>
+    <li><a href="restricted/artists.jsp">Artists</a></li>
     <li><a href="#contact">Albuns</a></li>
     <li><a href="profile">Profile</a></li>
     <li id="search-bar">

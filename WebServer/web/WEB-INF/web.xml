@@ -23,7 +23,7 @@
         <web-resource-collection>
             <web-resource-name>Deny Direct Access</web-resource-name>
             <description></description>
-            <url-pattern>*.jsp</url-pattern>
+            <url-pattern>/restricted/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>Denied</role-name>

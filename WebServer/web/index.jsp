@@ -5,7 +5,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Loginada nesta merda</title>
+  <title>Login</title>
   <!-- Required meta tags -->
 </head>
 <body>
