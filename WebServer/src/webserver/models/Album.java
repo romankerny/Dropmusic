@@ -1,7 +1,8 @@
 package webserver.models;
+import java.io.Serializable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Album {
+public class Album implements Serializable {
     private          String  title;
     private         String  description;
     private          String   genre;

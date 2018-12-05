@@ -14,7 +14,27 @@
 </head>
 <body>
 
-<c:out value="${results}" />
+<div id="main">
+    <c:choose>
+        <c:when test="${results == null}">
+            A problem occurred during the search!
+        </c:when>
+        <c:when test="${results.isEmpty()}">
+            No results found!
+        </c:when>
+        <c:otherwise>
+            Found ${results.size()} products!
+            <br />
+            <c:forEach items="${results}" var="item">
+                <div>
+                    Title: <c:out value="${item.title}" /> <br />
+                </div>
+                <br />
+            </c:forEach>
+        </c:otherwise>
+    </c:choose>
+
+</div>
 
 </body>
 </html>

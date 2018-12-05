@@ -1,12 +1,14 @@
 package webserver.services;
 
 import rmiserver.RMIServerInterface;
+import webserver.models.Album;
 import webserver.models.SearchModel;
 
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.ArrayList;
 
 public class AlbumSearchService implements SearchService {
 
@@ -24,15 +26,14 @@ public class AlbumSearchService implements SearchService {
         }
     }
 
-    @Override
-    public String search(SearchModel searchModel) {
-        String result="";
+    public ArrayList<Object> search(SearchModel searchModel) {
+        ArrayList<Object> results = null;
         try {
-            result = server.search("alb", searchModel.getKeyword());
+            results = server.searchAlbum(searchModel.getKeyword());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
 
-        return result;
+        return results;
     }
 }

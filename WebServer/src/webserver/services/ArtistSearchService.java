@@ -7,6 +7,7 @@ import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.ArrayList;
 
 public class ArtistSearchService implements SearchService {
 
@@ -25,14 +26,15 @@ public class ArtistSearchService implements SearchService {
     }
 
     @Override
-    public String search(SearchModel searchModel) {
-        String result="";
+    public ArrayList<Object> search(SearchModel searchModel) {
+        ArrayList<Object> result = null;
+        return result;
+        /*
         try {
             result = server.search("art", searchModel.getKeyword());
         } catch (RemoteException e) {
             e.printStackTrace();
-        }
+        }*/
 
-        return result;
     }
 }

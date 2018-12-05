@@ -1,7 +1,13 @@
 package rmiserver;
 
+import webserver.models.Album;
+import webserver.models.Artist;
+import webserver.models.Music;
+
+import java.awt.image.AreaAveragingScaleFilter;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 /**
  *
@@ -31,6 +37,9 @@ public interface RMIServerInterface extends Remote {
 
     // 3.
     public String search(String param, String keyword) throws RemoteException;
+    Artist searchArtist(String keyword) throws RemoteException;
+    ArrayList<Object> searchAlbum(String keyword) throws RemoteException;
+    ArrayList<Music> searchMusic(String keyword) throws RemoteException;
 
     // 5.
     public String rateAlbum(int stars, String artistName, String albumName, String review, String email) throws RemoteException;

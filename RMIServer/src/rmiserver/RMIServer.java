@@ -14,6 +14,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import static java.lang.Thread.sleep;
+import models.*;
+
 
 /**
  *
@@ -31,15 +33,13 @@ import static java.lang.Thread.sleep;
  *  The class also contains an array of Strings that has all the UUID hashes that identify MulticastServers in an
  *  unique way.
  *
- *
- *
  */
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface {
 
 
     private ConcurrentHashMap<String, RMIClientInterface> clients = new ConcurrentHashMap<String, RMIClientInterface>();
     private static final long serialVersionUID = 1L;
-    private static String MULTICAST_ADDRESS = "224.3.2.2";
+    private static String MULTICAST_ADDRESS = "224.3.2.1";
     private static int SEND_PORT = 5213, RCV_PORT = 5214;
     private static RMIServerInterface rmiServer;
     public static ArrayList<String> multicastHashes = new ArrayList<>();
@@ -49,6 +49,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public RMIServer() throws RemoteException {
         super();
     }
+
 
     /**
      * Using round-robin algorithm picks an hash code to concatenate with the @param resp
@@ -591,7 +592,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @return
      */
 
-    public String search(String param, String keyword) {
+    public String search(String param, String keyword) throws RemoteException{
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -611,6 +612,116 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             }
         }
         return rspToClient;
+    }
+
+    /**
+     * Request  -> flag | id; type | details; param | art; keyword | kkkk;
+     * Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
+     * @param keyword
+     * @return
+     */
+
+    public Artist searchArtist(String keyword) throws RemoteException{
+
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|details;param|art;keyword|" + keyword + ";", rspToClient = "";
+        boolean exit = false;
+
+        sendUDPDatagram(msg);
+
+        Artist result = null;
+
+        while (!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals(id)) {
+                rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
+                exit = true;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Request  -> flag | id; type | details; param | alb; keyword | kkkk;
+     * Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
+     * @param keyword
+     * @return
+     */
+
+    public ArrayList<Object> searchAlbum(String keyword) throws RemoteException {
+
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|details;param|alb;keyword|" + keyword + ";", rspToClient = "";
+        boolean exit = false;
+
+        sendUDPDatagram(msg);
+
+        ArrayList<Object> results = new ArrayList<>();
+
+        while (!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+            if (cleanMessage.get(0)[1].equals(id)) {
+
+                int nAlbums = Integer.parseInt(cleanMessage.get(5)[1]);
+
+                for (int i = 0; i < nAlbums; i++) {
+
+                    int nReviews = Integer.parseInt(cleanMessage.get(12)[1]);
+
+                    int offset = i*(7+nReviews*2);
+
+                    Album foundAlbum = new Album(cleanMessage.get(6+offset)[1], cleanMessage.get(7+offset)[1], cleanMessage.get(8+offset)[1]);
+                    foundAlbum.setLaunchDate(cleanMessage.get(9+offset)[1]);
+                    foundAlbum.setEditorLabel(cleanMessage.get(10+offset)[1]);
+                    foundAlbum.setAvgRating(Float.parseFloat(cleanMessage.get(11+offset)[1]));
+
+                    results.add(foundAlbum);
+
+                }
+
+
+                exit = true;
+            }
+        }
+        return results;
+    }
+
+    /**
+     * Request  -> flag | id; type | details; param | mus; keyword | kkkk;
+     * Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
+     * @param keyword
+     * @return
+     */
+
+    public ArrayList<Music> searchMusic(String keyword) throws RemoteException {
+
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|details;param|mus;keyword|" + keyword + ";", rspToClient = "";
+        boolean exit = false;
+
+        sendUDPDatagram(msg);
+
+        ArrayList<Music> results = null;
+
+        while (!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals(id)) {
+
+                exit = true;
+            }
+        }
+        return results;
     }
 
     /**

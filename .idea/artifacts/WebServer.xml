@@ -1,12 +1,13 @@
 <component name="ArtifactManager">
-  <artifact type="exploded-war" name="WebServer:war">
-    <output-path>$PROJECT_DIR$/out/artifacts/WebServer_war</output-path>
-    <root id="root">
+  <artifact type="war" name="WebServer">
+    <output-path>$PROJECT_DIR$/out/artifacts/WebServer</output-path>
+    <root id="archive" name="WebServer.war">
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="WebServer" />
         </element>
         <element id="directory" name="lib">
+          <element id="library" level="project" name="javax.websocket:javax.websocket-api:1.1" />
           <element id="library" level="project" name="javax.servlet:jstl:1.2" />
           <element id="library" level="project" name="org.apache.struts:struts2-spring-plugin:2.5.14.1" />
         </element>

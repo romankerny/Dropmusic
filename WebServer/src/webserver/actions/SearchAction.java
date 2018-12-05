@@ -5,14 +5,14 @@ import com.opensymphony.xwork2.ActionSupport;
 import webserver.models.SearchModel;
 import webserver.services.SearchService;
 
-public class SearchAction extends ActionSupport {
+import java.util.ArrayList;
 
-    private static final long serialVersionUID = 11L;
+public class SearchAction extends ActionSupport {
 
     private SearchModel inputObject =  new SearchModel();
     private SearchService searchService;
 
-    private String results;
+    private ArrayList<Object> results;
 
     public SearchAction(){
     }
@@ -39,11 +39,11 @@ public class SearchAction extends ActionSupport {
         this.searchService = searchService;
     }
 
-    public String getResults() {
+    public ArrayList<Object> getResults() {
         return results;
     }
 
-    public void setResults(String results) {
+    public void setResults(ArrayList<Object> results) {
         this.results = results;
     }
 }
