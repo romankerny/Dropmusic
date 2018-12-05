@@ -51,10 +51,21 @@
             <result>/WEB-INF/profile.jsp</result>
         </action>
 
-        <action name="search" class="webserver.actions.SearchAllAction" method="execute">
+        <action name="searchAll" class="webserver.actions.SearchAllAction" method="execute">
             <result>/WEB-INF/search.jsp</result>
         </action>
 
+        <action name="artistSearch" class="artistSearchAction" method="execute">
+            <result name="success">/WEB-INF/search.jsp</result>
+        </action>
+
+        <action name="albumSearch" class="albumSearchAction" method="execute">
+            <result name="success">/WEB-INF/search.jsp</result>
+        </action>
+
+        <action name="musicSearch" class="musicSearchAction" method="execute">
+            <result name="success">/WEB-INF/search.jsp</result>
+        </action>
 
 
         <!-- 'login' actions calls 'execute' in 'LoginAction' -->

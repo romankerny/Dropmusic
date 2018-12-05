@@ -3,7 +3,7 @@ var email = "";
 
 
 window.onload = function() { // URI = ws://10.16.0.165:8080/WebSocket/ws
-    connect('ws://' + window.location.host +'/WebSocket/ws/' + email);
+    connect('ws://' + window.location.host +'/ws/'+email);
 }
 
 
