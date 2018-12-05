@@ -16,9 +16,7 @@ public class WebSocketAnnotation {
     Session session;
 
 
-    private static final Set<WebSocketAnnotation> users = new CopyOnWriteArraySet<>();
-
-
+    private static Set<WebSocketAnnotation> users = new CopyOnWriteArraySet<>();
 
     @OnOpen
     public void start(@PathParam("email") String email, Session session) {
@@ -53,5 +51,8 @@ public class WebSocketAnnotation {
 
     }
 
+    public static String getUsers() {
+        return users.toString();
+    }
 
 }
