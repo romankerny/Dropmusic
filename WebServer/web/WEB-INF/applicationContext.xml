@@ -5,8 +5,8 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 
     <!-- Models -->
-    <bean id="loginModel" class="webserver.models.LoginModel" scope="prototype"/>
-    <bean id="searchModel" class="webserver.models.SearchModel" scope="prototype" />
+    <bean id="loginModel" class="shared.LoginModel" scope="prototype"/>
+    <bean id="searchModel" class="shared.SearchModel" scope="prototype" />
 
     <!-- Services -->
     <bean id="loginService" class="webserver.services.LoginService" />
