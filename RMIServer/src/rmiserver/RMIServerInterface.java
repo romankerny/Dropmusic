@@ -2,6 +2,7 @@ package rmiserver;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -16,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * in the RMIClient code].
  *
  */
+
+import models.*;
 
 public interface RMIServerInterface extends Remote {
 
@@ -32,6 +35,10 @@ public interface RMIServerInterface extends Remote {
 
     // 3.
     public String search(String param, String keyword) throws RemoteException;
+    Artist searchArtist(String keyword) throws RemoteException;
+    ArrayList<Object> searchAlbum(String keyword) throws RemoteException;
+    ArrayList<Music> searchMusic(String keyword) throws RemoteException;
+
 
     // 5.
     public String rateAlbum(int stars, String artistName, String albumName, String review, String email) throws RemoteException;

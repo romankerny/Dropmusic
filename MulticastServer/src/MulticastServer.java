@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  */
 
 public class MulticastServer extends Thread {
-    private static String MULTICAST_ADDRESS = "224.3.2.2";
+    private static String MULTICAST_ADDRESS = "224.3.2.1";
     private static int RECV_PORT = 5213;
     private static MulticastSocket socket = null;
 
@@ -720,6 +720,7 @@ public class MulticastServer extends Thread {
 
                 if (rsAlbInfo.next()) {
                     int nAlbums = 0; // Used to print `Found n items`
+                    String albumInfo = "";
                     result = "y";
                     ResultSetMetaData albumsMD = rsAlbInfo.getMetaData();
                     ResultSet rsSongs;
@@ -733,8 +734,9 @@ public class MulticastServer extends Thread {
                         int albumID = rsAlbInfo.getInt("id");
 
                         for (int i = 2; i <= albumsMD.getColumnCount(); i++) {
-                            message += albumsMD.getColumnLabel(i)+": "+rsAlbInfo.getString(i) + "\n";
+                            albumInfo += albumsMD.getColumnLabel(i)+"|"+rsAlbInfo.getString(i) + ";";
                         }
+                        message += albumInfo;
 
                         // Reviews
                         PreparedStatement reviewsStatement = con.prepareStatement("select r.rating, r.critic " +
@@ -744,41 +746,22 @@ public class MulticastServer extends Thread {
                         rsReviews = reviewsStatement.executeQuery();
 
                         if (rsReviews.next()) {
+                            int nReviews = 0;
+                            String reviews = "";
                             reviewsMD = rsReviews.getMetaData();
-                            message += "Reviews:\n";
                             do {
+                                nReviews++;
                                 for (int i = 1; i <= reviewsMD.getColumnCount(); i++)
-                                    message += reviewsMD.getColumnLabel(i) + ": "+rsReviews.getString(i) +'\n';
+                                    reviews += reviewsMD.getColumnLabel(i) + "|"+rsReviews.getString(i) +';';
 
                             } while (rsReviews.next());
+                            message += "item_count|"+nReviews+";"+reviews;
                         }
-
-
-                        // Songs
-                        PreparedStatement songsStatement = con.prepareStatement("select m.track, m.title " +
-                                "from music m " +
-                                "inner join album a on a.id = m.album_id " +
-                                "where m.album_id = ?;");
-                        songsStatement.setInt(1, albumID);
-
-                        rsSongs = songsStatement.executeQuery();
-
-                        if (rsSongs.next()) {
-                            songsMD = rsSongs.getMetaData();
-                            message += "Tracklist:\n";
-                            do {
-                                for (int i = 1; i <= songsMD.getColumnCount(); i++) {
-                                    message += songsMD.getColumnLabel(i) + ": "+ rsSongs.getString(i) +'\n';
-                                }
-                            } while (rsSongs.next());
-                        }
-                        message = "Found "+nAlbums+" albums matching `"+keyword+"`\n" + message;
-
-
                     } while (rsAlbInfo.next());
+                     message = "item_count|"+nAlbums+";"+message;
                 } else {
                     // No album found
-                    message = "Couldn't find any album by `"+keyword+"`";
+                    message = "item_count|0;";
                 }
 
             } else if(type.equals("mus")) {
@@ -809,7 +792,7 @@ public class MulticastServer extends Thread {
             message = "Couldn't find `"+keyword+"` in database";
         }
 
-        rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";msg|"+message+";";
+        rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";"+message;
         sendResponseMulticast(rsp, code);
 
     }

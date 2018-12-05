@@ -6,10 +6,15 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
     <!-- Models -->
     <bean id="loginModel" class="webserver.models.LoginModel" scope="prototype"/>
+    <bean id="searchModel" class="webserver.models.SearchModel" scope="prototype" />
 
     <!-- Services -->
     <bean id="loginService" class="webserver.services.LoginService" />
     <bean id="registerService" class="webserver.services.RegisterService" />
+
+    <bean id="artistSearchService" class="webserver.services.ArtistSearchService" />
+    <bean id="albumSearchService" class="webserver.services.AlbumSearchService" />
+    <bean id="musicSearchService" class="webserver.services.MusicSearchService" />
 
     <!-- Actions -->
     <bean id="loginAction" class="webserver.actions.LoginAction" scope="prototype">
@@ -18,6 +23,18 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
     <bean id="registerAction" class="webserver.actions.RegisterAction" scope="prototype">
         <property name="registerService" ref="registerService" />
+    </bean>
+    
+    <bean id="artistSearchAction" class="webserver.actions.SearchAction" scope="prototype">
+        <property name="searchService" ref="artistSearchService" />
+    </bean>
+
+    <bean id="albumSearchAction" class="webserver.actions.SearchAction" scope="prototype">
+        <property name="searchService" ref="albumSearchService" />
+    </bean>
+
+    <bean id="musicSearchAction" class="webserver.actions.SearchAction" scope="prototype">
+        <property name="searchService" ref="musicSearchService" />
     </bean>
 
 

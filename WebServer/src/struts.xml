@@ -52,7 +52,7 @@
         </action>
 
         <action name="search" class="webserver.actions.SearchAction" method="execute">
-            <result>/search.jsp</result>
+            <result>/WEB-INF/search.jsp</result>
         </action>
 
 
@@ -79,6 +79,18 @@
         <action name="turnIntoEditorAction" class="webserver.actions.TurnIntoEditorAction" method="execute">
            <result name="success">/WEB-INF/index.jsp</result>
             <result name="failed">/WEB-INF/register.jsp</result>
+        </action>
+
+        <action name="artistSearch" class="artistSearchAction" method="execute">
+            <result name="success">/WEB-INF/search.jsp</result>
+        </action>
+
+        <action name="albumSearch" class="albumSearchAction" method="execute">
+            <result name="success">/WEB-INF/search.jsp</result>
+        </action>
+
+        <action name="musicSearch" class="musicSearchAction" method="execute">
+            <result name="success">/WEB-INF/search.jsp</result>
         </action>
 
 

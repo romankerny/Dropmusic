@@ -2,46 +2,48 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.struts2.interceptor.SessionAware;
-import webserver.models.SearchBean;
+import webserver.models.SearchModel;
+import webserver.services.SearchService;
 
-import java.rmi.RemoteException;
-import java.util.Map;
+import java.util.ArrayList;
 
-public class SearchAction extends ActionSupport implements SessionAware {
-    private String keyword = null;
-    Map<String, Object> session;
+public class SearchAction extends ActionSupport {
+
+    private SearchModel inputObject =  new SearchModel();
+    private SearchService searchService;
+
+    private ArrayList<Object> results;
+
+    public SearchAction(){
+    }
 
     @Override
     public String execute() {
-        if (this.keyword != null) {
-            SearchBean sb = this.getSearchBean();
-            sb.setKeyword(keyword);
-            try {
-                if (sb.details()) {
-                    return SUCCESS;
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-        return Action.INPUT;
+        setResults(getSearchService().search(getInputObject()));
+        return Action.SUCCESS;
     }
 
-    public SearchBean getSearchBean() {
-        if (!this.session.containsKey("searchBean"))
-            this.setSearchBean(new SearchBean());
-        return (SearchBean) this.session.get("searchBean");
+    public SearchModel getInputObject() {
+        return inputObject;
     }
 
-    public void setKeyword(String keyword) {this.keyword = keyword;}
-
-    public void setSearchBean(SearchBean searchBean) {
-        this.session.put("searchBean", searchBean);
+    public void setInputObject(SearchModel inputObject) {
+        this.inputObject = inputObject;
     }
 
-    @Override
-    public void setSession(Map<String, Object> session) {
-        this.session = session;
+    public SearchService getSearchService() {
+        return searchService;
+    }
+
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
+    }
+
+    public ArrayList<Object> getResults() {
+        return results;
+    }
+
+    public void setResults(ArrayList<Object> results) {
+        this.results = results;
     }
 }
