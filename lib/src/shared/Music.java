@@ -5,16 +5,20 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Music implements Serializable {
+    private static final long serialVersionUID = 1234675L;
+
     private int track;
     private String title;
-    private ConcurrentHashMap<String, MusicFile> musicFiles;
+    private String lyrics;
+    // private ConcurrentHashMap<String, MusicFile> musicFiles;
 
 
 
-    Music(int track, String title) {
+    public Music(int track, String title, String lyrics) {
         this.track = track;
         this.title = title;
-        this.musicFiles = new ConcurrentHashMap<String, MusicFile>();
+        this.lyrics = lyrics;
+       //  this.musicFiles = new ConcurrentHashMap<String, MusicFile>();
     }
 
     @Override
@@ -38,12 +42,22 @@ public class Music implements Serializable {
         this.title = title;
     }
 
+    /*
     public ConcurrentHashMap<String, MusicFile> getMusicFiles() {
         return musicFiles;
     }
 
     public void setMusicFiles(ConcurrentHashMap<String, MusicFile> musicFiles) {
         this.musicFiles = musicFiles;
+    }
+    */
+
+    public String getLyrics() {
+        return lyrics;
+    }
+
+    public void setLyrics(String lyrics) {
+        this.lyrics = lyrics;
     }
 }
 
@@ -86,5 +100,8 @@ class MusicFile implements Serializable {
     public void setEmails(ArrayList<String> emails) {
         this.emails = emails;
     }
+
+
+
 }
 

@@ -36,7 +36,6 @@ import static java.lang.Thread.sleep;
  */
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface {
 
-
     private ConcurrentHashMap<String, RMIClientInterface> clients = new ConcurrentHashMap<String, RMIClientInterface>();
     private static final long serialVersionUID = 1L;
     private static String MULTICAST_ADDRESS = "224.3.2.1";
@@ -627,7 +626,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
         ArrayList<Object> results = new ArrayList<>();
 
-        String msg = "flag|"+id+";type|details;param|art;keyword|" + keyword + ";", rspToClient = "";
+        String msg = "flag|"+id+";type|details;param|art;keyword|" + keyword + ";";
         boolean exit = false;
 
         sendUDPDatagram(msg);
@@ -643,6 +642,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 for (int i = 0; i < nArtists; i++) {
 
                     Artist art = new Artist(cleanMessage.get(6 + i)[1], cleanMessage.get(7 + i)[1]);
+                    System.out.println(art);
                     results.add(art);
                 }
 
@@ -725,11 +725,21 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             if (cleanMessage.get(0)[1].equals(id)) {
 
+            int nMusics = Integer.parseInt(cleanMessage.get(5)[1]);
+
+                for (int i = 0; i < nMusics; i++) {
+
+                    Music mus = new Music(Integer.parseInt(cleanMessage.get(6 + i)[1]), cleanMessage.get(7 + i)[1], cleanMessage.get(8 + i)[1]);
+                    System.out.println(mus);
+                    results.add(mus);
+                }
+
                 exit = true;
+                }
             }
-        }
         return results;
-    }
+        }
+
 
     /**
      * Request  -> flag | id; type | addart; name | nnnn; details | dddd; email | dddd;

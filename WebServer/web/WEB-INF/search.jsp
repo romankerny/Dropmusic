@@ -27,13 +27,12 @@
             <br />
             <c:forEach items="${results}" var="item">
                 <div>
-                    Title: <c:out value="${item.title}" /> <br />
+                    Title: <c:out value="${item.name}" /> <br />
                 </div>
                 <br />
             </c:forEach>
         </c:otherwise>
     </c:choose>
-
 </div>
 
 </body>

@@ -655,6 +655,8 @@ public class MulticastServer extends Thread {
         PreparedStatement pstmtCritics = null, pstmtAlbInfo = null, pstmtArtInfo = null, pstmtMus = null;
         ResultSet rsCritics, rsAlbInfo, rsArtInfo, rsMus;
         String response = "", message = "", rsp, result = "n", aux = "";
+        String artistInfo = "", musicInfo = "";
+        int itemCount = 0;
 
         try {
 
@@ -684,11 +686,16 @@ public class MulticastServer extends Thread {
                     int columNumberArtistInfo = rsmdArtInfo.getColumnCount();
 
                     do {
-                        for (int i =1 ; i < columNumberArtistInfo + 1; i++)
-                            aux += rsmdArtInfo.getColumnLabel(i) + ":" + rsArtInfo.getString(i) + "\n";
+                        itemCount++;
+                        for (int i =1 ; i < columNumberArtistInfo + 1; i++) {
+                            aux += rsmdArtInfo.getColumnLabel(i) + "|" + rsArtInfo.getString(i) + ";";
+                        }
+                        artistInfo += aux;
+                        aux = "";
 
                     } while(rsArtInfo.next());
 
+                    /*
                     ResultSetMetaData rsmdAlbInfo = rsAlbInfo.getMetaData();
                     int columNumberAlbumInfo = rsmdAlbInfo.getColumnCount();
 
@@ -698,6 +705,9 @@ public class MulticastServer extends Thread {
                             aux += rsmdAlbInfo.getColumnLabel(i) + ":" + rsAlbInfo.getString(i) + "\n";
                     }
                     message = aux;
+                    */
+
+                    message = "item_count|"+itemCount+";" + artistInfo;
 
                 } else {
                     result = "n";
@@ -778,9 +788,16 @@ public class MulticastServer extends Thread {
                 if (rsMus.next()) {
                     result = "y";
                     do {
-                        for (int i =1 ; i <= columNumberMus; i++)
-                            message += rsmdMus.getColumnLabel(i) + ":" + rsMus.getString(i) + "\n";
+                        itemCount++;
+                        for (int i =1 ; i <= columNumberMus; i++) {
+                            aux += rsmdMus.getColumnLabel(i) + "|" + rsMus.getString(i) + ";";
+                        }
+
+                        musicInfo += aux;
+                        aux = "";
+
                     } while (rsMus.next());
+                    message = "item_count|"+itemCount+";" + musicInfo;
                 } else {
                     result = "n";
                     message = "Couldn't find song `"+keyword+"`";
