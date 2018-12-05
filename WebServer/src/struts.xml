@@ -75,6 +75,18 @@
             <result name="register">/WEB-INF/register.jsp</result>
         </action>
 
+        <action name="artistSearch" class="artistSearchAction" method="execute">
+            <result name="success">/WEB-INF/search.jsp</result>
+        </action>
+
+        <action name="albumSearch" class="albumSearchAction" method="execute">
+            <result name="success">/WEB-INF/search.jsp</result>
+        </action>
+
+        <action name="musicSearch" class="musicSearchAction" method="execute">
+            <result name="success">/WEB-INF/search.jsp</result>
+        </action>
+
 
         <action name="turnIntoEditorAction" class="webserver.actions.TurnIntoEditorAction" method="execute">
            <result name="success">/WEB-INF/index.jsp</result>
