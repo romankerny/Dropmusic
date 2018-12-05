@@ -27,14 +27,14 @@ public class ArtistSearchService implements SearchService {
 
     @Override
     public ArrayList<Object> search(SearchModel searchModel) {
-        ArrayList<Object> result = null;
-        return result;
-        /*
+        ArrayList<Object> results = null;
+
         try {
-            result = server.search("art", searchModel.getKeyword());
+            results = server.searchArtist(searchModel.getKeyword());
         } catch (RemoteException e) {
             e.printStackTrace();
-        }*/
+        }
+        return results;
 
     }
 }

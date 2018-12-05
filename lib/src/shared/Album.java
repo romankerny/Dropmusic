@@ -3,6 +3,7 @@ import java.io.Serializable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Album implements Serializable {
+    private static final long serialVersionUID = 1123124L;
     private          String  title;
     private         String  description;
     private          String   genre;
