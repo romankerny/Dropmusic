@@ -621,28 +621,35 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @return
      */
 
-    public Artist searchArtist(String keyword) throws RemoteException{
+    public ArrayList<Object> searchArtist(String keyword) throws RemoteException {
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
+        ArrayList<Object> results = new ArrayList<>();
 
         String msg = "flag|"+id+";type|details;param|art;keyword|" + keyword + ";", rspToClient = "";
         boolean exit = false;
 
         sendUDPDatagram(msg);
 
-        Artist result = null;
 
         while (!exit) {
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(0)[1].equals(id)) {
-                rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
+                int nArtists = Integer.parseInt(cleanMessage.get(5)[1]);
+
+                for (int i = 0; i < nArtists; i++) {
+
+                    Artist art = new Artist(cleanMessage.get(6 + i)[1], cleanMessage.get(7 + i)[1]);
+                    results.add(art);
+                }
+
                 exit = true;
             }
         }
-        return result;
+        return results;
     }
 
     /**
