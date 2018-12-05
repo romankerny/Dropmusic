@@ -15,17 +15,39 @@
 <body>
 
 <div id="main">
+    <h1>Artists</h1>
     <c:choose>
-        <c:when test="${results == null}">
+        <c:when test="${artistResults == null}">
             A problem occurred during the search!
         </c:when>
-        <c:when test="${results.isEmpty()}">
+        <c:when test="${artistResults.isEmpty()}">
             No results found!
         </c:when>
         <c:otherwise>
-            Found ${results.size()} products!
+            Found ${artistResults.size()} products!
             <br />
-            <c:forEach items="${results}" var="item">
+            <c:forEach items="${artistResult}" var="item">
+                <div>
+                    Title: <c:out value="${item.title}" /> <br />
+                </div>
+                <br />
+            </c:forEach>
+        </c:otherwise>
+    </c:choose>
+
+    <h1>Albums</h1>
+
+    <c:choose>
+        <c:when test="${albumResults == null}">
+            A problem occurred during the search!
+        </c:when>
+        <c:when test="${albumResults.isEmpty()}">
+            No results found!
+        </c:when>
+        <c:otherwise>
+            Found ${albumResults.size()} products!
+            <br />
+            <c:forEach items="${albumResults}" var="item">
                 <div>
                     Title: <c:out value="${item.title}" /> <br />
                 </div>

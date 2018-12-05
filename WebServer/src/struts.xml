@@ -51,7 +51,7 @@
             <result>/WEB-INF/profile.jsp</result>
         </action>
 
-        <action name="search" class="webserver.actions.SearchAction" method="execute">
+        <action name="search" class="webserver.actions.SearchAllAction" method="execute">
             <result>/WEB-INF/search.jsp</result>
         </action>
 

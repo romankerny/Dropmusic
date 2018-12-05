@@ -1,5 +1,5 @@
-import rmiserver.RMIClientInterface;
-import rmiserver.RMIServerInterface;
+import shared.RMIClientInterface;
+import shared.RMIServerInterface;
 
 import java.io.*;
 import java.net.InetAddress;
