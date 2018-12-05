@@ -1,9 +1,13 @@
 package webserver.services;
 import shared.RMIServerInterface;
 import shared.LoginModel;
+import ws.WebSocketAnnotation;
+
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+
+import static ws.WebSocketAnnotation.sendNotification;
 
 public class LoginService {
 
