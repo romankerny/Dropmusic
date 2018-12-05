@@ -9,6 +9,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="RMIClient" />
+    <orderEntry type="module" module-name="DropMusic" />
   </component>
 </module>

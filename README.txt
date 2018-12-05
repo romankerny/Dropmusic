@@ -8,7 +8,7 @@ Para correr :
 	- RMI Server
 		Entrar na directoria RMIServer_jar
 		Digitar na consola:[*]
-		>> java -jar rmiserver.RMIServer.jar
+		>> java -jar shared.RMIServer.jar
 		
 
 	- RMI Client

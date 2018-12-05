@@ -56,7 +56,7 @@ penso que seja o contador que vai incrementado
     Response -> flag | id; type | requestTCPConnection; operation | download; email | eeee; result | n; msg | mmmmmmmmm;
 
 
-[Comunicação Multicast-rmiserver.RMIServer]
+[Comunicação Multicast-shared.RMIServer]
 
 - Servidor qd se ligar manda ack
     Response -> flag | id; type | ack; hash | hhhh;

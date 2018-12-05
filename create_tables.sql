@@ -813,7 +813,7 @@ Took his homie to the show and this is what they said
 What I''m s''posed to do when I''m lookin'' at walkin'' licks?
 The convicts talk ''bout matchin'', money and foreign whips
 The private jets and passports, presidential glass floor
-Gold bottles, gold models, sniffin'' up the ass for
+Gold bottles, gold shared, sniffin'' up the ass for
 Instagram flicks, suck a dick, fuck is this?
 One more suck away from wavin'' flashy wrist
 My defense mechanism tell me to get him, quickly because he got it
@@ -1718,7 +1718,7 @@ One day at a time, uhh
 They wanna say it''s a war outside, bomb in the street
 Gun in the hood, mob of police
 Rock on the corner with a line for the fiend
-And a bottle full of lean and a models on the scheme uh
+And a bottle full of lean and a shared on the scheme uh
 These days of frustration keep y''all on tuck and rotation (Come to the front)
 I duck these cold faces, post up fi-fie-fo-fum basis
 Dreams of reality''s peace

@@ -1,6 +1,6 @@
 package webserver.services;
 
-import webserver.models.SearchModel;
+import shared.SearchModel;
 
 import java.util.ArrayList;
 

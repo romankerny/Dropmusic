@@ -1,7 +1,7 @@
 package webserver.services;
 
-import rmiserver.RMIServerInterface;
-import webserver.models.LoginModel;
+import shared.RMIServerInterface;
+import shared.LoginModel;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

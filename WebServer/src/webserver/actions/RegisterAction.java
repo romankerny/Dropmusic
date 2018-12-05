@@ -3,7 +3,7 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
-import webserver.models.LoginModel;
+import shared.LoginModel;
 import webserver.services.RegisterService;
 
 

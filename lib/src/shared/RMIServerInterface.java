@@ -1,24 +1,19 @@
-package rmiserver;
+package shared;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
- * This class contains all remote methods from rmiserver.RMIServer class.
- *
+ * This class contains all remote methods from shared.RMIServer class.
+ * <p>
  * the isAlive() method is the only one that is used only between RMIServers, all the others are called by clients.
- *
- *
- * the subscribe() method is called either when a clients logs in [runs in the login() method in rmiserver.RMIServer]
+ * <p>
+ * <p>
+ * the subscribe() method is called either when a clients logs in [runs in the login() method in shared.RMIServer]
  * or when a client loses it's connection to the server and has to re-send it's interface [runned in the waitforServer() method
  * in the RMIClient code].
- *
  */
-
-import models.*;
 
 public interface RMIServerInterface extends Remote {
 
@@ -31,7 +26,7 @@ public interface RMIServerInterface extends Remote {
     // 2.
     public String addArtist(String artist, String details, String email) throws RemoteException;
     public String addAlbum(String artist, String albumTitle, String description, String genre, String email, String launchDate, String editorLabel) throws RemoteException;
-    public String addMusic(String musicTitle, String track, String albumTitle , String email, String lyrics, String artistName) throws  RemoteException;
+    public String addMusic(String musicTitle, String track, String albumTitle, String email, String lyrics, String artistName) throws  RemoteException;
 
     // 3.
     public String search(String param, String keyword) throws RemoteException;

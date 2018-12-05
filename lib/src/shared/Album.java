@@ -1,4 +1,4 @@
-package models;
+package shared;
 import java.io.Serializable;
 import java.util.concurrent.CopyOnWriteArrayList;
 

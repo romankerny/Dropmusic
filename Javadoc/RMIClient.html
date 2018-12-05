@@ -121,20 +121,21 @@ var activeTableTab = "activeTableTab";
 <li class="blockList">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd>java.io.Serializable, java.rmi.Remote, <a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIClientInterface</a></dd>
+<dd>java.io.Serializable, java.rmi.Remote, <a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">shared.RMIClientInterface</a></dd>
 </dl>
 <hr>
 <br>
 <pre>public class <span class="typeNameLabel">RMIClient</span>
 extends java.rmi.server.UnicastRemoteObject
-implements <a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIClientInterface</a></pre>
+implements <a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">shared.RMIClientInterface</a></pre>
 <div class="block">This class will be runned in the Client's machine.
- It basically gets user strings via command line, parses them, and then makes remote invocations on the rmiserver.RMIServer
- via it's interface based on them.
- It connects to the rmiserver.RMIServer with the IP provided in the args array when starting the program
- If for some reason RMIServers go off during the execution of a rmiserver.RMIServer method the client will hold and wait
- for the reconection - this happens in the method waitForServer()
- and then retry to call the method.</div>
+    It basically gets user strings via command line, parses them, and then makes remote invocations on the
+    shared.RMIServer
+    via it's interface based on them.
+    It connects to the shared.RMIServer with the IP provided in the args array when starting the program
+    If for some reason RMIServers go off during the execution of a shared.RMIServer method the client will hold and wait
+    for the reconection - this happens in the method waitForServer()
+    and then retry to call the method.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="serialized-form.html#RMIClient">Serialized Form</a></dd>
@@ -175,7 +176,7 @@ implements <a href="rmiserver.RMIClientInterface.html" title="interface in &lt;U
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="RMIClient.html#getEmail--">getEmail</a></span>()</code>
-<div class="block">called by rmiserver.RMIServer, simply returns the email of the Client</div>
+<div class="block">called by shared.RMIServer, simply returns the email of the Client</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
@@ -239,7 +240,7 @@ implements <a href="rmiserver.RMIClientInterface.html" title="interface in &lt;U
                    throws java.rmi.RemoteException</pre>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="rmiserver.RMIClientInterface.html#printOnClient-java.lang.String-">printOnClient</a></code>&nbsp;in interface&nbsp;<code><a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIClientInterface</a></code></dd>
+<dd><code><a href="rmiserver.RMIClientInterface.html#printOnClient-java.lang.String-">printOnClient</a></code>&nbsp;in interface&nbsp;<code><a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">shared.RMIClientInterface</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.rmi.RemoteException</code></dd>
 </dl>
@@ -253,10 +254,10 @@ implements <a href="rmiserver.RMIClientInterface.html" title="interface in &lt;U
 <h4>getEmail</h4>
 <pre>public&nbsp;java.lang.String&nbsp;getEmail()
                           throws java.rmi.RemoteException</pre>
-<div class="block">called by rmiserver.RMIServer, simply returns the email of the Client</div>
+<div class="block">called by shared.RMIServer, simply returns the email of the Client</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="rmiserver.RMIClientInterface.html#getEmail--">getEmail</a></code>&nbsp;in interface&nbsp;<code><a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">rmiserver.RMIClientInterface</a></code></dd>
+<dd><code><a href="rmiserver.RMIClientInterface.html#getEmail--">getEmail</a></code>&nbsp;in interface&nbsp;<code><a href="rmiserver.RMIClientInterface.html" title="interface in &lt;Unnamed&gt;">shared.RMIClientInterface</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.rmi.RemoteException</code></dd>

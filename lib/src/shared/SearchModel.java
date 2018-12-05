@@ -1,4 +1,4 @@
-package webserver.models;
+package shared;
 
 public class SearchModel {
     private String type;

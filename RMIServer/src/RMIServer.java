@@ -1,5 +1,3 @@
-package rmiserver;
-
 import java.io.IOException;
 import java.net.*;
 import java.rmi.AlreadyBoundException;
@@ -13,14 +11,16 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+
+import shared.*;
+
 import static java.lang.Thread.sleep;
-import models.*;
 
 
 /**
  *
- * rmiserver.RMIServer contains all methods that RMI Client can call via remote interface.
- * The rmiserver.RMIServer interface is named 'rmiserver' and the registry runs on port 1099.
+ * shared.RMIServer contains all methods that RMI Client can call via remote interface.
+ * The shared.RMIServer interface is named 'rmiserver' and the registry runs on port 1099.
  *
  * This class contains a concurrentHaspMap that holds the correspondence between client's emails and the corresponding
  * RMI Interfaces. It's mainly used to control which users are logged to the Server and comes in hand when the server
@@ -1008,7 +1008,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
             try {
-                // try to bind, if it fails that means that an rmiserver.RMIServer is already running
+                // try to bind, if it fails that means that an shared.RMIServer is already running
                 r = LocateRegistry.createRegistry(1099);
                 r.bind("rmiserver", rmiServer);
 
@@ -1068,7 +1068,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
         } catch (RemoteException re) {
-            System.out.println("Exception in rmiserver.RMIServer.main: " + re);
+            System.out.println("Exception in shared.RMIServer.main: " + re);
         }
 
         while(true) {

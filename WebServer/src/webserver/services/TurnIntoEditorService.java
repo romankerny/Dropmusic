@@ -1,8 +1,7 @@
 package webserver.services;
 
-import rmiserver.RMIServerInterface;
+import shared.RMIServerInterface;
 
-import javax.websocket.Session;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

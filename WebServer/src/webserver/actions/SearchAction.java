@@ -2,7 +2,7 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
-import webserver.models.SearchModel;
+import shared.SearchModel;
 import webserver.services.SearchService;
 
 import java.util.ArrayList;

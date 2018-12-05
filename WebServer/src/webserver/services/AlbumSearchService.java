@@ -1,8 +1,7 @@
 package webserver.services;
 
-import rmiserver.RMIServerInterface;
-import webserver.models.Album;
-import webserver.models.SearchModel;
+import shared.RMIServerInterface;
+import shared.SearchModel;
 
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
@@ -25,7 +24,7 @@ public class AlbumSearchService implements SearchService {
             e.printStackTrace();
         }
     }
-
+    @Override
     public ArrayList<Object> search(SearchModel searchModel) {
         ArrayList<Object> results = null;
         try {

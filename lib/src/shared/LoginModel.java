@@ -1,4 +1,4 @@
-package models;
+package shared;
 
 public class LoginModel {
 

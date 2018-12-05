@@ -1,7 +1,7 @@
 package webserver.services;
 
-import rmiserver.RMIServerInterface;
-import webserver.models.SearchModel;
+import shared.RMIServerInterface;
+import shared.SearchModel;
 
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
