@@ -27,10 +27,8 @@ public class WebSocketAnnotation {
             this.email = email;
             users.add(this);
 
-
-            session.getBasicRemote().sendText(email);
-            System.out.println(users.size());
-
+            session.getBasicRemote().sendText("Notifications: ");
+            //System.out.println(users.size());
 
         } catch (IOException e) {
             e.printStackTrace();

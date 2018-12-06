@@ -1,5 +1,7 @@
 package shared;
 
+import shared.manage.Music;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;

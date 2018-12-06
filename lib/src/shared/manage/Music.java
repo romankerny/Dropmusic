@@ -1,10 +1,9 @@
-package shared;
+package shared.manage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class Music implements Serializable {
+public class Music implements Serializable, ManageModel {
     private static final long serialVersionUID = 1234675L;
 
     private int track;
@@ -15,10 +14,15 @@ public class Music implements Serializable {
 
 
     public Music(int track, String title, String lyrics) {
-        this.track = track;
-        this.title = title;
-        this.lyrics = lyrics;
+        setTrack(track);
+        setTitle(title);
+        setLyrics(lyrics);
        //  this.musicFiles = new ConcurrentHashMap<String, MusicFile>();
+    }
+
+    public Music()
+    {
+        this(0, null, null);
     }
 
     @Override

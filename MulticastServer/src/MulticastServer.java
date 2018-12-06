@@ -1117,6 +1117,42 @@ public class MulticastServer extends Thread {
     }
 
 
+    // META-2
+
+    public void getEditors(String id, String artName, String code) {
+
+        // Request  -> flag | id; type | getEditors; name | nnnn;
+        // Rsponse  -> flag | id; type | getEditors; notif_count | n; Aname | nnn; Aname | nnn; [etc...];
+
+        PreparedStatement pstmt;
+        ResultSet rs;
+        String editor, EditorsAdd = "";
+        int nEditors = 0;
+
+        String rsp = "flag|"+id+";type|getEditors;";
+
+        try {
+            pstmt = con.prepareStatement("SELECT user_email FROM editor WHERE artist_name = ?");
+
+            pstmt.setString(1, artName);
+            rs = pstmt.executeQuery();
+
+            while(rs.next()) {
+                editor = rs.getString("user_email");
+                EditorsAdd += "Aname|" + editor + ";";
+                nEditors++;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        rsp += "notif_count|"+nEditors + ";" + EditorsAdd;
+
+        sendResponseMulticast(rsp, code);
+    }
+
+
     /**
      * Thread that receives a packet, parses it with cleanTokens() and calls the respective function depending on type of packet
      * @see #cleanTokens(String)
@@ -1163,6 +1199,9 @@ public class MulticastServer extends Thread {
                 break;
             case "addmusic":
                 addMusic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(7)[1], cleanMessage.get(8)[1]);
+                break;
+            case "getEditors":
+                getEditors(cleanMessage.get(0)[1], cleanMessage.get(1)[1], cleanMessage.get(2)[1]);
                 break;
             case "requestTCPConnection":
                 String operation = cleanMessage.get(2)[1];

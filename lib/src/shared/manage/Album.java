@@ -1,8 +1,10 @@
-package shared;
+package shared.manage;
+import shared.Review;
+
 import java.io.Serializable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Album implements Serializable {
+public class Album implements Serializable, ManageModel {
     private static final long serialVersionUID = 1123124L;
     private          String  title;
     private         String  description;
@@ -10,13 +12,17 @@ public class Album implements Serializable {
     private         String launchDate;
     private         String editorLabel;
     private         float avgRating;
-    private           CopyOnWriteArrayList<Review> reviews;
+    private         CopyOnWriteArrayList<Review> reviews;
 
     public Album(String title, String description, String genre) {
-        this.title = title;
-        this.description = description;
-        this.genre = genre;
-        this.reviews = new CopyOnWriteArrayList<Review>();
+        setTitle(title);
+        setDescription(description);
+        setGenre(genre);
+        setReviews(reviews);
+    }
+    public Album()
+    {
+        this(null, null, null);
     }
 
     public void setDescription(String description) {

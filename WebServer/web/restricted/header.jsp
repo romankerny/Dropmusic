@@ -12,8 +12,7 @@
 
 <ul>
     <li><a href="dropmusic" class="active">Home</a></li>
-    <li><a href="restricted/artists.jsp">Artists</a></li>
-    <li><a href="#contact">Albuns</a></li>
+    <li><a href="manage">Manage</a></li>
     <li><a href="profile">Profile</a></li>
     <li id="search-bar">
         <s:form action="searchAll" method="GET">
