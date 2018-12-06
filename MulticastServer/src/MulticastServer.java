@@ -237,7 +237,6 @@ public class MulticastServer extends Thread {
             }
         }
 
-
     }
 
     /**
@@ -711,7 +710,7 @@ public class MulticastServer extends Thread {
 
                 } else {
                     result = "n";
-                    message = "Couldn't find an artist named `"+keyword+"`";
+                    message =  "item_count|"+itemCount+";" + "message|Couldn't find an artist named `"+keyword+"`;";
                 }
 
 
@@ -800,13 +799,13 @@ public class MulticastServer extends Thread {
                     message = "item_count|"+itemCount+";" + musicInfo;
                 } else {
                     result = "n";
-                    message = "Couldn't find song `"+keyword+"`";
+                    message = "Couldn't find song`"+keyword+"`";
                 }
             }
         } catch (SQLException e) {
             result = "n";
             e.printStackTrace();
-            message = "Couldn't find `"+keyword+"` in database";
+            message =  "item_count|"+itemCount+";" + "message|Couldn't find an music named `"+keyword+"`;";
         }
 
         rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";"+message;

@@ -26,9 +26,9 @@
         <c:otherwise>
             Found ${artistResults.size()} products!
             <br />
-            <c:forEach items="${artistResult}" var="item">
+            <c:forEach items="${artistResults}" var="item">
                 <div>
-                    Title: <c:out value="${item.title}" /> <br />
+                    Title: <c:out value="${item.name}" /> <br />
                 </div>
                 <br />
             </c:forEach>
@@ -49,7 +49,7 @@
             <br />
             <c:forEach items="${albumResults}" var="item">
                 <div>
-                    Title: <c:out value="${item.name}" /> <br />
+                    Title: <c:out value="${item.title}" /> <br />
                 </div>
                 <br />
             </c:forEach>

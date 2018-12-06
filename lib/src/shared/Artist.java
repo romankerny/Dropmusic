@@ -17,7 +17,6 @@ public class Artist implements Serializable {
 
     public void setDetails(String details, User s) {
         this.details = details;
-
     }
 
 
