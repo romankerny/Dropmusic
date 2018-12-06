@@ -1,18 +1,23 @@
-package shared;
+package shared.manage;
+
+import shared.User;
 
 import java.io.Serializable;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Artist implements Serializable {
+public class Artist implements Serializable, ManageModel {
     private static final long serialVersionUID = 1234L;
-    private String name;
 
+    private String name;
     private String details;
 
     public Artist(String name, String details) {
-        this.name = name;
-        this.details = details;
+       setDetails(details);
+       setName(name);
+    }
 
+    public Artist()
+    {
+        this(null, null);
     }
 
     public void setDetails(String details, User s) {
@@ -20,11 +25,12 @@ public class Artist implements Serializable {
     }
 
 
-
+/*
     @Override
     public String toString() {
         return "Artist: "+name + "\nBio: "+details+"\n";
     }
+    */
 
     public String getName() {
         return name;

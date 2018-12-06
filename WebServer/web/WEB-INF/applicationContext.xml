@@ -5,37 +5,81 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 
     <!-- Models -->
-    <bean id="loginModel" class="shared.LoginModel" scope="prototype"/>
-    <bean id="searchModel" class="shared.SearchModel" scope="prototype" />
+        <bean id="loginModel" class="shared.LoginModel" scope="prototype"/>
+        <bean id="searchModel" class="shared.SearchModel" scope="prototype" />
+
+        <!-- Manage Models -->
+        <bean id="artistModel" class="shared.manage.Artist" scope="prototype" />
+        <bean id="albumModel" class="shared.manage.Album" scope="prototype" />
+        <bean id="musicModel" class="shared.manage.Music" scope="prototype" />
+
+
+
+
+
+
 
     <!-- Services -->
-    <bean id="loginService" class="webserver.services.LoginService" />
-    <bean id="registerService" class="webserver.services.RegisterService" />
+        <bean id="loginService"    class="webserver.services.LoginService" />
+        <bean id="registerService" class="webserver.services.RegisterService" />
 
-    <bean id="artistSearchService" class="webserver.services.ArtistSearchService" />
-    <bean id="albumSearchService" class="webserver.services.AlbumSearchService" />
-    <bean id="musicSearchService" class="webserver.services.MusicSearchService" />
+        <!-- Search Services -->
+        <bean id="artistSearchService" class="webserver.services.ArtistSearchService" />
+        <bean id="albumSearchService"  class="webserver.services.AlbumSearchService" />
+        <bean id="musicSearchService"  class="webserver.services.MusicSearchService" />
+
+        <!-- Manage Services -->
+        <bean id="addArtistService" class="webserver.services.manage.AddArtistService" />
+        <bean id="addAlbumService"  class="webserver.services.manage.AddAlbumService" />
+        <bean id="addMusicService"  class="webserver.services.manage.AddMusicService" />
+
+
+
+
+
+
 
     <!-- Actions -->
-    <bean id="loginAction" class="webserver.actions.LoginAction" scope="prototype">
-        <property name="loginService" ref="loginService" />
-    </bean>
+        <bean id="loginAction" class="webserver.actions.LoginAction" scope="prototype">
+            <property name="loginService" ref="loginService" />
+        </bean>
 
-    <bean id="registerAction" class="webserver.actions.RegisterAction" scope="prototype">
-        <property name="registerService" ref="registerService" />
-    </bean>
-    
-    <bean id="artistSearchAction" class="webserver.actions.SearchAction" scope="prototype">
-        <property name="searchService" ref="artistSearchService" />
-    </bean>
+        <bean id="registerAction" class="webserver.actions.RegisterAction" scope="prototype">
+            <property name="registerService" ref="registerService" />
+        </bean>
 
-    <bean id="albumSearchAction" class="webserver.actions.SearchAction" scope="prototype">
-        <property name="searchService" ref="albumSearchService" />
-    </bean>
 
-    <bean id="musicSearchAction" class="webserver.actions.SearchAction" scope="prototype">
-        <property name="searchService" ref="musicSearchService" />
-    </bean>
+        <!-- Search Actions -->
+        <bean id="artistSearchAction" class="webserver.actions.SearchAction" scope="prototype">
+            <property name="searchService" ref="artistSearchService" />
+        </bean>
+
+        <bean id="albumSearchAction" class="webserver.actions.SearchAction" scope="prototype">
+            <property name="searchService" ref="albumSearchService" />
+        </bean>
+
+        <bean id="musicSearchAction" class="webserver.actions.SearchAction" scope="prototype">
+            <property name="searchService" ref="musicSearchService" />
+        </bean>
+
+
+        <!-- Manage Actions -->
+        <bean id="addArtistAction" class="webserver.actions.ManageAction" scope="prototype">
+            <property name="manageService" ref="addArtistService" />
+            <property name="manageModel" ref="artistModel" />
+        </bean>
+
+        <bean id="addAlbumAction" class="webserver.actions.ManageAction" scope="prototype">
+            <property name="manageService" ref="addAlbumService" />
+            <property name="manageModel" ref="albumModel" />
+        </bean>
+
+        <bean id="addMusicAction" class="webserver.actions.ManageAction" scope="prototype">
+            <property name="manageService" ref="addMusicService" />
+            <property name="manageModel" ref="musicModel" />
+        </bean>
+
+
 
 
 </beans>

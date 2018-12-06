@@ -13,6 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import shared.*;
+import shared.manage.Album;
+import shared.manage.Artist;
+import shared.manage.Music;
 
 import static java.lang.Thread.sleep;
 
@@ -742,6 +745,37 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 }
             }
         return results;
+        }
+
+        public ArrayList<String> getEditors(String artistName)  throws RemoteException  {
+
+            // Request  -> flag | id; type | getEditors; name | nnnn;
+            // Rsponse  -> flag | id; type | getEditors; notif_count | n; Aname | nnn; Aname | nnn; [etc...];
+
+            String uuid = UUID.randomUUID().toString();
+            String id = uuid.substring(0, Math.min(uuid.length(), 8));
+            String msg = "flag|"+id+";type|getEditors;name|" + artistName + ";";
+            sendUDPDatagram(msg);
+            boolean exit = false;
+            ArrayList<String> editors = new ArrayList<>();
+
+            while (!exit) {
+                String rsp = receiveUDPDatagram(msg);
+                ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+                if (cleanMessage.get(0)[1].equals(id)) {
+                    int nEditors = Integer.parseInt(cleanMessage.get(2)[1]);
+
+                    for (int i = 0; i < nEditors; i++) {
+                       editors.add(cleanMessage.get(3)[1] + i);
+                    }
+
+                    exit = true;
+                }
+            }
+
+            return editors;
+
         }
 
 

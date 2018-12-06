@@ -47,6 +47,10 @@
             <result>/restricted/dropmusic.jsp</result>
         </action>
 
+        <action name="manage">
+            <result>/restricted/manage.jsp</result>
+        </action>
+
         <action name="profile">
             <result>/restricted/profile.jsp</result>
         </action>
@@ -86,12 +90,27 @@
             <result name="register">/restricted/register.jsp</result>
         </action>
 
-
         <action name="turnIntoEditorAction" class="webserver.actions.TurnIntoEditorAction" method="execute">
            <result name="success">/index.jsp</result>
             <result name="failed">/restricted/register.jsp</result>
         </action>
 
+        <action name="manageAction" class="webserver.actions.ManageAction" method="execute">
+        </action>
+
+
+        <action name="addArtist" class="addArtistAction">
+            <result name="success">/index.jsp</result>
+            <result name="failed">/restricted/register.jsp</result>
+        </action>
+
+        <action name="addAlbum" class="addAlbumAction">
+
+        </action>
+
+        <action name="addMusic" class="addMusicAction">
+
+        </action>
 
 
     </package>
