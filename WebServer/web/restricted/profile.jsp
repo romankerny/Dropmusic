@@ -5,7 +5,7 @@
 <html>
 <head>
     <jsp:include page="header.jsp"/>
-    <title>Profile</title>
+    <title>Profile | DropMusic</title>
 </head>
 
 

@@ -7,10 +7,12 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
 <head>
-    <title>Search results</title>
+    <jsp:include page="header.jsp"/>
+    <title>Search results | DropMusic</title>
 </head>
 <body>
 
@@ -24,11 +26,15 @@
             No results found!
         </c:when>
         <c:otherwise>
-            Found ${artistResults.size()} products!
+            Found ${artistResults.size()} artists!
             <br />
             <c:forEach items="${artistResults}" var="item">
                 <div>
-                    Title: <c:out value="${item.name}" /> <br />
+                    Name: <s:url value="artistSearch.action" method="execute" var="urlTag">
+                                <s:param name="inputObject.keyword">${item.name}</s:param>
+                            </s:url>
+                    <s:a href="%{urlTag}">${item.name}</s:a>
+                    <br />
                 </div>
                 <br />
             </c:forEach>
@@ -45,11 +51,15 @@
             No results found!
         </c:when>
         <c:otherwise>
-            Found ${albumResults.size()} products!
+            Found ${albumResults.size()} albums!
             <br />
             <c:forEach items="${albumResults}" var="item">
                 <div>
-                    Title: <c:out value="${item.title}" /> <br />
+                Title: <s:url value="albumSearch.action" method="execute" var="urlTag">
+                             <s:param name="inputObject.keyword">${item.title}</s:param>
+                        </s:url>
+                    <s:a href="%{urlTag}">${item.title}</s:a>
+                      <br />
                 </div>
                 <br />
             </c:forEach>

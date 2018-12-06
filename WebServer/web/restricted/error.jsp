@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Hey!</title>
+<title>Error | DropMusic</title>
 </head>
 <body>
 	<h4>You got an exception. Please <i>throw</i> it to someone who can handle it.</h4>

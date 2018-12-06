@@ -5,12 +5,11 @@
 <html>
 <head>
     <jsp:include page="header.jsp"/>
-    <title>Drop Music</title>
+    <title>DropMusic</title>
 </head>
 
 
 <body>
 <h1>DropMusic</h1>
-
 </body>
 </html>
