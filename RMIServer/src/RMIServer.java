@@ -38,7 +38,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     private ConcurrentHashMap<String, RMIClientInterface> clients = new ConcurrentHashMap<String, RMIClientInterface>();
     private static final long serialVersionUID = 1L;
-    private static String MULTICAST_ADDRESS = "224.3.2.1";
+    private static String MULTICAST_ADDRESS = "224.3.2.2";
     private static int SEND_PORT = 5213, RCV_PORT = 5214;
     private static RMIServerInterface rmiServer;
     public static ArrayList<String> multicastHashes = new ArrayList<>();
@@ -682,12 +682,16 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                     int nReviews = Integer.parseInt(cleanMessage.get(12)[1]);
 
-                    int offset = i*(7+nReviews*2);
+                    int offset = i*(7+nReviews*3);
 
                     Album foundAlbum = new Album(cleanMessage.get(6+offset)[1], cleanMessage.get(7+offset)[1], cleanMessage.get(8+offset)[1]);
                     foundAlbum.setLaunchDate(cleanMessage.get(9+offset)[1]);
                     foundAlbum.setEditorLabel(cleanMessage.get(10+offset)[1]);
                     foundAlbum.setAvgRating(Float.parseFloat(cleanMessage.get(11+offset)[1]));
+
+                    for (int j = 0; j < nReviews; j++) {
+                        foundAlbum.getReviews().add(new Review(Integer.parseInt(cleanMessage.get(13+j*3+offset)[1]), cleanMessage.get(14+j*3+offset)[1], cleanMessage.get(15+j*3+offset)[1]));
+                    }
 
                     results.add(foundAlbum);
 

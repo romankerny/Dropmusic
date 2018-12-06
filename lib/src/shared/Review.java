@@ -8,7 +8,7 @@ public class Review implements Serializable {
     private int rating;
     private String email;
 
-    public Review(String critic, int rating, String email) {
+    public Review(int rating, String critic, String email) {
         this.critic = critic;
         this.rating = rating;
         this.email = email;

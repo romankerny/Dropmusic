@@ -16,7 +16,7 @@ public class Album implements Serializable {
         this.title = title;
         this.description = description;
         this.genre = genre;
-        this.reviews = new CopyOnWriteArrayList<Review>();
+        this.reviews = new CopyOnWriteArrayList<>();
     }
 
     public void setDescription(String description) {

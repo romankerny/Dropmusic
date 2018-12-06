@@ -11,5 +11,8 @@
 
 <body>
 <h1>DropMusic</h1>
+<s:form action="albumSearch" method="GET">
+    <s:textfield name="inputObject.keyword" />
+</s:form>
 </body>
 </html>

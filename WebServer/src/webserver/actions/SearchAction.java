@@ -2,6 +2,7 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import shared.Album;
 import shared.SearchModel;
 import webserver.services.SearchService;
 
@@ -19,11 +20,7 @@ public class SearchAction extends ActionSupport {
 
     @Override
     public String execute() {
-        System.out.println("Searching for "+inputObject.getKeyword());
         setResults(getSearchService().search(getInputObject()));
-
-        System.out.println("Before ACTION>SUCESS");
-        System.out.println(results.size() + "Got results");
 
         return Action.SUCCESS;
     }

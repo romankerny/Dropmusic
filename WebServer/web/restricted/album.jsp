@@ -23,17 +23,34 @@
         No results found!
     </c:when>
     <c:otherwise>
-        <br />
         <c:forEach items="${results}" var="item">
-            <h1>
-                <c:out value="${item.title}" />
-            </h1>
+            <h1><c:out value="${item.title}" /> </h1>
+
             <div>
                 <b>Description:</b> <c:out value="${item.description}" /> <br/>
                 <b>Genre:</b> <c:out value="${item.genre}" /> <br/>
                 <b>Launch Date:</b> <c:out value="${item.launchDate}" /> <br/>
                 <b>Editor Label:</b> <c:out value="${item.editorLabel}" /> <br/>
                 <b>Averate Rating:</b> <c:out value="${item.avgRating}" /> <br/>
+
+                <c:choose>
+                    <c:when test="${item.reviews == null}">
+                        A problem occurred during the search!
+                    </c:when>
+                    <c:when test="${item.reviews.isEmpty()}">
+                        No reviews yet
+                    </c:when>
+
+                    <c:otherwise>
+                        <h2>User reviews</h2>
+                        <c:forEach items="${item.reviews}" var="review">
+                            <b>Rating:</b> <c:out value="${review.rating}"  /> <br/>
+                            <b>Email:</b> <c:out value="${review.email}" /> <br/>
+                            <b>Review:</b> <c:out value="${review.critic}" /> <br/>
+                            <p></p>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
 
             </div>
             <div>

@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  */
 
 public class MulticastServer extends Thread {
-    private static String MULTICAST_ADDRESS = "224.3.2.1";
+    private static String MULTICAST_ADDRESS = "224.3.2.2";
     private static int RECV_PORT = 5213;
     private static MulticastSocket socket = null;
 
@@ -748,7 +748,7 @@ public class MulticastServer extends Thread {
                         message += albumInfo;
 
                         // Reviews
-                        PreparedStatement reviewsStatement = con.prepareStatement("select r.rating, r.critic " +
+                        PreparedStatement reviewsStatement = con.prepareStatement("select r.rating, r.critic, r.user_email " +
                                 "from review r where r.album_id = ?");
 
                         reviewsStatement.setInt(1, albumID);
