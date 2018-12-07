@@ -664,6 +664,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     public ArrayList<Object> searchAlbum(String keyword) throws RemoteException {
 
+
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
@@ -681,6 +682,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                 int nAlbums = Integer.parseInt(cleanMessage.get(5)[1]);
 
+                /* // CORRIGE SFF PUTO
                 for (int i = 0; i < nAlbums; i++) {
 
                     int nReviews = Integer.parseInt(cleanMessage.get(12)[1]);
@@ -698,13 +700,16 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                     results.add(foundAlbum);
 
+
                 }
+                */
 
 
                 exit = true;
             }
         }
         return results;
+
     }
 
     /**
@@ -767,7 +772,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     int nEditors = Integer.parseInt(cleanMessage.get(2)[1]);
 
                     for (int i = 0; i < nEditors; i++) {
-                       editors.add(cleanMessage.get(3)[1] + i);
+                       editors.add(cleanMessage.get(3 + i)[1]);
+                        System.out.println();
                     }
 
                     exit = true;
@@ -855,7 +861,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @throws RemoteException
      */
 
-    public String addAlbum(String artist, String albumTitle, String description, String genre, String email, String launchDate, String editorLabel) throws  RemoteException{
+    public String addAlbum(String artist, String albumTitle, String description, String genre, String launchDate, String editorLabel,  String email) throws  RemoteException{
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));

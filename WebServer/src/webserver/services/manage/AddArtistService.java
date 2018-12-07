@@ -3,10 +3,12 @@ package webserver.services.manage;
 import shared.manage.Artist;
 import shared.manage.ManageModel;
 import shared.RMIServerInterface;
+import ws.WebSocketAnnotation;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.ArrayList;
 
 public class AddArtistService implements ManageService {
 
@@ -25,7 +27,12 @@ public class AddArtistService implements ManageService {
                 Artist artist = (Artist) manageModel;
 
                 rsp = server.addArtist(artist.getName(), artist.getDetails(), email);
-                if(rsp.equals("Artist created")) {
+                if(rsp.equals("Artist created") || rsp.equals("Artist `" + artist.getName() + "` was edited")) {
+                    ArrayList<String> editors = new ArrayList<>();
+                    editors = server.getEditors(artist.getName());
+                    for (String ed : editors)
+                        WebSocketAnnotation.sendNotification(ed, "Artist `\" + artist.getName() + \"` was edited\") by " + email);
+
                     return true;
                 } else {
                     return false;

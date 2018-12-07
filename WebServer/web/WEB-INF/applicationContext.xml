@@ -5,7 +5,6 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 
     <!-- Models -->
-        <bean id="loginModel" class="shared.LoginModel" scope="prototype"/>
         <bean id="searchModel" class="shared.SearchModel" scope="prototype" />
 
         <!-- Manage Models -->
@@ -20,7 +19,6 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 
     <!-- Services -->
-        <bean id="loginService"    class="webserver.services.LoginService" />
         <bean id="registerService" class="webserver.services.RegisterService" />
 
         <!-- Search Services -->
@@ -40,10 +38,6 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 
     <!-- Actions -->
-        <bean id="loginAction" class="webserver.actions.LoginAction" scope="prototype">
-            <property name="loginService" ref="loginService" />
-        </bean>
-
         <bean id="registerAction" class="webserver.actions.RegisterAction" scope="prototype">
             <property name="registerService" ref="registerService" />
         </bean>

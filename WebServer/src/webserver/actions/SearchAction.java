@@ -2,7 +2,7 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
-import shared.Album;
+import shared.manage.Album;
 import shared.SearchModel;
 import webserver.services.SearchService;
 

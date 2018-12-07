@@ -10,9 +10,9 @@
 </head>
 <body>
 <s:form action="loginAction" method="POST">
-  <s:textfield name="inputObject.email" label="Email" />
-  <s:password name="inputObject.password" label="Password" />
-  <s:submit label="Log in putas" />
+  <s:textfield name="email" label="Email" />
+  <s:password name="password" label="Password" />
+  <s:submit label="Log in" />
 </s:form>
 
 <s:form action="register-direct" method="post">

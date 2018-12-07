@@ -13,6 +13,11 @@
 
 <h1>Profile</h1>
 <h2>Turn a user into Editor</h2>
+<h1>Email:${session.email} </h1>
+
+
+
+
 <s:form action="turnIntoEditorAction" method="get">
     <s:text name="Email:" />
     <s:textfield name="regular" />

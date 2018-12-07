@@ -1,6 +1,6 @@
 package webserver.services;
 
-import shared.Artist;
+import shared.manage.Artist;
 import shared.RMIServerInterface;
 import shared.SearchModel;
 

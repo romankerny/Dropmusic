@@ -19,13 +19,12 @@ public class ManageAction extends ActionSupport {
     public String execute()
     {
         session = ActionContext.getContext().getSession();
-        boolean r = getManageService().add(getManageModel(),(String) session.get("email"));
+        boolean r = getManageService().add(getManageModel(), (String) session.get("email"));
         if(r) {
-            return "sucess";
+            return "success";
         } else {
             return "failed";
         }
-
     }
 
     public ManageService getManageService() {

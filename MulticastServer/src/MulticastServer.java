@@ -1201,7 +1201,7 @@ public class MulticastServer extends Thread {
                 addMusic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(7)[1], cleanMessage.get(8)[1]);
                 break;
             case "getEditors":
-                getEditors(cleanMessage.get(0)[1], cleanMessage.get(1)[1], cleanMessage.get(2)[1]);
+                getEditors(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1]);
                 break;
             case "requestTCPConnection":
                 String operation = cleanMessage.get(2)[1];

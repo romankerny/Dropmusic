@@ -105,7 +105,8 @@
         </action>
 
         <action name="addAlbum" class="addAlbumAction">
-
+            <result name="success">/index.jsp</result>
+            <result name="failed">/restricted/register.jsp</result>
         </action>
 
         <action name="addMusic" class="addMusicAction">
