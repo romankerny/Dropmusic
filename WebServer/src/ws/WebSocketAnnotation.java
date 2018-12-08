@@ -1,12 +1,15 @@
 package ws;
 
 
+import shared.RMIClientInterface;
+
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 
@@ -16,19 +19,19 @@ public class WebSocketAnnotation {
     Session session;
 
 
-    private static Set<WebSocketAnnotation> users = new CopyOnWriteArraySet<>();
+    private static ConcurrentHashMap<String, Session> clients = new ConcurrentHashMap<String, Session>();
 
     @OnOpen
     public void start(@PathParam("email") String email, Session session) {
 
         try {
-            // Code to run when users connects to WebSocket
-            this.session = session;
-            this.email = email;
-            users.add(this);
+
+            // if client already has a session then we overwrite it
+            // when client changes page we need to update the session
+            clients.put(email, session);
 
             session.getBasicRemote().sendText("Notifications: ");
-            //System.out.println(users.size());
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -38,19 +41,20 @@ public class WebSocketAnnotation {
 
     public static void sendNotification(String email, String notification) {
 
-        for(WebSocketAnnotation e : users)
-            if(e.email.equals(email)) {
-                try {
-                    e.session.getBasicRemote().sendText(notification);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
+        Session s = clients.get(email);
+
+
+        try {
+            s.getBasicRemote().sendText(notification);
+        } catch (IOException e) {
+            System.out.println("IOExeption in WebSocketAnnotation");
+        }
+
 
     }
 
     public static String getUsers() {
-        return users.toString();
+        return clients.toString();
     }
 
 }

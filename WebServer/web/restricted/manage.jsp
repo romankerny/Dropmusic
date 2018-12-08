@@ -3,7 +3,8 @@
 
 <html>
 <head>
-    <title>Manage</title>
+    <jsp:include page="header.jsp"/>
+    <title>Manage | DropMusic</title>
     <script src="https://code.jquery.com/jquery-1.10.2.js" type="text/javascript"></script>
     <script>
 
@@ -34,8 +35,8 @@
 
                 $.ajax({
                     type: 'POST',
-                    url:'addArtist.action?manageModel.artist=' + document.getElementById('AAartistName').value +'&manageModel.details='
-                        +document.getElementById('AartistDetails').value,
+                    url:'addArtist.action?manageModel.name=' + document.getElementById('AartistName').value
+                        +'&manageModel.details=' + document.getElementById('AartistDetails').value,
                     dataType: 'text',
                     success: function(data){
                         document.getElementById('rspArt').innerHTML = data;

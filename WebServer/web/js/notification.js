@@ -28,8 +28,10 @@ function connect(host) { // connect to the host websocket
 
 
 function onClose(event) {
+    console.log("closing socket")
     document.getElementById('chat').onkeydown = null;
 }
+
 
 
 function onMessage(message) { // print the received message

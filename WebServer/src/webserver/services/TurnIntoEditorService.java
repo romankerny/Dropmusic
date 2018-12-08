@@ -22,6 +22,7 @@ public class TurnIntoEditorService {
         RMIServerInterface server = null;
         String rsp;
 
+
         try {
             server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
         }
@@ -29,17 +30,18 @@ public class TurnIntoEditorService {
             e.printStackTrace();
         }
 
-
         rsp = server.regularToEditor(editor, regular);
 
         if (rsp.equals(regular + " casted to Editor with success"))
         {
             r = true;
+            System.out.println("no service true" + regular + editor);
             // notifications
             WebSocketAnnotation.sendNotification(regular, "[*] You've promoted to Editor by " + editor + ".\n You can now edit materials!");
 
         } else
         {
+            System.out.println("No service false");
             r = false;
         }
         
