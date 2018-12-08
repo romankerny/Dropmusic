@@ -1,34 +1,48 @@
 package webserver.services.manage;
 
 import shared.RMIServerInterface;
+import shared.manage.Album;
 import shared.manage.Artist;
 import shared.manage.ManageModel;
+import shared.manage.Music;
+import ws.WebSocketAnnotation;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.ArrayList;
 
 public class AddMusicService implements ManageService {
 
     public boolean add(ManageModel manageModel, String email) {
 
-        boolean r;
-        RMIServerInterface server = null;
+        boolean r = false;
+        RMIServerInterface server;
         String rsp;
 
         try {
             server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
 
-            if (manageModel instanceof Artist)
+            if (manageModel instanceof Music)
             {
-                Artist artist = (Artist) manageModel;
+                Music music = (Music) manageModel;
 
-                rsp = server.addArtist(artist.getName(), artist.getDetails(), email);
-                if(rsp.equals("Artist created")) {
-                    return true;
-                } else {
-                    return false;
+                rsp = server.addMusic(music.getTitle(), music.getTrack(), music.getAlbumTitle(), email, music.getLyrics(), music.getArtistName());
+                if(rsp.equals("Music info added with success"))
+                {
+                    ArrayList<String> editors;
+                    editors = server.getEditors(music.getArtistName());
+                    for (String ed : editors)
+                    {
+                        WebSocketAnnotation.sendNotification(ed, "An Album from " + music.getArtistName() + " has been edited!");
+                    }
+                    r = true;
                 }
+                else
+                {
+                    r = false;
+                }
+
             }
 
 
@@ -36,6 +50,7 @@ public class AddMusicService implements ManageService {
         } catch(NotBoundException | RemoteException e) {
             e.printStackTrace();
         }
-        return false;
+
+        return r;
     }
 }

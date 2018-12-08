@@ -36,7 +36,6 @@ public class LoginAction extends ActionSupport implements SessionAware {
 			{   // if true then user can log
 				// set session parameters
 				session.put("email", email);
-				System.out.println("No metodo login dentro de " + session.get("email"));
 				session.put("loggedin", true);
 				r = "success";
 			}

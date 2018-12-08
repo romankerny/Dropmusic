@@ -15,8 +15,8 @@ public class AddAlbumService implements ManageService {
 
     public boolean add(ManageModel manageModel, String email) {
 
-        boolean r;
-        RMIServerInterface server = null;
+        boolean r = false;
+        RMIServerInterface server;
         String rsp;
 
         try {
@@ -27,16 +27,19 @@ public class AddAlbumService implements ManageService {
                 Album album = (Album) manageModel;
 
                 rsp = server.addAlbum(album.getArtist(), album.getTitle(), album.getDescription(), album.getGenre(), album.getLaunchDate(),album.getEditorLabel(),email);
-                if(rsp.equals("Album info added with success")) {
-                    ArrayList<String> editors = new ArrayList<>();
+                if(rsp.equals("Album info added with success"))
+                {
+                    ArrayList<String> editors;
                     editors = server.getEditors(album.getArtist());
-                    for (String ed : editors) {
-                        System.out.println("EDITOR " + ed);
+                    for (String ed : editors)
+                    {
                         WebSocketAnnotation.sendNotification(ed, "Album `" + album.getTitle() + "` by " + album.getArtist() + " was edited");
                     }
-                    return true;
-                } else {
-                    return false;
+                    r = true;
+                }
+                else
+                {
+                    r = false;
                 }
 
             }
@@ -46,7 +49,8 @@ public class AddAlbumService implements ManageService {
         } catch(NotBoundException | RemoteException e) {
             e.printStackTrace();
         }
-        return false;
+
+        return r;
     }
 
 }

@@ -682,12 +682,14 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                 int nAlbums = Integer.parseInt(cleanMessage.get(5)[1]);
 
-                /* // CORRIGE SFF PUTO
                 for (int i = 0; i < nAlbums; i++) {
-
+                    System.out.println("--------");
+                    System.out.println(msg);
                     int nReviews = Integer.parseInt(cleanMessage.get(12)[1]);
 
                     int offset = i*(7+nReviews*3);
+                    // keyword|Lateralus;item_count|1;title|Lateralus;description|asfsaf;genre|asfafs;launch_date|2014-10-10;editor_label|lol;Average Rating|4.0000;item_count|2;rating|3;critic|wtf is this?;user_email|diogo;rating|5;critic|Very nice;user_email|roman;hash|b14f51e2f97d;
+                    // String title, String description, String genre, String artist, String launchDate, String editorLabel
 
                     Album foundAlbum = new Album(cleanMessage.get(6+offset)[1], cleanMessage.get(7+offset)[1], cleanMessage.get(8+offset)[1]);
                     foundAlbum.setLaunchDate(cleanMessage.get(9+offset)[1]);
@@ -702,7 +704,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
                 }
-                */
+
 
 
                 exit = true;
@@ -741,9 +743,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                 for (int i = 0; i < nMusics; i++) {
 
-                    Music mus = new Music(Integer.parseInt(cleanMessage.get(6 + i)[1]), cleanMessage.get(7 + i)[1], cleanMessage.get(8 + i)[1]);
+                    Music mus = new Music(cleanMessage.get(6 + i)[1], cleanMessage.get(7 + i)[1], cleanMessage.get(8 + i)[1]);
                     System.out.println(mus);
                     results.add(mus);
+
                 }
 
                 exit = true;

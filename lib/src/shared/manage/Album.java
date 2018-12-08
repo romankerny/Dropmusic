@@ -24,6 +24,14 @@ public class Album implements Serializable, ManageModel {
         setGenre(genre);
         setReviews(reviews);
     }
+
+    public Album(String title, String description, String genre) {
+        this.title = title;
+        this.description = description;
+        this.genre = genre;
+        this.reviews = new CopyOnWriteArrayList<Review>();
+    }
+
     public Album()
     {
         this(null, null, null, null, null, null);

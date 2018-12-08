@@ -31,7 +31,6 @@ public class LoginModel {
         rsp = server.login(getEmail(), getPassword());
         if (rsp.equals("Logged in successfully " + getEmail()))
         {
-            System.out.println("No loginModel" + getEmail());
             r = true;
         } else
         {
