@@ -13,6 +13,29 @@
 <head>
     <jsp:include page="header.jsp"/>
     <title>Album | DropMusic</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js" type="text/javascript"></script>
+    <script>
+        $(document).ready(function() {
+            $("#addReviewButton").click(function(){
+                $.ajax({
+                    type: 'POST',
+                    url:'addReview.action?reviewModel.rating='+ document.getElementById('rating').value
+                        + '&reviewModel.critic='+document.getElementById('critic').value
+                        + '&reviewModel.artist='+document.getElementById('artist').value
+                        + '&reviewModel.album='+document.getElementById('album').value
+                        + '&reviewModel.email='+document.getElementById('email').value
+                    ,
+                    dataType: 'text',
+                    success: function(data){
+                        document.getElementById('reviewStatus').innerHTML = data;
+                    }, error: function(data) {
+                        document.getElementById('reviewStatus').innerHTML = data;
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
 </head>
 <body>
 
@@ -62,14 +85,15 @@
                 </h2>
                     <s:form action="addReview">
                         Rating:
-                        <s:textfield type="number" name="reviewModel.rating" min="1" max="5" step="1" /> <br/>
+                        <s:textfield type="number" name="reviewModel.rating" min="1" max="5" step="1" id="rating"/> <br/>
                         Review:
-                        <s:textarea name="reviewModel.critic" /> <br/>
+                        <s:textarea name="reviewModel.critic" id="critic"/> <br/>
 
-                        <s:hidden name="reviewModel.artist" value="%{#artistName}"/>
-                        <s:hidden name="reviewModel.album" value="%{#albumName}" />
-                        <s:hidden name="reviewModel.email" value="%{#session.email}" />
-                        <s:submit />
+                        <s:hidden name="reviewModel.artist" value="%{#artistName}" id="artist"/>
+                        <s:hidden name="reviewModel.album" value="%{#albumName}" id="album"/>
+                        <s:hidden name="reviewModel.email" value="%{#session.email}" id="email" />
+                        <button type="button" id="addReviewButton">Review!</button>
+                        <div id="reviewStatus"></div>
                     </s:form>
             </div>
         </c:forEach>

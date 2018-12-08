@@ -116,7 +116,8 @@
         </action>
 
         <action name="addReview" class="webserver.actions.ReviewAction">
-            <result name="success">/restricted/album.jsp</result>
+            <result name="success">/restricted/success.html</result>
+            <result name="failed">/restricted/fail.html</result>
         </action>
 
     </package>

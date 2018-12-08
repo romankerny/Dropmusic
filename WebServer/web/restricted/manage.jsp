@@ -29,7 +29,7 @@
                     }, error: function(data) {
                         document.getElementById('rspAlb').innerHTML = data;
                     }
-            });
+                });
                 return false;
             });
 
