@@ -4,7 +4,6 @@ package webserver.actions;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
 import shared.LoginModel;
-import webserver.services.LoginService;
 
 import java.rmi.RemoteException;
 import java.util.Map;
@@ -13,9 +12,9 @@ public class LoginAction extends ActionSupport implements SessionAware {
 	private static final long serialVersionUID = 4L;
 	private Map<String, Object> session;
 
-	private LoginService loginService;
+	private String email = null;
+	private String password = null;
 
-	private LoginModel inputObject = new LoginModel();
 
 	public LoginAction() {
 
@@ -27,11 +26,16 @@ public class LoginAction extends ActionSupport implements SessionAware {
 		String r = "";
 
 		System.out.println("Executing LoginAction - execute()");
+		this.getLoginModel().setEmail(this.email);
+		this.getLoginModel().setPassword(this.password);
+
+		System.out.println(this.getLoginModel().getEmail());
+
 		try {
-			if(getLoginService().login(getInputObject()))
+			if(this.getLoginModel().login())
 			{   // if true then user can log
 				// set session parameters
-				session.put("email", getInputObject().getEmail());
+				session.put("email", email);
 				session.put("loggedin", true);
 				r = "success";
 			}
@@ -46,24 +50,26 @@ public class LoginAction extends ActionSupport implements SessionAware {
 		return r;
 	}
 
-
-	public LoginService getLoginService() {
-		return loginService;
-	}
-
-	public void setLoginService(LoginService loginService) {
-		this.loginService = loginService;
+	public LoginModel getLoginModel() {
+		if(!session.containsKey("loginModel"))
+			this.setLoginModel(new LoginModel());
+		return (LoginModel) session.get("loginModel");
 	}
 
 
-	public LoginModel getInputObject() {
-		return inputObject;
+	public void setLoginModel(LoginModel loginModel) {
+		this.session.put("loginModel", loginModel);
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 
-	public void setInputObject(LoginModel inputObject) {
-		this.inputObject = inputObject;
-	}
 
 	@Override
 	public void setSession(Map<String, Object> session) {

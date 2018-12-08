@@ -95,20 +95,24 @@
             <result name="failed">/restricted/register.jsp</result>
         </action>
 
-        <action name="manageAction" class="webserver.actions.ManageAction" method="execute">
-        </action>
 
+
+
+        <!-- ManageAction -->
 
         <action name="addArtist" class="addArtistAction">
-            <result name="success">/index.jsp</result>
-            <result name="failed">/restricted/register.jsp</result>
+            <result name="success">/restricted/success.html</result>
+            <result name="failed">/restricted/fail.html</result>
         </action>
 
         <action name="addAlbum" class="addAlbumAction">
-
+            <result name="success">/restricted/success.html</result>
+            <result name="failed">/restricted/fail.html</result>
         </action>
 
         <action name="addMusic" class="addMusicAction">
+            <result name="success">/restricted/success.html</result>
+            <result name="failed">/restricted/fail.html</result>
         </action>
 
         <action name="addReview" class="webserver.actions.ReviewAction">

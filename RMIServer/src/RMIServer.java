@@ -690,13 +690,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     String albumName = cleanMessage.get(6+offset)[1];
                     String artistName = cleanMessage.get(12+offset)[1];
 
-                    Album foundAlbum = new Album(albumName, cleanMessage.get(7+offset)[1], cleanMessage.get(8+offset)[1]);
-                    foundAlbum.setLaunchDate(cleanMessage.get(9+offset)[1]);
-                    foundAlbum.setEditorLabel(cleanMessage.get(10+offset)[1]);
+                    Album foundAlbum = new Album(albumName, cleanMessage.get(7+offset)[1], cleanMessage.get(8+offset)[1], artistName, cleanMessage.get(9+offset)[1], cleanMessage.get(10+offset)[1]);
                     foundAlbum.setAvgRating(Float.parseFloat(cleanMessage.get(11+offset)[1]));
-                    foundAlbum.setArtist(artistName);
 
-                    System.out.println("Is this null?");
                     System.out.println(foundAlbum);
 
                     for (int j = 0; j < nReviews; j++) {
@@ -705,7 +701,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     results.add(foundAlbum);
 
                 }
-
 
                 exit = true;
             }
@@ -742,9 +737,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                 for (int i = 0; i < nMusics; i++) {
 
-                    Music mus = new Music(Integer.parseInt(cleanMessage.get(6 + i)[1]), cleanMessage.get(7 + i)[1], cleanMessage.get(8 + i)[1]);
+                    Music mus = new Music(cleanMessage.get(6 + i)[1], cleanMessage.get(7 + i)[1], cleanMessage.get(8 + i)[1]);
                     System.out.println(mus);
                     results.add(mus);
+
                 }
 
                 exit = true;
@@ -773,7 +769,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     int nEditors = Integer.parseInt(cleanMessage.get(2)[1]);
 
                     for (int i = 0; i < nEditors; i++) {
-                       editors.add(cleanMessage.get(3)[1] + i);
+                       editors.add(cleanMessage.get(3 + i)[1]);
+                        System.out.println();
                     }
 
                     exit = true;
@@ -861,7 +858,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @throws RemoteException
      */
 
-    public String addAlbum(String artist, String albumTitle, String description, String genre, String email, String launchDate, String editorLabel) throws  RemoteException{
+    public String addAlbum(String artist, String albumTitle, String description, String genre, String launchDate, String editorLabel,  String email) throws  RemoteException{
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));

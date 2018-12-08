@@ -7,23 +7,27 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Album implements Serializable, ManageModel {
     private static final long serialVersionUID = 1123124L;
     private          String  title;
-    private         String  description;
+    private          String  artist;
+    private          String  description;
     private          String   genre;
-    private         String launchDate;
-    private         String editorLabel;
-    private         float avgRating;
-    private         CopyOnWriteArrayList<Review> reviews;
-    private         String artist;
+    private          String launchDate;
+    private          String editorLabel;
+    private          float avgRating;
+    private          CopyOnWriteArrayList<Review> reviews;
 
-    public Album(String title, String description, String genre) {
+    public Album(String title, String description, String genre, String artist, String launchDate, String editorLabel) {
         setTitle(title);
+        setArtist(artist);
+        setLaunchDate(launchDate);
+        setEditorLabel(editorLabel);
         setDescription(description);
         setGenre(genre);
         setReviews(new CopyOnWriteArrayList<Review>());
     }
+
     public Album()
     {
-        this(null, null, null);
+        this(null, null, null, null, null, null);
     }
 
     public void setDescription(String description) {

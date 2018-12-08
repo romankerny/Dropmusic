@@ -6,23 +6,35 @@ import java.util.ArrayList;
 public class Music implements Serializable, ManageModel {
     private static final long serialVersionUID = 1234675L;
 
-    private int track;
+    private String   track;
     private String title;
     private String lyrics;
+    private String albumTitle;
+    private String artistName;
+
     // private ConcurrentHashMap<String, MusicFile> musicFiles;
 
 
 
-    public Music(int track, String title, String lyrics) {
+    public Music(String track, String title, String lyrics, String albumTitle, String artistName) {
         setTrack(track);
         setTitle(title);
         setLyrics(lyrics);
+        setAlbumTitle(albumTitle);
+        setArtistName(artistName);
        //  this.musicFiles = new ConcurrentHashMap<String, MusicFile>();
     }
 
     public Music()
     {
-        this(0, null, null);
+        this(null , null, null, null, null);
+    }
+
+    public Music(String track, String title, String lyrics) {
+        this.track = track;
+        this.title = title;
+        this.lyrics = lyrics;
+        //  this.musicFiles = new ConcurrentHashMap<String, MusicFile>();
     }
 
     @Override
@@ -30,11 +42,27 @@ public class Music implements Serializable, ManageModel {
         return track+ " - "+title;
     }
 
-    public int getTrack() {
+    public String getAlbumTitle() {
+        return albumTitle;
+    }
+
+    public void setAlbumTitle(String albumTitle) {
+        this.albumTitle = albumTitle;
+    }
+
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public String getTrack() {
         return track;
     }
 
-    public void setTrack(int track) {
+    public void setTrack(String track) {
         this.track = track;
     }
 

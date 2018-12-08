@@ -18,14 +18,18 @@ public class ManageAction extends ActionSupport {
     @Override
     public String execute()
     {
+        System.out.println("Executing ManageAction - execute()");
         session = ActionContext.getContext().getSession();
-        boolean r = getManageService().add(getManageModel(),(String) session.get("email"));
-        if(r) {
-            return "sucess";
-        } else {
+        boolean r = getManageService().add(getManageModel(), (String) session.get("email"));
+
+        if(r)
+        {
+            return "success";
+        }
+        else
+        {
             return "failed";
         }
-
     }
 
     public ManageService getManageService() {
