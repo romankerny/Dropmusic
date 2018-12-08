@@ -7,11 +7,19 @@ public class Review implements Serializable {
     private String critic;
     private int rating;
     private String email;
+    private String artist;
+    private String album;
 
-    public Review(int rating, String critic, String email) {
+    public Review(int rating, String critic, String email, String artist, String album) {
         this.critic = critic;
         this.rating = rating;
         this.email = email;
+        this.artist = artist;
+        this.album = album;
+    }
+
+    public Review() {
+
     }
 
     public String getCritic() {
@@ -36,6 +44,22 @@ public class Review implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
     }
 
     @Override

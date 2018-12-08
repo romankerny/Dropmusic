@@ -109,9 +109,11 @@
         </action>
 
         <action name="addMusic" class="addMusicAction">
-
         </action>
 
+        <action name="addReview" class="webserver.actions.ReviewAction">
+            <result name="success">/restricted/album.jsp</result>
+        </action>
 
     </package>
 

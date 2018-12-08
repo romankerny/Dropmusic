@@ -683,19 +683,25 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                 for (int i = 0; i < nAlbums; i++) {
 
-                    int nReviews = Integer.parseInt(cleanMessage.get(12)[1]);
+                    int nReviews = Integer.parseInt(cleanMessage.get(13)[1]);
 
-                    int offset = i*(7+nReviews*3);
+                    int offset = i*(8+nReviews*3);
 
-                    Album foundAlbum = new Album(cleanMessage.get(6+offset)[1], cleanMessage.get(7+offset)[1], cleanMessage.get(8+offset)[1]);
+                    String albumName = cleanMessage.get(6+offset)[1];
+                    String artistName = cleanMessage.get(12+offset)[1];
+
+                    Album foundAlbum = new Album(albumName, cleanMessage.get(7+offset)[1], cleanMessage.get(8+offset)[1]);
                     foundAlbum.setLaunchDate(cleanMessage.get(9+offset)[1]);
                     foundAlbum.setEditorLabel(cleanMessage.get(10+offset)[1]);
                     foundAlbum.setAvgRating(Float.parseFloat(cleanMessage.get(11+offset)[1]));
+                    foundAlbum.setArtist(artistName);
+
+                    System.out.println("Is this null?");
+                    System.out.println(foundAlbum);
 
                     for (int j = 0; j < nReviews; j++) {
-                        foundAlbum.getReviews().add(new Review(Integer.parseInt(cleanMessage.get(13+j*3+offset)[1]), cleanMessage.get(14+j*3+offset)[1], cleanMessage.get(15+j*3+offset)[1]));
+                        foundAlbum.getReviews().add(new Review(Integer.parseInt(cleanMessage.get(14+j*3+offset)[1]), cleanMessage.get(15+j*3+offset)[1], cleanMessage.get(16+j*3+offset)[1], artistName, albumName));
                     }
-
                     results.add(foundAlbum);
 
                 }

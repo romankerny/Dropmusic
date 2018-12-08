@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ page session="true" %>
 <%--
   Created by IntelliJ IDEA.
   User: roman
@@ -24,7 +25,7 @@
     </c:when>
     <c:otherwise>
         <c:forEach items="${results}" var="item">
-            <h1><c:out value="${item.title}" /> </h1>
+            <h1><c:out value="${item.title}" /> by <c:out value="${item.artist}" /></h1>
 
             <div>
                 <b>Description:</b> <c:out value="${item.description}" /> <br/>
@@ -54,11 +55,23 @@
 
             </div>
             <div>
+                <s:set var="artistName">${item.artist}</s:set>
+                <s:set var="albumName">${item.title}</s:set>
                 <h2>
-                    Write a review:
+                    Write a review
                 </h2>
+                    <s:form action="addReview">
+                        Rating:
+                        <s:textfield type="number" name="reviewModel.rating" min="1" max="5" step="1" /> <br/>
+                        Review:
+                        <s:textarea name="reviewModel.critic" /> <br/>
+
+                        <s:hidden name="reviewModel.artist" value="%{#artistName}"/>
+                        <s:hidden name="reviewModel.album" value="%{#albumName}" />
+                        <s:hidden name="reviewModel.email" value="%{#session.email}" />
+                        <s:submit />
+                    </s:form>
             </div>
-            <br />
         </c:forEach>
     </c:otherwise>
 </c:choose>

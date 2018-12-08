@@ -26,7 +26,12 @@ public class ReviewService {
         }
     }
 
-    public boolean addReview(Review review, String email, String albumName) {
+    public boolean addReview(Review review) {
+        try {
+            server.rateAlbum(review.getRating(), review.getArtist(), review.getAlbum(), review.getCritic(), review.getEmail());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         return true;
     }
 }

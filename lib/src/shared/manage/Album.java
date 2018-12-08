@@ -13,12 +13,13 @@ public class Album implements Serializable, ManageModel {
     private         String editorLabel;
     private         float avgRating;
     private         CopyOnWriteArrayList<Review> reviews;
+    private         String artist;
 
     public Album(String title, String description, String genre) {
         setTitle(title);
         setDescription(description);
         setGenre(genre);
-        setReviews(reviews);
+        setReviews(new CopyOnWriteArrayList<Review>());
     }
     public Album()
     {
@@ -45,6 +46,14 @@ public class Album implements Serializable, ManageModel {
         }
 
         return rsp;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
     }
 
     public String getLaunchDate() {

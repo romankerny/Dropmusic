@@ -716,7 +716,7 @@ public class MulticastServer extends Thread {
 
 
             } else if (type.equals("alb")) {
-                pstmtAlbInfo = con.prepareStatement("select a.id, a.title, a.description, a.genre, a.launch_date, a.editor_label, IFNULL(avgRates.avgrating, 0) 'Average Rating' " +
+                pstmtAlbInfo = con.prepareStatement("select a.id, a.title, a.description, a.genre, a.launch_date, a.editor_label, IFNULL(avgRates.avgrating, 0) 'Average Rating', a.artist_name " +
                         "from album a " +
                         "left join (select album_id, avg(rating) as avgrating from review group by album_id) as avgRates on a.id = avgRates.album_id " +
                         "where a.title = ? or a.genre = ? or a.editor_label = ?;");
