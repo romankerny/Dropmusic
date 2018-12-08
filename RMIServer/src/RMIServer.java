@@ -364,22 +364,23 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     try {
                         clients.get(regular).printOnClient("You got promoted to Editor by " + editor);
                     } catch (RemoteException re) {
+                        /*
                         clients.remove(regular);
                         System.out.println("Client is off");
                         sendUDPDatagram("flag|"+idNotify+";type|notifyfail;email|" + regular + ";message|" + "You got promoted to Editor by " + editor + ";");
+                        */
                     } catch (NullPointerException npe) {
+                        /*
                         System.out.println("Client is off");
                         sendUDPDatagram("flag|"+idNotify+";type|notifyfail;email|" + regular + ";message|" + "You got promoted to Editor by " + editor + ";");
+                        */
                     }
                 } else {
-                    System.out.println("Aqui");
                     rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
                 }
-                System.out.println("Aqui true");
                 exit = true;
             }
         }
-        System.out.println("Bou dar a answer");
         return rspToClient;
     }
 
@@ -720,7 +721,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
-        String msg = "flag|"+id+";type|details;param|mus;keyword|" + keyword + ";", rspToClient = "";
+        String msg = "flag|"+id+";type|details;param|mus;keyword|" + keyword + ";";
         boolean exit = false;
 
         sendUDPDatagram(msg);
@@ -742,7 +743,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     results.add(mus);
 
                 }
-
                 exit = true;
                 }
             }
@@ -827,13 +827,17 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                             }
 
                         } catch (RemoteException re) {
+                            /*
                             String uuidNotify = UUID.randomUUID().toString();
                             String idNotify = uuid.substring(0, Math.min(uuid.length(), 8));
                             sendUDPDatagram("flag|" + idNotify + ";type|notifyfail;email|" + userEmail + ";message|" + notification+";");
+                            */
                         } catch (NullPointerException npe) {
+                            /*
                             String uuidNotify = UUID.randomUUID().toString();
                             String idNotify = uuid.substring(0, Math.min(uuid.length(), 8));
                             sendUDPDatagram("flag|" + idNotify + ";type|notifyfail;email|" + userEmail + ";message|" + notification+";");
+                            */
                         }
                     }
                 } else if(rspToClient.equals("Artist created")) {
@@ -891,13 +895,17 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                             }
 
                         } catch (RemoteException re) {
+                            /*
                             String uuidNotify = UUID.randomUUID().toString();
                             String idNotify = uuid.substring(0, Math.min(uuid.length(), 8));
                             sendUDPDatagram("flag|" + idNotify + ";type|notifyfail;email|" + userEmail + ";message|" + notification+";");
+                            */
                         } catch (NullPointerException npe) {
+                            /*
                             String uuidNotify = UUID.randomUUID().toString();
                             String idNotify = uuid.substring(0, Math.min(uuid.length(), 8));
                             sendUDPDatagram("flag|" + idNotify + ";type|notifyfail;email|" + userEmail + ";message|" + notification+";");
+                            */
                         }
                     }
                 }
@@ -954,13 +962,17 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                             }
 
                         } catch (RemoteException re) {
+                            /*
                             String uuidNotify = UUID.randomUUID().toString();
                             String idNotify = uuid.substring(0, Math.min(uuid.length(), 8));
                             sendUDPDatagram("flag|" + idNotify + ";type|notifyfail;email|" + userEmail + ";message|" + notification+";");
+                            */
                         } catch (NullPointerException npe) {
+                            /*
                             String uuidNotify = UUID.randomUUID().toString();
                             String idNotify = uuid.substring(0, Math.min(uuid.length(), 8));
                             sendUDPDatagram("flag|" + idNotify + ";type|notifyfail;email|" + userEmail + ";message|" + notification+";");
+                            */
                         }
                     }
                 }

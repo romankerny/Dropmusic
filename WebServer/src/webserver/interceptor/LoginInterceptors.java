@@ -21,7 +21,7 @@ public class LoginInterceptors implements Interceptor {
         if(session.get("loggedin") != null)
         {
             // then user is logged
-            System.out.println(session.get("email") + " has a session.");
+            System.out.println("[" + session.get("email") + "] has a session.");
             return invocation.invoke();
         }
         else {

@@ -91,8 +91,8 @@
         </action>
 
         <action name="turnIntoEditorAction" class="webserver.actions.TurnIntoEditorAction" method="execute">
-           <result name="success">/index.jsp</result>
-            <result name="failed">/restricted/register.jsp</result>
+            <result name="success">/restricted/success.html</result>
+            <result name="failed">/restricted/fail.html</result>
         </action>
 
 

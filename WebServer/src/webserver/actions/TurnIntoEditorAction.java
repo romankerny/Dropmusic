@@ -22,14 +22,16 @@ public class TurnIntoEditorAction extends ActionSupport implements SessionAware 
         String r = "";
         session = ActionContext.getContext().getSession();
 
-        System.out.println("Executing LoginAction - execute()");
+        System.out.println("Executing TurnIntoEditor - execute()");
         try {
             if(getTurnIntoEditorService().regularToEditor((String) session.get("email"), regular))
             {
+                System.out.println("sucesso no turn");
                 r = "success";
             }
             else
             {
+                System.out.println("nao sucesso no turn");
                 r = "failed";
             }
         } catch (RemoteException e) {
