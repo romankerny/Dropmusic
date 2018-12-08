@@ -20,7 +20,9 @@ public class ManageAction extends ActionSupport {
     {
         session = ActionContext.getContext().getSession();
         boolean r = getManageService().add(getManageModel(), (String) session.get("email"));
+
         if(r) {
+            System.out.println("A adicionar");
             return "success";
         } else {
             return "failed";

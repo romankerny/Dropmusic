@@ -4,17 +4,52 @@
 <html>
 <head>
     <title>Manage</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"
+            type="text/javascript"></script>
+    <script>
+
+        // http://localhost:8080/addArtist.action?manageModel.name=LOOOL&manageModel.details=mau+mau
+        $(document).ready(function(){
+
+            console.log('aqui');
+
+            $("#searchArtistButton").click(function() {
+
+                console.log("Inside Ajax call");
+
+                $.ajax({
+                    type: 'POST',
+                    url:'addArtist.action?manageModel.name='+ document.getElementById('artistName').value +'&manageModel.details='+document.getElementById('artistDetails').value,
+                    dataType: 'text',
+                    success: function(data){
+                        console.log("success");
+                        document.getElementById('rspArt').innerHTML = data;
+
+                    }, error: function(data) {
+                        console.log("fail");
+                        document.getElementById('rspArt').innerHTML = data;
+                    }
+
+
+            });
+                return false;
+
+            });
+        })
+
+    </script>
 </head>
 <body>
 
 <!-- Artists -->
 <div id="artist">
     <h1>Artist</h1>
-    <s:form method="GET" action="addArtist">
-        <s:text name="Name:" /><s:textfield name="manageModel.name" label="Name" /><br>
-        <s:text name="Details:" /><s:textfield name="manageModel.details" label="Details" /><br>
-        <s:submit label="Submit" /><br>
+    <s:form method="GET">
+        <s:text name="Name:" /><s:textfield  id="artistName" /><br>
+        <s:text name="Details:" /><s:textfield  id="artistDetails" /><br>
+        <button type="button" id="searchArtistButton">Search</button>
     </s:form>
+    <div id="rspArt"></div>
 </div>
 
 <!-- Albuns -->
@@ -37,6 +72,7 @@
     <s:textfield name="manageModel.lyrics" label="Lyrics" /><br>
     <s:submit label="Submit" /><br>
 </s:form>
+
 
 
 </body>
