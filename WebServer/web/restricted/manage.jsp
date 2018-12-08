@@ -5,6 +5,8 @@
 <head>
     <jsp:include page="header.jsp"/>
     <title>Manage | DropMusic</title>
+    <script><%@include file="../js/notification.js"%></script>
+    <script>setEmail("${session.email}")</script>
     <script src="https://code.jquery.com/jquery-1.10.2.js" type="text/javascript"></script>
     <script>
 
