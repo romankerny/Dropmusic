@@ -79,6 +79,12 @@
             <result name="login">/index.jsp</result>
         </action>
 
+        <action name="loginDropboxAction" class="webserver.actions.LoginDropboxAction" method="execute">
+            <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
+            <result name="success">/restricted/dropmusic.jsp</result>
+            <result name="login">/index.jsp</result>
+        </action>
+
         <action name="register-direct">
             <interceptor-ref name="defaultStack"></interceptor-ref>
             <result>/restricted/register.jsp</result>

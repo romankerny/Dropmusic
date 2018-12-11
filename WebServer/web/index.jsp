@@ -15,6 +15,8 @@
   <s:submit label="Log in" />
 </s:form>
 
+<s:submit type="button" action="loginDropboxAction">Login with Dropbox</s:submit>
+
 <s:form action="register-direct" method="post">
 <s:submit value="Sign Up"/>
 </s:form>

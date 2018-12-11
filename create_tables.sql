@@ -32,6 +32,7 @@ CREATE TABLE user (
 	email	 varchar(200),
 	password varchar(50),
 	editor	 boolean DEFAULT false,
+	token varchar(200) default null,
 	PRIMARY KEY(email)
 );
 
