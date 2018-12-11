@@ -34,7 +34,7 @@ public interface RMIServerInterface extends Remote {
     public String search(String param, String keyword) throws RemoteException;
     ArrayList<Object> searchArtist(String keyword) throws RemoteException;
     ArrayList<Object> searchAlbum(String keyword) throws RemoteException;
-    ArrayList<Music> searchMusic(String keyword) throws RemoteException;
+    ArrayList<Object> searchMusic(String keyword) throws RemoteException;
     public ArrayList<String> getEditors(String artistName)  throws RemoteException;
 
 
