@@ -449,6 +449,10 @@ public class MulticastServer extends Thread {
 
     }
 
+    public void getToken(String id, String authCode, String code) {
+
+    }
+
     /**
      * Method to login. Checks if email and password match, answering with result|y or result|n if not.
      * If user has any missed notifications, these are added to Multicast's answer.

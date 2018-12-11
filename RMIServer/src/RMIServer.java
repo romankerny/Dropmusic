@@ -336,6 +336,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
+    public boolean loginDropbox() throws RemoteException {
+        return false;
+    }
+
     /**
      * Request  -> flag | id; type | privilege; user1 | username; user2; username;
      * Response -> flag | id; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
