@@ -728,7 +728,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @return
      */
 
-    public ArrayList<Music> searchMusic(String keyword) throws RemoteException {
+    public ArrayList<Object> searchMusic(String keyword) throws RemoteException {
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -738,7 +738,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         sendUDPDatagram(msg);
 
-        ArrayList<Music> results = null;
+        ArrayList<Object> results = new ArrayList<>();
 
         while (!exit) {
             String rsp = receiveUDPDatagram(msg);

@@ -55,11 +55,36 @@
             <br />
             <c:forEach items="${albumResults}" var="item">
                 <div>
-                Title: <s:url value="albumSearch.action" method="execute" var="urlTag">
+                Title: <s:url value="musicSearch.action" method="execute" var="urlTag">
                              <s:param name="inputObject.keyword">${item.title}</s:param>
                         </s:url>
                     <s:a href="%{urlTag}">${item.title}</s:a>
                       <br />
+                </div>
+                <br />
+            </c:forEach>
+        </c:otherwise>
+    </c:choose>
+
+    <h1>Songs</h1>
+
+    <c:choose>
+        <c:when test="${musicResults == null}">
+            A problem occurred during the search!
+        </c:when>
+        <c:when test="${musicResults.isEmpty()}">
+            No results found!
+        </c:when>
+        <c:otherwise>
+            Found ${musicResults.size()} songs!
+            <br />
+            <c:forEach items="${musicResults}" var="item">
+                <div>
+                    Title: <s:url value="musicSearch.action" method="execute" var="urlTag">
+                    <s:param name="inputObject.keyword">${item.title}</s:param>
+                </s:url>
+                    <s:a href="%{urlTag}">${item.title}</s:a>
+                    <br />
                 </div>
                 <br />
             </c:forEach>
