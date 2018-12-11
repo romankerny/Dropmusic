@@ -29,6 +29,8 @@ public class AssociateDropBoxTokenService {
         boolean r = false;
         RMIServerInterface server = null;
 
+        System.out.println("AssociateDropBoxTokenService - execute()");
+
         try
         {
             server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");

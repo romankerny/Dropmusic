@@ -59,6 +59,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     private static final String API_APP_KEY = "wbwulmkt4ykv4ry";
     private static final String API_APP_SECRET = "n1kg0x7177alqbv";
+    private OAuthService service = new ServiceBuilder()
+            .provider(DropBoxApi2.class)
+            .apiKey(API_APP_KEY)
+            .apiSecret(API_APP_SECRET)
+            .callback("http://localhost:8080/associateDropBoxTokenAction") //
+            .build();
 
 
     public RMIServer() throws RemoteException {
@@ -1069,13 +1075,15 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public String associateDropBox(String email) throws RemoteException{
 
         String urlAuth = "";
-
+        /*
         OAuthService service = new ServiceBuilder()
                 .provider(DropBoxApi2.class)
                 .apiKey(API_APP_KEY)
                 .apiSecret(API_APP_SECRET)
                 .callback("http://localhost:8080/associateDropBoxTokenAction") //
                 .build();
+                */
+
 
 
         return service.getAuthorizationUrl(null);
@@ -1085,15 +1093,19 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public boolean setToken(String email, String code) throws RemoteException {
 
         // flag | id; type | token; token | tttt; email | eeee;
+        // flag | id; rsp | y/n;
 
         String API_USER_TOKEN = "";
         boolean r = false;
 
+        //OAuthService service = this.service;
+        /*
         OAuthService service = new ServiceBuilder()
                 .provider(DropBoxApi2.class)
                 .apiKey(API_APP_KEY)
                 .apiSecret(API_APP_SECRET)
                 .build();
+        */
 
         try {
             Verifier verifier = new Verifier(code);

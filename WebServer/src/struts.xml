@@ -108,7 +108,6 @@
 
 
         <!-- ManageAction -->
-
         <action name="addArtist" class="addArtistAction">
             <result name="success">/restricted/success.html</result>
             <result name="failed">/restricted/fail.html</result>

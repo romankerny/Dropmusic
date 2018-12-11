@@ -442,10 +442,42 @@ public class MulticastServer extends Thread {
         sendResponseMulticast(rsp, code);
     }
 
-    public void setToken(String id, String email, String authCode, String code) {
+    public void setToken(String id, String userToken, String email, String code) {
+
+        String rsp = "flag|"+id+";rsp|";
+        String aux = "";
 
 
+        PreparedStatement pstmt;
+        int rs;
 
+        try {
+            pstmt = con.prepareStatement(  "UPDATE user AS u "+
+                                                "SET u.token = ? " +
+                                                "WHERE u.email = ?");
+
+
+            pstmt.setString(1, userToken);
+            pstmt.setString(2, email);
+
+            rs = pstmt.executeUpdate();
+
+            if (rs == 0) {
+                // failed
+                aux = "n;";
+
+            } else if (rs == 1) {
+               // worked
+                aux = "y;";
+            }
+
+        } catch (SQLException e) {
+            aux ="n;";
+        }
+
+        System.out.println("setToken() result : " + aux);
+
+        sendResponseMulticast(rsp+aux, code); // -> RMIServer
 
     }
 
