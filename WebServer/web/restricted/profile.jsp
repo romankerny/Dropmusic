@@ -50,5 +50,11 @@
 </s:form>
 <div id="rsp"></div>
 
+<s:form action="associateDropBoxAction" method="post">
+    <s:text name="Associate with DropBox" />
+    <s:submit />
+</s:form>
+
+
 </body>
 </html>
