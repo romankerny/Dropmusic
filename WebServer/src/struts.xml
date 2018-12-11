@@ -102,6 +102,15 @@
         </action>
 
 
+        <action name="associateDropBoxAction" class="webserver.actions.AssociateDropBoxAction" method="execute">
+            <result name="redirect" type="redirect">${urlOauth}</result>
+        </action>
+
+        <action name="associateDropBoxTokenAction" class="webserver.actions.AssociateDropBoxTokenAction" method="execute">
+            <result name="success">/restricted/profile.jsp</result>
+            <result name="failed">/restricted/error.jsp</result>
+        </action>
+
 
 
         <!-- ManageAction -->

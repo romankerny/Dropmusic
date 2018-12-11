@@ -442,6 +442,13 @@ public class MulticastServer extends Thread {
         sendResponseMulticast(rsp, code);
     }
 
+    public void setToken(String id, String email, String authCode, String code) {
+
+
+
+
+    }
+
     /**
      * Method to login. Checks if email and password match, answering with result|y or result|n if not.
      * If user has any missed notifications, these are added to Multicast's answer.
@@ -849,7 +856,7 @@ public class MulticastServer extends Thread {
             if(usrIsEditor.equals("1")) {
                 // insert new Artist
                 System.out.println(email + " is editor");
-                pstmt = con.prepareStatement("INSERT INTO artist (name, details) VALUES (?,?)");
+                pstmt = con.prepareStatement("INSERT INTO artist (name, details) VALUES (?,?) ");
                 pstmt.setString(1, name);
                 pstmt.setString(2, details);
                 rs = pstmt.executeUpdate();
@@ -1178,6 +1185,9 @@ public class MulticastServer extends Thread {
                 break;
             case "details":
                 getDetails(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (Artist or Album, keyword)
+                break;
+            case "token":
+                setToken(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1]);
                 break;
             case "critic":
                 writeCritic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1],cleanMessage.get(cleanMessage.size()-1)[1]);// (album, critic, rate, email)

@@ -37,6 +37,8 @@ public interface RMIServerInterface extends Remote {
     ArrayList<Object> searchMusic(String keyword) throws RemoteException;
     public ArrayList<String> getEditors(String artistName)  throws RemoteException;
 
+    public String associateDropBox(String email) throws RemoteException;
+    public boolean setToken(String email, String code) throws RemoteException;
 
     // 5.
     public String rateAlbum(int stars, String artistName, String albumName, String review, String email) throws RemoteException;

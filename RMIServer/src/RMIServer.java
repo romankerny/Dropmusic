@@ -12,12 +12,20 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import com.github.scribejava.core.builder.ServiceBuilder;
+import com.github.scribejava.core.exceptions.OAuthException;
+import com.github.scribejava.core.model.Token;
+import com.github.scribejava.core.model.Verifier;
+import com.github.scribejava.core.oauth.OAuthService;
 import shared.*;
 import shared.manage.Album;
 import shared.manage.Artist;
 import shared.manage.Music;
+import uc.sd.apis.DropBoxApi2;
 
 import static java.lang.Thread.sleep;
+
+
 
 
 /**
@@ -37,6 +45,8 @@ import static java.lang.Thread.sleep;
  *  unique way.
  *
  */
+
+
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface {
 
     private ConcurrentHashMap<String, RMIClientInterface> clients = new ConcurrentHashMap<String, RMIClientInterface>();
@@ -46,6 +56,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     private static RMIServerInterface rmiServer;
     public static ArrayList<String> multicastHashes = new ArrayList<>();
     public static int globalCounter = 0;
+
+    private static final String API_APP_KEY = "wbwulmkt4ykv4ry";
+    private static final String API_APP_SECRET = "n1kg0x7177alqbv";
 
 
     public RMIServer() throws RemoteException {
@@ -182,7 +195,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @param password
      * @return rsp to Client with result
      */
-
     public String register(String name, String password) {
 
 
@@ -1051,6 +1063,72 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
 
 
+    }
+
+
+    public String associateDropBox(String email) throws RemoteException{
+
+        String urlAuth = "";
+
+        OAuthService service = new ServiceBuilder()
+                .provider(DropBoxApi2.class)
+                .apiKey(API_APP_KEY)
+                .apiSecret(API_APP_SECRET)
+                .callback("http://localhost:8080/associateDropBoxTokenAction") //
+                .build();
+
+
+        return service.getAuthorizationUrl(null);
+
+    }
+
+    public boolean setToken(String email, String code) throws RemoteException {
+
+        // flag | id; type | token; token | tttt; email | eeee;
+
+        String API_USER_TOKEN = "";
+        boolean r = false;
+
+        OAuthService service = new ServiceBuilder()
+                .provider(DropBoxApi2.class)
+                .apiKey(API_APP_KEY)
+                .apiSecret(API_APP_SECRET)
+                .build();
+
+        try {
+            Verifier verifier = new Verifier(code);
+            Token accessToken = service.getAccessToken(null, verifier);
+            API_USER_TOKEN = accessToken.getToken();
+
+
+            String uuid = UUID.randomUUID().toString();
+            String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+            String msg = "flag|"+id+";type|token;token|" + API_USER_TOKEN + ";email|" + email + ";", rspToClient = "";
+            boolean exit = false;
+
+            sendUDPDatagram(msg);
+
+            while (!exit) {
+                String rsp = receiveUDPDatagram(msg);
+                ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+                if (cleanMessage.get(0)[1].equals(id)) {
+                    if(cleanMessage.get(1)[1].equals("y")){
+                        r = true;
+                    } else {
+                        r = false;
+                    }
+                    exit = true;
+                }
+            }
+
+        } catch(OAuthException e) {
+            e.printStackTrace();
+            r = false;
+        }
+
+        return r;
     }
 
 
