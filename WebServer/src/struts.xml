@@ -104,9 +104,7 @@
             <result name="success">/restricted/profile.jsp</result>
             <result name="failed">/restricted/error.jsp</result>
         </action>
-
-
-
+        
         <!-- ManageAction -->
         <action name="addArtist" class="addArtistAction">
             <result name="success">/restricted/success.html</result>
