@@ -95,16 +95,26 @@
             <result name="failed">/restricted/fail.html</result>
         </action>
 
+        <!-- OAuth with DropBox -->
 
+        <!-- used to redirect both association w platform and login -->
         <action name="associateDropBoxAction" class="webserver.actions.AssociateDropBoxAction" method="execute">
+            <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
             <result name="redirect" type="redirect">${urlOauth}</result>
         </action>
+
 
         <action name="associateDropBoxTokenAction" class="webserver.actions.AssociateDropBoxTokenAction" method="execute">
             <result name="success">/restricted/profile.jsp</result>
             <result name="failed">/restricted/error.jsp</result>
         </action>
-        
+
+        <action name="loginDropbox" class="webserver.actions.LoginDropboxAction" method="execute">
+            <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
+            <result name="success">/restricted/dropmusic.jsp</result>
+            <result name="failed">/index.jsp</result>
+        </action>
+
         <!-- ManageAction -->
         <action name="addArtist" class="addArtistAction">
             <result name="success">/restricted/success.html</result>

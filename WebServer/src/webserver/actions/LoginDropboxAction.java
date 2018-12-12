@@ -2,41 +2,49 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
-import webserver.services.AssociateDropBoxTokenService;
+import webserver.services.LoginDropboxService;
 
 import java.util.Map;
 
-public class AssociateDropBoxTokenAction extends ActionSupport implements SessionAware {
+public class LoginDropboxAction extends ActionSupport implements SessionAware {
 
-    private AssociateDropBoxTokenService service = new AssociateDropBoxTokenService();
+    private LoginDropboxService service = new LoginDropboxService();
     private String oauth_token;
     private String code;
     private Map<String, Object> session;
+
 
     @Override
     public String execute() {
         String rsp;
 
-        System.out.println("AssociateDropBoxTokenAction - execute()");
-        System.out.println("Code for OAuth " + code);
+        System.out.println("LoginDropboxAction - execute()");
+        System.out.println("Code " + code);
+        System.out.println("OAuth_token " + oauth_token);
 
-
-        if(getService().setUserToken(session, getCode()))
+        String email = getService().canLogin(getCode());
+        if(!email.equals("null"))
         {
+            // set Session
+            System.out.println("Sucess in LoginDropboxAction()");
+            session.put("email", email);
+            session.put("loggedin", true);
             return "success";
+
         }
         else
         {
+            System.out.println("Failed LoginDropboxAction()");
             return "failed";
         }
 
     }
 
-    public AssociateDropBoxTokenService getService() {
+    public LoginDropboxService getService() {
         return service;
     }
 
-    public void setService(AssociateDropBoxTokenService service) {
+    public void setService(LoginDropboxService service) {
         this.service = service;
     }
 
@@ -54,10 +62,6 @@ public class AssociateDropBoxTokenAction extends ActionSupport implements Sessio
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public Map<String, Object> getSession() {
-        return session;
     }
 
     @Override

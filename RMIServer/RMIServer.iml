@@ -10,5 +10,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="DropMusic" />
+    <orderEntry type="library" name="async-http-client-1.9.31" level="project" />
   </component>
 </module>
