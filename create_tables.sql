@@ -33,6 +33,7 @@ CREATE TABLE user (
 	password varchar(50),
 	editor	 boolean DEFAULT false,
 	token varchar(200) DEFAULT null,
+	email_dropbox varchar(200) DEFAULT null,
 	PRIMARY KEY(email)
 );
 

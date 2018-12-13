@@ -8,21 +8,25 @@ import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.exceptions.OAuthException;
-import com.github.scribejava.core.model.Token;
-import com.github.scribejava.core.model.Verifier;
+import com.github.scribejava.core.model.*;
 import com.github.scribejava.core.oauth.OAuthService;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import shared.*;
 import shared.manage.Album;
 import shared.manage.Artist;
 import shared.manage.Music;
 import uc.sd.apis.DropBoxApi2;
 
+import static java.lang.Thread.activeCount;
 import static java.lang.Thread.sleep;
 
 
@@ -59,6 +63,20 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     private static final String API_APP_KEY = "wbwulmkt4ykv4ry";
     private static final String API_APP_SECRET = "n1kg0x7177alqbv";
+    private OAuthService service = new ServiceBuilder()
+            .provider(DropBoxApi2.class)
+            .apiKey(API_APP_KEY)
+            .apiSecret(API_APP_SECRET)
+            .callback("http://localhost:8080/associateDropBoxTokenAction") //
+            .build();
+
+
+    private OAuthService serviceBeforeLogin = new ServiceBuilder()
+            .provider(DropBoxApi2.class)
+            .apiKey(API_APP_KEY)
+            .apiSecret(API_APP_SECRET)
+            .callback("http://localhost:8080/loginDropbox") //
+            .build();
 
 
     public RMIServer() throws RemoteException {
@@ -1070,45 +1088,111 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
 
-    public String associateDropBox(String email) throws RemoteException{
+    public String associateDropBox() throws RemoteException{
 
         String urlAuth = "";
 
-        OAuthService service = new ServiceBuilder()
-                .provider(DropBoxApi2.class)
-                .apiKey(API_APP_KEY)
-                .apiSecret(API_APP_SECRET)
-                .callback("http://localhost:8080/associateDropBoxTokenAction") //
-                .build();
-
-
         return service.getAuthorizationUrl(null);
+    }
 
+    public String associateDropBoxBeforeLogin() throws RemoteException{
+
+        String urlAuth = "";
+
+        return serviceBeforeLogin.getAuthorizationUrl(null);
+    }
+
+    public String canLogin(String code) throws RemoteException {
+        // flag | id; type | logindropbox; emaildropbox | eeee;
+        // flag | id; type | logindropbox; rsp | y/n; email | eeee;
+
+        String dropMusicEmail = "";
+
+        // Get account_id and access_token from API
+        OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/oauth2/token", serviceBeforeLogin);
+        request.addParameter("code", code);
+        request.addParameter("grant_type","authorization_code");
+        request.addParameter("client_id","wbwulmkt4ykv4ry");
+        request.addParameter("client_secret","n1kg0x7177alqbv");
+        request.addParameter("redirect_uri", "http://localhost:8080/loginDropbox");
+        Response response = request.send();
+        JSONObject rj = (JSONObject) JSONValue.parse(response.getBody());
+        String account_id = rj.get("account_id").toString();
+        String acessToken = rj.get("access_token").toString();
+
+
+        // Get email from user's Dropbox acc
+        request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/2/users/get_account", serviceBeforeLogin);
+        request.addHeader("Authorization", "Bearer " + acessToken);
+        request.addHeader("Content-Type",  "application/json");
+        request.addPayload("{\"account_id\": \"" + account_id + "\"}");
+        response = request.send();
+        rj = (JSONObject) JSONValue.parse(response.getBody());
+        String emailDropbox = rj.get("email").toString();
+
+
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|logindropbox;emaildropbox|"+emailDropbox+";";
+        boolean exit = false;
+
+        sendUDPDatagram(msg);
+
+        while (!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals(id)) {
+                if(cleanMessage.get(2)[1].equals("y")){
+                    dropMusicEmail = cleanMessage.get(3)[1]; // get email from multicast to identify user
+                } else {
+                    dropMusicEmail = "null";
+                }
+                exit = true;
+            }
+        }
+
+        return dropMusicEmail;
     }
 
     public boolean setToken(String email, String code) throws RemoteException {
 
-        // flag | id; type | token; token | tttt; email | eeee;
+        // flag | id; type | token; token | tttt; email | eeee; emaildropbox | eeee;
+        // flag | id; rsp | y/n;
 
-        String API_USER_TOKEN = "";
         boolean r = false;
 
-        OAuthService service = new ServiceBuilder()
-                .provider(DropBoxApi2.class)
-                .apiKey(API_APP_KEY)
-                .apiSecret(API_APP_SECRET)
-                .build();
 
         try {
-            Verifier verifier = new Verifier(code);
-            Token accessToken = service.getAccessToken(null, verifier);
-            API_USER_TOKEN = accessToken.getToken();
+
+
+            // get account email and token
+            OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/oauth2/token", service);
+            request.addParameter("code", code);
+            request.addParameter("grant_type","authorization_code");
+            request.addParameter("client_id","wbwulmkt4ykv4ry");
+            request.addParameter("client_secret","n1kg0x7177alqbv");
+            request.addParameter("redirect_uri", "http://localhost:8080/associateDropBoxTokenAction");
+            Response response = request.send();
+            JSONObject rj = (JSONObject) JSONValue.parse(response.getBody());
+            String account_id = rj.get("account_id").toString();
+            String acessToken = rj.get("access_token").toString();
+
+            // Get email from user's Dropbox acc
+            request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/2/users/get_account", service);
+            request.addHeader("Authorization", "Bearer " + acessToken);
+            request.addHeader("Content-Type",  "application/json");
+            request.addPayload("{\"account_id\": \"" + account_id + "\"}");
+            response = request.send();
+            rj = (JSONObject) JSONValue.parse(response.getBody());
+            String emailDropbox = rj.get("email").toString();
 
 
             String uuid = UUID.randomUUID().toString();
             String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
-            String msg = "flag|"+id+";type|token;token|" + API_USER_TOKEN + ";email|" + email + ";", rspToClient = "";
+            String msg = "flag|"+id+";type|token;token|" + acessToken + ";email|" + email + ";emaildropbox|"+emailDropbox+";", rspToClient = "";
             boolean exit = false;
 
             sendUDPDatagram(msg);

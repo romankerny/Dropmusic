@@ -16,6 +16,11 @@ public class AssociateDropBoxService {
     }
     public String associateDropBox(Map<String, Object> session)  {
 
+        // This service is meant to generate an URL to Dropbox auth
+        // is used by 2 actions
+        // AssociateDropBoxAction - loggedin == true
+        // LoginDropBoxAction - loggedin == false
+
         boolean r = false;
         RMIServerInterface server = null;
 
@@ -28,7 +33,12 @@ public class AssociateDropBoxService {
         }
 
         try {
-            return server.associateDropBox((String) session.get("email"));
+            System.out.println();
+            if(session.get("loggedin") != null) {
+                return server.associateDropBox();
+            } else {
+                return server.associateDropBoxBeforeLogin();
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }

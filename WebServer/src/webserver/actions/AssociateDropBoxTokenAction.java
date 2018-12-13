@@ -17,6 +17,10 @@ public class AssociateDropBoxTokenAction extends ActionSupport implements Sessio
     public String execute() {
         String rsp;
 
+        System.out.println("AssociateDropBoxTokenAction - execute()");
+        System.out.println("Code for OAuth " + code);
+
+
         if(getService().setUserToken(session, getCode()))
         {
             return "success";

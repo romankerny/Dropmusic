@@ -1,3 +1,5 @@
+import jdk.nashorn.internal.parser.Token;
+
 import java.io.*;
 import java.net.*;
 import java.sql.*;
@@ -442,12 +444,6 @@ public class MulticastServer extends Thread {
         sendResponseMulticast(rsp, code);
     }
 
-    public void setToken(String id, String email, String authCode, String code) {
-
-
-
-
-    }
 
     public void getToken(String id, String authCode, String code) {
 
@@ -1163,6 +1159,86 @@ public class MulticastServer extends Thread {
         sendResponseMulticast(rsp, code);
     }
 
+    public void setToken(String id, String userToken, String email, String emailDropbox, String code) {
+
+        // flag | id; type | token; token | tttt; email | eeee; emaildropbox | eeee;
+        // flag | id; rsp | y/n;
+
+        String rsp = "flag|"+id+";rsp|";
+        String aux = "";
+
+
+        PreparedStatement pstmt;
+        int rs;
+
+        System.out.println("token"+userToken);
+        System.out.println("emaildp"+emailDropbox);
+
+        try {
+            pstmt = con.prepareStatement(  "UPDATE user AS u "+
+                    "SET u.token = ? , u.email_dropbox = ? " +
+                    "WHERE u.email = ?");
+
+
+            pstmt.setString(1, userToken);
+            pstmt.setString(2, emailDropbox);
+            pstmt.setString(3, email);
+
+            rs = pstmt.executeUpdate();
+
+            if (rs == 0) {
+                // failed
+                aux = "n;";
+
+            } else if (rs == 1) {
+                // worked
+                aux = "y;";
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            aux ="n;";
+        }
+
+
+        sendResponseMulticast(rsp+aux, code); // -> RMIServer
+
+    }
+
+    public void canLogin(String id, String emailDropbox, String code) {
+
+        // flag | id; type | logindropbox; emaildropbox | eeee;
+        // flag | id; type | logindropbox; rsp | y/n; email | eeee;
+
+        PreparedStatement pstmt;
+        ResultSet rs;
+        String email = "null", result = "n;";
+
+
+        try {
+            pstmt = con.prepareStatement("SELECT email FROM user WHERE email_dropbox = ?");
+
+            pstmt.setString(1, emailDropbox);
+            rs = pstmt.executeQuery();
+
+            while(rs.next()) {
+
+                email = rs.getString("email");
+                result = "y;";
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("canLogin() result: " + result);
+
+        String rsp = "flag|"+id+";type|logindropbox;result|"+result+"email|"+email+";";
+        sendResponseMulticast(rsp, code);
+
+
+    }
+
 
     /**
      * Thread that receives a packet, parses it with cleanTokens() and calls the respective function depending on type of packet
@@ -1191,7 +1267,10 @@ public class MulticastServer extends Thread {
                 getDetails(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (Artist or Album, keyword)
                 break;
             case "token":
-                setToken(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1]);
+                setToken(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]);
+                break;
+            case "logindropbox":
+                canLogin(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1]);
                 break;
             case "critic":
                 writeCritic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1],cleanMessage.get(cleanMessage.size()-1)[1]);// (album, critic, rate, email)

@@ -19,7 +19,7 @@ public class AssociateDropBoxAction extends ActionSupport implements SessionAwar
         System.out.println("Executing AssociateDropBoxAction - execute()");
 
         setUrlOauth(getService().associateDropBox(getSession()));
-        System.out.println("vou dar redirect p " + urlOauth);
+        System.out.println("vou dar redirect p/ " + urlOauth);
         return "redirect";
 
     }

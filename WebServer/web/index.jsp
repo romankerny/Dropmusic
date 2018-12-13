@@ -19,7 +19,13 @@
 
 <s:form action="register-direct" method="post">
 <s:submit value="Sign Up"/>
+</s:form><br>
+
+<s:form action="associateDropBoxAction" method="post">
+  <s:submit value="Sign Up w/ Dropbox" />
 </s:form>
+
+
 
 
 </body>
