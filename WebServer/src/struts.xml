@@ -95,6 +95,13 @@
             <result name="failed">/restricted/fail.html</result>
         </action>
 
+
+
+
+
+
+
+
         <!-- OAuth with DropBox -->
 
         <!-- used to redirect both association w platform and login -->
@@ -114,6 +121,21 @@
             <result name="success">/restricted/dropmusic.jsp</result>
             <result name="failed">/index.jsp</result>
         </action>
+
+
+
+
+        <!-- Associate Music Dropbox - DropMusic -->
+
+        <action name="associateMusicAction" class="webserver.actions.AssociateMusicAction" method="execute">
+            <result name="success">/restricted/success.html</result>
+            <result name="failed">/restricted/fail.html</result>
+        </action>
+
+
+
+
+
 
         <!-- ManageAction -->
         <action name="addArtist" class="addArtistAction">

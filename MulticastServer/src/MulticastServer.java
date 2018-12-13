@@ -779,8 +779,10 @@ public class MulticastServer extends Thread {
             } else if(type.equals("mus")) {
 
                 pstmtMus = con.prepareStatement("select m.track, m.title, m.lyrics" +
-                        "                from music m" +
-                        "                where m.title = ?;");
+                                     "                from music m" +
+                                     "                where m.title = ?;");
+                
+
                 pstmtMus.setString(1, keyword);
                 rsMus = pstmtMus.executeQuery();
 
@@ -1232,7 +1234,40 @@ public class MulticastServer extends Thread {
         String rsp = "flag|"+id+";type|logindropbox;result|"+result+"email|"+email+";";
         sendResponseMulticast(rsp, code);
 
+    }
 
+    public void getToken(String id, String email, String code) {
+
+        // flag | id; type | getToken; email | eeee;
+        // flag | id; type | getToken; result | y/n; token | ttttt;
+
+        // gets token from db and sends it to RMI Server
+
+        PreparedStatement pstmt;
+        ResultSet rs;
+        String token = "null", result = "n;";
+
+
+        try {
+            pstmt = con.prepareStatement("SELECT token FROM user WHERE email = ?");
+
+            pstmt.setString(1, email);
+            rs = pstmt.executeQuery();
+
+            while(rs.next()) {
+
+                token = rs.getString("token");
+                result = "y;";
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("getToken() result: " + result + " token: " + token);
+
+        String rsp = "flag|"+id+";type|getToken;result|"+result+"token|"+token+";";
+        sendResponseMulticast(rsp, code);
     }
 
 
@@ -1264,6 +1299,9 @@ public class MulticastServer extends Thread {
                 break;
             case "token":
                 setToken(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]);
+                break;
+            case "getToken":
+                getToken(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1]);
                 break;
             case "logindropbox":
                 canLogin(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1]);

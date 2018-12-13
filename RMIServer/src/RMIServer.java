@@ -1215,6 +1215,66 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return r;
     }
 
+    public String getTokenFromMulticast(String email) {
+
+        // flag | id; type | getToken; email | eeee;
+        // flag | id; type | getToken; result | y/n; token | ttttt;
+
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|getToken;email|"+email+";";
+        boolean exit = false;
+        String token = "";
+
+        sendUDPDatagram(msg);
+
+        while (!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals(id)) {
+                if(cleanMessage.get(2)[1].equals("y")){
+                    token = cleanMessage.get(3)[1]; // get token
+                } else {
+                    token = "null";
+                }
+                exit = true;
+            }
+        }
+
+        return token;
+    }
+
+    public boolean associateMusic(String email, String artist, String album, String musicTitle, String fileName) throws RemoteException {
+
+
+
+        // get acess Token of email from multicast
+        String userToken = getTokenFromMulticast(email);
+
+        JSONObject j = new JSONObject();
+        j.put("path","/DropMusic/" + fileName);
+
+
+        // get link in DropBox to fileName
+        // /create_shared_link_with_settings
+        OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings", service);
+        request.addHeader("Authorization", "Bearer " + userToken);
+        request.addHeader("Content-Type",  "application/json");
+        request.addPayload(j.toJSONString());
+        Response response = request.send();
+
+        JSONObject rj = (JSONObject) JSONValue.parse(response.getBody());
+        String url = rj.get("url").toString();
+
+        System.out.println("URL: " + url);
+
+
+        return true;
+
+    }
+
 
 
     public static void main(String args[]) throws NotBoundException, AlreadyBoundException, IOException {
