@@ -55,7 +55,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     private ConcurrentHashMap<String, RMIClientInterface> clients = new ConcurrentHashMap<String, RMIClientInterface>();
     private static final long serialVersionUID = 1L;
-    private static String MULTICAST_ADDRESS = "224.3.2.2";
+    private static String MULTICAST_ADDRESS = "224.3.2.1";
     private static int SEND_PORT = 5213, RCV_PORT = 5214;
     private static RMIServerInterface rmiServer;
     public static ArrayList<String> multicastHashes = new ArrayList<>();
@@ -352,6 +352,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             }
         }
         return rspToClient;
+    }
+
+    public boolean loginDropbox() throws RemoteException {
+        return false;
     }
 
     /**
@@ -768,7 +772,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                 for (int i = 0; i < nMusics; i++) {
 
-                    Music mus = new Music(cleanMessage.get(6 + i)[1], cleanMessage.get(7 + i)[1], cleanMessage.get(8 + i)[1]);
+                    Music mus = new Music(cleanMessage.get(6 + i)[1], cleanMessage.get(7 + i)[1], cleanMessage.get(8 + i)[1], cleanMessage.get(9+i)[1], cleanMessage.get(10+i)[1]);
                     System.out.println(mus);
                     results.add(mus);
 
