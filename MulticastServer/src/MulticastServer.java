@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  */
 
 public class MulticastServer extends Thread {
-    private static String MULTICAST_ADDRESS = "224.3.2.2";
+    private static String MULTICAST_ADDRESS = "224.3.2.1";
     private static int RECV_PORT = 5213;
     private static MulticastSocket socket = null;
 
@@ -782,8 +782,8 @@ public class MulticastServer extends Thread {
 
             } else if(type.equals("mus")) {
 
-                pstmtMus = con.prepareStatement("select m.track, m.title, m.lyrics" +
-                        "                from music m" +
+                pstmtMus = con.prepareStatement("select m.track, m.title, m.lyrics, a.title, a.artist_name" +
+                        "                from music m join album a on m.album_id = a.id" +
                         "                where m.title = ?;");
                 pstmtMus.setString(1, keyword);
                 rsMus = pstmtMus.executeQuery();
