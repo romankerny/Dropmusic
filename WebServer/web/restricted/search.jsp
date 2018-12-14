@@ -82,7 +82,6 @@
                 <div>
                     Title: <s:url value="musicSearch.action" method="execute" var="urlTag">
                     <s:param name="inputObject.keyword">${item.title}</s:param>
-                    <s:param name="inputObject.email"><s:property value="%{#session.email}" /></s:param>
                 </s:url>
                     <s:a href="%{urlTag}">${item.title}</s:a>
                     <br />

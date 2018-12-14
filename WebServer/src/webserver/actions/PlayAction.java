@@ -4,20 +4,23 @@ import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
 import shared.manage.Music;
-import webserver.services.PlayService;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Map;
 
 public class PlayAction extends ActionSupport implements SessionAware {
     private Map<String, Object> session;
-    private PlayService service = new PlayService();
 
     private Music inputModel;
 
     private String url;
+    private InputStream stream;
 
     @Override public String execute() {
-        setUrl(getService().getURL(inputModel, (String) session.get("email")));
+        setUrl(getInputModel().getURL(inputModel, (String) session.get("email")));
+        String rawHTML = "<audio controls src="+url+"></audio>";
+        setStream(new ByteArrayInputStream(rawHTML.getBytes()));
         return Action.SUCCESS;
     }
 
@@ -38,11 +41,19 @@ public class PlayAction extends ActionSupport implements SessionAware {
         return session;
     }
 
-    public PlayService getService() {
-        return service;
+    public Music getInputModel() {
+        return inputModel;
     }
 
-    public void setService(PlayService service) {
-        this.service = service;
+    public void setInputModel(Music inputModel) {
+        this.inputModel = inputModel;
+    }
+
+    public InputStream getStream() {
+        return stream;
+    }
+
+    public void setStream(InputStream stream) {
+        this.stream = stream;
     }
 }

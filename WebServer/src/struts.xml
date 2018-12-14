@@ -137,7 +137,10 @@
 
 
         <action name="playAction" class="webserver.actions.PlayAction">
-            <result name="success">dropmusic.action</result>
+            <result name="success" type="stream">
+                <param name="contentType">text/html</param>
+                <param name="inputName">stream</param>
+            </result>
         </action>
 
 

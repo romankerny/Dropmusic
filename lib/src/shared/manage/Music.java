@@ -1,6 +1,12 @@
 package shared.manage;
 
+import shared.RMIServerInterface;
+
 import java.io.Serializable;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 
 public class Music implements Serializable, ManageModel {
@@ -12,9 +18,6 @@ public class Music implements Serializable, ManageModel {
     private String albumTitle;
     private String artistName;
 
-    // private ConcurrentHashMap<String, MusicFile> musicFiles;
-
-
 
     public Music(String track, String title, String lyrics, String albumTitle, String artistName) {
         setTrack(track);
@@ -22,7 +25,6 @@ public class Music implements Serializable, ManageModel {
         setLyrics(lyrics);
         setAlbumTitle(albumTitle);
         setArtistName(artistName);
-       //  this.musicFiles = new ConcurrentHashMap<String, MusicFile>();
     }
 
     public Music()
@@ -35,6 +37,18 @@ public class Music implements Serializable, ManageModel {
         this.title = title;
         this.lyrics = lyrics;
         //  this.musicFiles = new ConcurrentHashMap<String, MusicFile>();
+    }
+
+    public String getURL(Music inputModel, String email) {
+        try {
+            RMIServerInterface server = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmiserver");
+            return server.getMusicURL(inputModel.getArtistName(), inputModel.getAlbumTitle(), inputModel.getTitle(), email);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        }
+        return "fail";
     }
 
     @Override
