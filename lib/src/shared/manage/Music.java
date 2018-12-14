@@ -75,14 +75,12 @@ public class Music implements Serializable, ManageModel {
         this.title = title;
     }
 
-    public String getFileName() {
-        return fileName;
-    }
+
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-    */
+
 
     public String getLyrics() {
         return lyrics;
