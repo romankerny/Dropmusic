@@ -709,11 +709,11 @@ public class MulticastServer extends Thread {
                     message = aux;
                     */
 
-                    message = "item_count|"+itemCount+";" + artistInfo;
+                    message = "item_count|"+itemCount+";" + artistInfo + ";";
 
                 } else {
                     result = "n";
-                    message =  "item_count|"+itemCount+";" + "message|Couldn't find an artist named `"+keyword+"`;";
+                    message = "item_count|0;";
                 }
 
 
@@ -770,7 +770,7 @@ public class MulticastServer extends Thread {
                             message += "item_count|"+nReviews+";"+reviews;
                         }
                     } while (rsAlbInfo.next());
-                     message = "item_count|"+nAlbums+";"+message;
+                     message = "item_count|"+nAlbums+";"+message+";";
                 } else {
                     // No album found
                     message = "item_count|0;";
@@ -802,13 +802,13 @@ public class MulticastServer extends Thread {
                     message = "item_count|"+itemCount+";" + musicInfo;
                 } else {
                     result = "n";
-                    message = "Couldn't find song`"+keyword+"`";
+                    message = "item_count|0;";
                 }
             }
         } catch (SQLException e) {
             result = "n";
             e.printStackTrace();
-            message =  "item_count|"+itemCount+";" + "message|Couldn't find an music named `"+keyword+"`;";
+            message = "item_count|0;";
         }
 
         rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";"+message;

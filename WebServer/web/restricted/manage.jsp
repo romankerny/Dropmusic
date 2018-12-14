@@ -88,7 +88,7 @@
     <s:form method="GET">
         <s:text name="Name:"    /><s:textfield     id="AartistName" /><br>
         <s:text name="Details:" /><s:textfield     id="AartistDetails" /><br>
-        <button type="button" id="searchArtistButton">Search</button>
+        <button type="button" id="searchArtistButton">Add</button>
     </s:form>
     <div id="rspArt"></div>
 </div>
@@ -104,7 +104,7 @@
     <s:text name="Genre:" />        <s:textfield id="AAgenre" /><br>
     <s:text name="Launch Date:" />  <s:textfield id="AAlaunchDate" /><br>
     <s:text name="Editor Label:" /> <s:textfield id="AAeditorLabel" /><br>
-    <button type="button" id="searchAlbumButton">Search</button>
+    <button type="button" id="searchAlbumButton">Add</button>
     <div id="rspAlb"></div>
 </s:form>
 </div>
@@ -119,7 +119,7 @@
     <s:text name="Track:" />       <s:textfield id="Mtrack" /><br>
     <s:text name="Title:" />       <s:textfield id="Mtitle" /><br>
     <s:text name="Lyrics:" />      <s:textfield id="Mlyrics" /><br>
-    <button type="button" id="searchMusicButton">Search</button>
+    <button type="button" id="searchMusicButton">Add</button>
     <div id="rspMus"></div>
 </s:form>
 </div>
