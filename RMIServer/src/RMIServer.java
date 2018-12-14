@@ -755,7 +755,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
-        String msg = "flag|"+id+";type|details;param|mus;keyword|" + keyword + ";";
+        String msg = "flag|"+id+";type|details;param|mus;keyword|" + keyword + ";";;
         boolean exit = false;
 
         sendUDPDatagram(msg);
@@ -783,7 +783,31 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return results;
         }
 
-        public ArrayList<String> getEditors(String artistName)  throws RemoteException  {
+    public String getMusicURL(String artist, String album, String title, String email) throws RemoteException {
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+        String msg = "flag|"+id+";type|musURL;artist|" + artist + ";album|"+album+";title|"+title+";email|"+email+";";
+
+        sendUDPDatagram(msg);
+        boolean exit = false;
+        String url = "";
+
+        while (!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals(id)) {
+                if (cleanMessage.get(2)[1].equals("y")) {
+                    url = cleanMessage.get(3)[1];
+                }
+                exit = true;
+            }
+        }
+        return url;
+    }
+
+
+    public ArrayList<String> getEditors(String artistName)  throws RemoteException  {
 
             // Request  -> flag | id; type | getEditors; name | nnnn;
             // Rsponse  -> flag | id; type | getEditors; notif_count | n; Aname | nnn; Aname | nnn; [etc...];

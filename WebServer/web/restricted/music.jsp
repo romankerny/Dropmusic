@@ -79,6 +79,9 @@
                 <b>Title:</b> <c:out value="${item.track}" /> <br/>
                 <b>Lyrics:</b> <c:out value="${item.lyrics}" /> <br/>
             </div>
+
+            <s:submit type="button" action="playAction" ></s:submit>
+            <br />
             <br/>
 
             <p hidden id="artistName" >${item.artistName}</p>

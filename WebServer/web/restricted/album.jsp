@@ -75,9 +75,6 @@
                         </c:forEach>
                     </c:otherwise>
                 </c:choose>
-
-            </div>
-            <div>
                 <s:set var="artistName">${item.artist}</s:set>
                 <s:set var="albumName">${item.title}</s:set>
                 <h2>

@@ -4,7 +4,6 @@ public class SearchModel {
     private String type;
     private String keyword;
 
-
     public SearchModel() {
         setType(null);
         setKeyword(null);
