@@ -30,29 +30,6 @@
                 return false;
             });
 
-            $("#associateDropboxButton").click(function() {
-
-                $.ajax({
-                    type: 'POST',
-                    url:'associateMusicAction.action?' +
-                        '&albumTitle='+ document.getElementById('albumTitle').value +
-                        '&artistName=' + document.getElementById('aristName').value +
-                        '&musicTitle='+ document.getElementById('musicTitle').value +
-                        '&fileName='+ document.getElementById('musicFileName').value
-                    ,
-                    dataType: 'text',
-                    success: function(data){
-                        document.getElementById('rsp').innerHTML = data;
-                    }, error: function(data) {
-                        document.getElementById('rsp').innerHTML = data;
-                    }
-                });
-                return false;
-            });
-
-
-
-
         })
 
 
@@ -81,18 +58,8 @@
     <s:submit />
 </s:form>
 
-<hr>
 
-<h1>Associate Music : Dropbox - DropMusic</h1>
-<s:form action="associateMusicAction" method="get">
-    <s:text name="Music name:" /> <s:textfield id="musicTitle" /> <br>
-    <s:text name="Album:" /> <s:textfield id="albumTitle" /> <br>
-    <s:text name="Artist:" /> <s:textfield id="artistName" /> <br>
-    <s:text name="Music file name: "/> <s:textfield id="musicFileName"/> <br>
-    <button type="button" id="associateDropboxButton">Associate</button>
-</s:form>
 
-<hr>
 
 </body>
 </html>

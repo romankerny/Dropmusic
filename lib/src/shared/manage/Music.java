@@ -11,6 +11,7 @@ public class Music implements Serializable, ManageModel {
     private String lyrics;
     private String albumTitle;
     private String artistName;
+    private String fileName;
 
     // private ConcurrentHashMap<String, MusicFile> musicFiles;
 
@@ -74,15 +75,13 @@ public class Music implements Serializable, ManageModel {
         this.title = title;
     }
 
-    /*
-    public ConcurrentHashMap<String, MusicFile> getMusicFiles() {
-        return musicFiles;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setMusicFiles(ConcurrentHashMap<String, MusicFile> musicFiles) {
-        this.musicFiles = musicFiles;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
-    */
 
     public String getLyrics() {
         return lyrics;
@@ -93,47 +92,5 @@ public class Music implements Serializable, ManageModel {
     }
 }
 
-class MusicFile implements Serializable {
 
-    private String filename;
-    private byte[] rawData = null;
-    private ArrayList<String> emails;
-
-    MusicFile(String filename, byte[] rawData) {
-        this.filename = filename;
-        this.rawData = rawData;
-        this.emails = new ArrayList<String>();
-    }
-
-    public void shareWith(String email) {
-        emails.add(email);
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
-    public byte[] getRawData() {
-        return rawData;
-    }
-
-    public void setRawData(byte[] rawData) {
-        this.rawData = rawData;
-    }
-
-    public ArrayList<String> getEmails() {
-        return emails;
-    }
-
-    public void setEmails(ArrayList<String> emails) {
-        this.emails = emails;
-    }
-
-
-
-}
 

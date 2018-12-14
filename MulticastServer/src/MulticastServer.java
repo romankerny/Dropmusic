@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  */
 
 public class MulticastServer extends Thread {
-    private static String MULTICAST_ADDRESS = "224.3.2.1";
+    private static String MULTICAST_ADDRESS = "224.3.2.2";
     private static int RECV_PORT = 5213;
     private static MulticastSocket socket = null;
 
@@ -779,8 +779,8 @@ public class MulticastServer extends Thread {
             } else if(type.equals("mus")) {
 
                 pstmtMus = con.prepareStatement("select m.track, m.title, m.lyrics, a.title, a.artist_name" +
-                        "                from music m join album a on m.album_id = a.id" +
-                        "                where m.title = ?;");
+                                        "                from music m join album a on m.album_id = a.id" +
+                                        "                where m.title = ?;");
                 pstmtMus.setString(1, keyword);
                 rsMus = pstmtMus.executeQuery();
 
@@ -1269,6 +1269,58 @@ public class MulticastServer extends Thread {
     }
 
 
+    public void associateMusic(String id, String email, String artist, String album, String musicTitle, String url, String code) {
+
+        PreparedStatement pstmt;
+        int rs;
+        String result = "n;";
+
+        try {
+
+
+            pstmt = con.prepareStatement(" INSERT INTO upload (musicfilename, music_id, user_email) " +
+                    "                           VALUES (?,(select m.id from music m join album a on m.album_id = a.id " +
+                    "                                       WHERE m.title = ? AND a.title = ? AND a.artist_name = ?),?)");
+
+
+            pstmt.setString(1, url);
+            pstmt.setString(2, musicTitle);
+            pstmt.setString(3, album);
+            pstmt.setString(4, artist);
+            pstmt.setString(5, email);
+            rs = pstmt.executeUpdate();
+
+            if(rs > 0) {
+                result = "y;";
+                pstmt = con.prepareStatement("INSERT INTO allowed (upload_music_id, allowed_email, user_email)" +
+                                                    "VALUES ((select m.id from music m join album a on m.album_id = a.id" +
+                        "                            WHERE m.title = ? AND a.title = ? AND a.artist_name = ?), ?,?)");
+
+                pstmt.setString(1, musicTitle);
+                pstmt.setString(2, album);
+                pstmt.setString(3, artist);
+                pstmt.setString(4, email);
+                pstmt.setString(5, email);
+
+                rs = pstmt.executeUpdate();
+
+                if(rs > 0) {
+                    System.out.println("adding to allowed owner");
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            result = "n;";
+
+        }
+
+        String rsp = "flag|"+id+";type|associate;rsp|" + result;
+        sendResponseMulticast(rsp, code);
+
+    }
+
+
     /**
      * Thread that receives a packet, parses it with cleanTokens() and calls the respective function depending on type of packet
      * @see #cleanTokens(String)
@@ -1297,6 +1349,9 @@ public class MulticastServer extends Thread {
                 break;
             case "token":
                 setToken(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]);
+                break;
+            case "associate":
+                associateMusic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(7)[1]);
                 break;
             case "getToken":
                 getToken(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1]);

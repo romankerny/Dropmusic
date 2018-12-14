@@ -55,7 +55,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     private ConcurrentHashMap<String, RMIClientInterface> clients = new ConcurrentHashMap<String, RMIClientInterface>();
     private static final long serialVersionUID = 1L;
-    private static String MULTICAST_ADDRESS = "224.3.2.1";
+    private static String MULTICAST_ADDRESS = "224.3.2.2";
     private static int SEND_PORT = 5213, RCV_PORT = 5214;
     private static RMIServerInterface rmiServer;
     public static ArrayList<String> multicastHashes = new ArrayList<>();
@@ -1163,9 +1163,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         boolean r = false;
 
-
         try {
-
 
             // get account email and token
             OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/oauth2/token", service);
@@ -1250,10 +1248,22 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return token;
     }
 
+    public boolean shareMusic(String emailToShare, String artist, String album, String musicTitle, String email) {
+
+        // get url from music
+
+
+
+
+    }
+
     public boolean associateMusic(String email, String artist, String album, String musicTitle, String fileName) throws RemoteException {
 
+        // flag | id; type | associate; email | eeee; artist | aaaa; album | aaaa; music | tttt; url | uuuu;
+        // flag | id; type | associate; rsp | y/n
 
-
+        boolean r = false, exit = false;
+        String msg = "";
         // get acess Token of email from multicast
         String userToken = getTokenFromMulticast(email);
 
@@ -1270,13 +1280,36 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         Response response = request.send();
 
         JSONObject rj = (JSONObject) JSONValue.parse(response.getBody());
-        String url = rj.get("url").toString();
+        System.out.println(response.getBody());
 
-        System.out.println("URL: " + url);
+        try {
+            String uuid = UUID.randomUUID().toString();
+            String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
+            String url = rj.get("url").toString();
+            url = url.replace("dl=0","raw=1");
+            msg = "flag|"+id+";type|associate;email|"+email+";artist|"+artist+";album|"+album+";music|"+musicTitle+";url|"+url+";";
+            sendUDPDatagram(msg);
 
-        return true;
+            while (!exit) {
+                String rsp = receiveUDPDatagram(msg);
+                ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
+                if (cleanMessage.get(0)[1].equals(id)) {
+                    if(cleanMessage.get(2)[1].equals("y")){
+                        r = true;
+                    } else {
+                        r = false;
+                    }
+                    exit = true;
+                }
+            }
+
+        } catch(NullPointerException n) {
+            r = false;
+        }
+
+        return r;
     }
 
 
