@@ -1457,9 +1457,6 @@ public class MulticastServer extends Thread {
             case "getEditors":
                 getEditors(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1]);
                 break;
-            case "musURL":
-                getURL(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(cleanMessage.size() - 1)[1]);
-                break;
             case "requestTCPConnection":
                 String operation = cleanMessage.get(2)[1];
                 if (operation.equals("upload")) {
