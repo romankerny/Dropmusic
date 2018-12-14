@@ -4,6 +4,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
 import webserver.services.ShareMusicDropboxService;
 
+import java.rmi.RemoteException;
 import java.util.Map;
 
 public class ShareMusicDropboxAction extends ActionSupport implements SessionAware {
@@ -15,23 +16,29 @@ public class ShareMusicDropboxAction extends ActionSupport implements SessionAwa
     private Map<String, Object> session;
     ShareMusicDropboxService service = new ShareMusicDropboxService();
 
-
-
     @Override
     public String execute()  {
 
         System.out.println("ShareMusicDropboxAction - execute()");
+        String rsp = "failed";
 
-        if(getService().shareMusic(email, artistName, albumTitle, musicTitle, (String) session.get("email"))) {
-            return "success";
+        try {
+
+            if(getService().shareMusic(email, artistName, albumTitle, musicTitle, (String) session.get("email"))) {
+                rsp = "success";
+            }
+            else
+            {
+                rsp = "failed";
+            }
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
-        else
-        {
-            return "failed";
-        }
+
+        return rsp;
 
     }
-
 
     public String getEmail() {
         return email;

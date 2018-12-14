@@ -79,6 +79,11 @@
             <result name="login">/index.jsp</result>
         </action>
 
+
+        <action name="logout" class="webserver.actions.LogoutAction" method="execute">
+            <result name="success">/index.jsp</result>
+        </action>
+
         <action name="loginDropboxAction" class="webserver.actions.LoginDropboxAction" method="execute">
             <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
             <result name="success">/restricted/dropmusic.jsp</result>
@@ -135,12 +140,13 @@
             <result name="failed">/restricted/fail.html</result>
         </action>
 
-        <!-- Share Music Dropbox - DropMusic -->
+        <!-- Share Music Dropbox - DropMusic     -->
 
         <action name="shareMusicDropbox" class="webserver.actions.ShareMusicDropboxAction" method="execute">
             <result name="success">/restricted/success.html</result>
             <result name="failed">/restricted/fail.html</result>
         </action>
+
 
 
         <action name="playAction" class="webserver.actions.PlayAction">

@@ -1178,7 +1178,7 @@ public class MulticastServer extends Thread {
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                result = "y";
+                result = "y;";
                 url = rs.getString("musicfilename");
 
             } else {
@@ -1270,6 +1270,35 @@ public class MulticastServer extends Thread {
 
         String rsp = "flag|"+id+";type|logindropbox;result|"+result+"email|"+email+";";
         sendResponseMulticast(rsp, code);
+
+    }
+
+    public void getDropMusicEmail(String id, String dropboxEmail, String code) {
+
+        PreparedStatement pstmt;
+        ResultSet rs;
+        String email = "null", result = "n;";
+
+
+        try {
+            pstmt = con.prepareStatement("SELECT email FROM user WHERE email_dropbox = ?");
+
+            pstmt.setString(1, dropboxEmail);
+            rs = pstmt.executeQuery();
+
+            while(rs.next()) {
+
+                email = rs.getString("email");
+                result = "y;";
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        String rsp = "flag|"+id+";type|getEmail;result|"+result+"email|"+email+";";
+        sendResponseMulticast(rsp, code);
+
 
     }
 
@@ -1410,8 +1439,14 @@ public class MulticastServer extends Thread {
             case "share":
                 share(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(cleanMessage.size() - 1)[1]); // (title, shareTo, uploader)
                 break;
+            case "getEmail":
+                getDropMusicEmail(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1]);
+                break;
             case "addart":
                 addArtist(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1] ,cleanMessage.get(cleanMessage.size()-1)[1]);
+                break;
+            case "musURL":
+                getURL(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1]);
                 break;
             case "addalb":
                 addAlbum(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1], cleanMessage.get(6)[1], cleanMessage.get(7)[1], cleanMessage.get(8)[1], cleanMessage.get(9)[1]);

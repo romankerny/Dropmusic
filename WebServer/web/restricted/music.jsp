@@ -38,7 +38,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url:'shareMusicAction.action?' +
+                    url:'shareMusicDropbox.action?' +
                         '&email='+ document.getElementById('email').value +
                         '&albumTitle='+ document.getElementById('albumName').innerText +
                         '&artistName=' + document.getElementById('artistName').innerText +

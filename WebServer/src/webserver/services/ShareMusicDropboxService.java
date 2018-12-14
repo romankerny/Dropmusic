@@ -11,7 +11,7 @@ public class ShareMusicDropboxService {
 
     public boolean shareMusic(String emailToShare, String artist, String album, String title, String email) throws RemoteException {
 
-        boolean r;
+        boolean r = false;
         RMIServerInterface server = null;
         String rsp;
 
@@ -28,13 +28,14 @@ public class ShareMusicDropboxService {
                 r = false;
             }
         }
-        catch(NotBoundException |RemoteException e) {
+        catch(NotBoundException | RemoteException e) {
             e.printStackTrace();
         }
 
 
         return r;
     }
+
 
 
 }
