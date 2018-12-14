@@ -12,16 +12,13 @@ public class ReviewAction extends ActionSupport {
     private Review reviewModel;
     private ReviewService reviewService = new ReviewService();
 
-    private boolean result;
+    private double result;
 
     @Override
     public String execute() {
         result = reviewService.addReview(reviewModel);
-
-        if (result)
-            return Action.SUCCESS;
-        else
-            return Action.ERROR;
+        System.out.println(result);
+        return Action.SUCCESS;
     }
 
     public Review getReviewModel() {
@@ -38,5 +35,13 @@ public class ReviewAction extends ActionSupport {
 
     public void setReviewService(ReviewService reviewService) {
         this.reviewService = reviewService;
+    }
+
+    public double getResult() {
+        return result;
+    }
+
+    public void setResult(double result) {
+        this.result = result;
     }
 }

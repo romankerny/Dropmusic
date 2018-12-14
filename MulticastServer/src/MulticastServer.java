@@ -590,9 +590,26 @@ public class MulticastServer extends Thread {
             pstmt.setInt(7, Integer.parseInt(rate));
 
             rs = pstmt.executeUpdate();
+            if (rs >= 1) {
+                System.out.println("Gonna run query");
+                double avg = 0.0;
+                ResultSet rsAvg;
+                pstmt = con.prepareStatement("select avg(rating) " +
+                        "from review join album a on review.album_id = a.id " +
+                        "where a.artist_name = ? and a.title = ?;");
 
-            if (rs == 1)
-                rsp = "flag|"+id+";type|critic;result|y;album|" + albumName + ";critic|" + critic +";rate|" + rate + ";";
+                pstmt.setString(1, artistName);
+                pstmt.setString(2, albumName);
+                rsAvg = pstmt.executeQuery();
+
+                if (rsAvg.next()) {
+                    System.out.println("Found stuff");
+                    avg = rsAvg.getDouble(1);
+                }
+
+                rsp = "flag|" + id + ";type|critic;result|y;album|" + albumName + ";critic|" + critic + ";avg|" +avg+ ";";
+
+            }
 
             pstmt.close();
 

@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.*;
+import java.nio.DoubleBuffer;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
@@ -595,7 +596,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @return
      */
 
-    public String rateAlbum(int stars, String artistName, String albumName, String review, String email) {
+    public double rateAlbum(int stars, String artistName, String albumName, String review, String email) {
 
 
         String uuid = UUID.randomUUID().toString();
@@ -604,6 +605,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String msg = "flag|"+id+";type|critic;artist|"+artistName+";album|" + albumName + ";critic|" + review + ";rate|" + stars + ";email|" + email + ";";
         boolean exit = false;
         String rspToClient = "Failed to rate " + albumName;
+        double avgRating = 0.0;
 
         sendUDPDatagram(msg);
 
@@ -614,13 +616,14 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if (cleanMessage.get(0)[1].equals(id)) {
                 if (cleanMessage.get(2)[1].equals("y")) {
                     rspToClient = "Rated "+albumName+" as "+stars+" successfully";
+                    avgRating = Double.parseDouble(cleanMessage.get(5)[1]);
                 } else {
                     rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
                 }
                 exit = true;
             }
         }
-        return rspToClient;
+        return avgRating;
     }
 
     /**

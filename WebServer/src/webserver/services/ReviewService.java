@@ -26,12 +26,12 @@ public class ReviewService {
         }
     }
 
-    public boolean addReview(Review review) {
+    public double addReview(Review review) {
         try {
-            server.rateAlbum(review.getRating(), review.getArtist(), review.getAlbum(), review.getCritic(), review.getEmail());
+            return server.rateAlbum(review.getRating(), review.getArtist(), review.getAlbum(), review.getCritic(), review.getEmail());
         } catch (RemoteException e) {
             e.printStackTrace();
+            return 0.0;
         }
-        return true;
     }
 }
