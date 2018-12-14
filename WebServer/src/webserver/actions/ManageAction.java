@@ -2,12 +2,13 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.struts2.interceptor.SessionAware;
 import shared.manage.ManageModel;
 import webserver.services.manage.ManageService;
 
 import java.util.Map;
 
-public class ManageAction extends ActionSupport {
+public class ManageAction extends ActionSupport implements SessionAware {
 
 
     private Map<String, Object> session;
@@ -30,6 +31,11 @@ public class ManageAction extends ActionSupport {
         {
             return "failed";
         }
+    }
+
+    @Override
+    public void setSession(Map<String, Object> session) {
+        this.session = session;
     }
 
     public ManageService getManageService() {

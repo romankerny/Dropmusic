@@ -1155,6 +1155,45 @@ public class MulticastServer extends Thread {
         sendResponseMulticast(rsp, code);
     }
 
+    public void getURL(String id, String artist, String album, String title, String email, String code) {
+        String rsp = "flag|"+id+";type|musURL;"+"result|";
+        String result;
+        String url = "null";
+        PreparedStatement pstmt;
+        ResultSet rs;
+
+        try {
+            pstmt = con.prepareStatement("select musicfilename " +
+                    "from upload u join allowed a on u.music_id = a.upload_music_id join music m on u.music_id = m.id join album a2 on m.album_id = a2.id " +
+                    "where a.allowed_email = ? " +
+                    "and m.title = ? " +
+                    "and a2.title = ? " +
+                    "and a2.artist_name = ?;");
+
+            pstmt.setString(1, email);
+            pstmt.setString(2, title);
+            pstmt.setString(3, album);
+            pstmt.setString(4, artist);
+
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                result = "y";
+                url = rs.getString("musicfilename");
+
+            } else {
+                result = "n;";
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            result = "n;";
+        }
+        rsp += result + "url|"+url+";";
+        sendResponseMulticast(rsp, code);
+
+    }
+
     public void setToken(String id, String userToken, String email, String emailDropbox, String code) {
 
         // flag | id; type | token; token | tttt; email | eeee; emaildropbox | eeee;

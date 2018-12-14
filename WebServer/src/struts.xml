@@ -105,9 +105,6 @@
 
 
 
-
-
-
         <!-- OAuth with DropBox -->
 
         <!-- used to redirect both association w platform and login -->
@@ -139,6 +136,9 @@
         </action>
 
 
+        <action name="playAction" class="webserver.actions.PlayAction">
+            <result name="success">dropmusic.action</result>
+        </action>
 
 
 
