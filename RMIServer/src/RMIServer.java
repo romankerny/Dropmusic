@@ -63,8 +63,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public static ArrayList<String> multicastHashes = new ArrayList<>();
     public static int globalCounter = 0;
 
-    private static final String API_APP_KEY = "wbwulmkt4ykv4ry";
-    private static final String API_APP_SECRET = "n1kg0x7177alqbv";
+    private static final String API_APP_KEY = "38rui0xr3sccsdp";
+    private static final String API_APP_SECRET = "tp9cimdal84i23l";
     private OAuthService service = new ServiceBuilder()
             .provider(DropBoxApi2.class)
             .apiKey(API_APP_KEY)
@@ -1172,8 +1172,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/oauth2/token", service);
             request.addParameter("code", code);
             request.addParameter("grant_type","authorization_code");
-            request.addParameter("client_id","wbwulmkt4ykv4ry");
-            request.addParameter("client_secret","n1kg0x7177alqbv");
+            request.addParameter("client_id","38rui0xr3sccsdp");
+            request.addParameter("client_secret","tp9cimdal84i23l");
             request.addParameter("redirect_uri", "http://localhost:8080/associateDropBoxTokenAction");
             Response response = request.send();
             JSONObject rj = (JSONObject) JSONValue.parse(response.getBody());

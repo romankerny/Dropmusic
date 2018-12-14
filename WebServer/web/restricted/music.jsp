@@ -58,6 +58,23 @@
 
         })
 
+        $(document).ready(function() {
+            $("#playButton").click(function(){
+                $.ajax({
+                    type: 'POST',
+                    url:'playAction.action?inputModel.artistName='+ document.getElementById('artist').value
+                        + '&inputModel.albumTitle='+document.getElementById('album').value
+                        + '&inputModel.title='+document.getElementById('title').value,
+                    dataType: 'text',
+                    success: function(data){
+                        document.getElementById('playBar').innerHTML = data;
+                    }, error: function(data) {
+                        document.getElementById('playBar').innerHTML = data;
+                    }
+                });
+                return false;
+            });
+        });
     </script>
 </head>
 <body>
@@ -80,7 +97,19 @@
                 <b>Lyrics:</b> <c:out value="${item.lyrics}" /> <br/>
             </div>
 
-            <s:submit type="button" action="playAction" ></s:submit>
+            <s:set var="artistName">${item.artistName}</s:set>
+            <s:set var="albumName">${item.albumTitle}</s:set>
+            <s:set var="title">${item.title}</s:set>
+
+            <s:form action="playAction">
+                <s:hidden name="inputModel.artistName" value="%{#artistName}" id="artist"/>
+                <s:hidden name="inputModel.albumTitle" value="%{#albumName}" id="album"/>
+                <s:hidden name="inputModel.title" value="%{#title}" id="title" />
+                <button type="button" id="playButton">Play song!</button>
+                <div id="playBar">
+
+                </div>
+            </s:form>
             <br />
             <br/>
 
