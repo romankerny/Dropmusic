@@ -17,6 +17,7 @@ public class Music implements Serializable, ManageModel {
     private String lyrics;
     private String albumTitle;
     private String artistName;
+    private String fileName;
 
 
     public Music(String track, String title, String lyrics, String albumTitle, String artistName) {
@@ -88,15 +89,12 @@ public class Music implements Serializable, ManageModel {
         this.title = title;
     }
 
-    /*
-    public ConcurrentHashMap<String, MusicFile> getMusicFiles() {
-        return musicFiles;
+
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
-    public void setMusicFiles(ConcurrentHashMap<String, MusicFile> musicFiles) {
-        this.musicFiles = musicFiles;
-    }
-    */
 
     public String getLyrics() {
         return lyrics;
@@ -106,3 +104,6 @@ public class Music implements Serializable, ManageModel {
         this.lyrics = lyrics;
     }
 }
+
+
+

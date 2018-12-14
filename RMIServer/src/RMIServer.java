@@ -2,13 +2,14 @@ import java.io.IOException;
 import java.net.*;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
@@ -17,6 +18,7 @@ import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.exceptions.OAuthException;
 import com.github.scribejava.core.model.*;
 import com.github.scribejava.core.oauth.OAuthService;
+import jdk.nashorn.internal.parser.JSONParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -55,7 +57,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     private ConcurrentHashMap<String, RMIClientInterface> clients = new ConcurrentHashMap<String, RMIClientInterface>();
     private static final long serialVersionUID = 1L;
-    private static String MULTICAST_ADDRESS = "224.3.2.1";
+    private static String MULTICAST_ADDRESS = "224.3.2.2";
     private static int SEND_PORT = 5213, RCV_PORT = 5214;
     private static RMIServerInterface rmiServer;
     public static ArrayList<String> multicastHashes = new ArrayList<>();
@@ -783,29 +785,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return results;
         }
 
-    public String getMusicURL(String artist, String album, String title, String email) throws RemoteException {
-        String uuid = UUID.randomUUID().toString();
-        String id = uuid.substring(0, Math.min(uuid.length(), 8));
-        String msg = "flag|"+id+";type|musURL;artist|" + artist + ";album|"+album+";title|"+title+";email|"+email+";";
-
-        sendUDPDatagram(msg);
-        boolean exit = false;
-        String url = "";
-
-        while (!exit) {
-            String rsp = receiveUDPDatagram(msg);
-            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
-
-            if (cleanMessage.get(0)[1].equals(id)) {
-                if (cleanMessage.get(2)[1].equals("y")) {
-                    url = cleanMessage.get(3)[1];
-                }
-                exit = true;
-            }
-        }
-        return url;
-    }
-
 
     public ArrayList<String> getEditors(String artistName)  throws RemoteException  {
 
@@ -1187,9 +1166,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         boolean r = false;
 
-
         try {
-
 
             // get account email and token
             OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/oauth2/token", service);
@@ -1274,10 +1251,160 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return token;
     }
 
+    public String getMusicURL(String artist, String album, String title, String email) throws RemoteException {
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+        String msg = "flag|"+id+";type|musURL;artist|" + artist + ";album|"+album+";title|"+title+";email|"+email+";";
+
+        sendUDPDatagram(msg);
+        boolean exit = false;
+        String url = "";
+
+        while (!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals(id)) {
+                if (cleanMessage.get(2)[1].equals("y")) {
+                    url = cleanMessage.get(3)[1];
+                }
+                exit = true;
+            }
+        }
+        return url;
+    }
+
+
+    public boolean shareMusic(String emailToShare, String artist, String album, String musicTitle, String email) throws RemoteException {
+
+
+        boolean rsp = false, exit = false;
+        try {
+
+            String urlOriginal = getMusicURL(artist, album, musicTitle, email); // RMICall
+            String token = getTokenFromMulticast(email);
+            // get url from music in Multicast
+            String url = urlOriginal;
+            url = url.replace("raw=1","dl=0");
+            System.out.println("url:    " + url);
+
+            System.out.println("sharedMusic()");
+            JSONObject j = new JSONObject();
+            j.put("url",url);
+
+            // get file id from url
+            // /get_shared_link_metadata - Dropbox HTTP get id
+            OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/2/sharing/get_shared_link_metadata", service);
+            request.addHeader("Authorization", "Bearer " + token);
+            request.addHeader("Content-Type",  "application/json");
+            request.addPayload(j.toJSONString());
+            Response response = request.send();
+            JSONObject rs = (JSONObject) JSONValue.parse(response.getBody());
+
+            String fileIdDropbox = rs.get("id").toString(); // get the id of the file in Dropbox
+
+
+
+            // clean JSONObject used before
+            j = new JSONObject();
+            j.put("file", fileIdDropbox);
+            LinkedHashMap m = new LinkedHashMap(2);
+            m.put(".tag", "email");
+            m.put("email", emailToShare);
+            JSONArray ja = new JSONArray();
+            ja.add(m);
+            j.put("members",ja);
+            j.put("custom_message", "Someone shared a beautiful thing w/ you in DropMusic");
+            j.put("quiet", false);
+            j.put("access_level", "viewer");
+
+
+
+
+            // /add_file_member - Dropbox HTTP - shares file with emailToShare
+            request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/2/sharing/add_file_member", service);
+            request.addHeader("Authorization", "Bearer " + token);
+            request.addHeader("Content-Type",  "application/json");
+            request.addPayload(j.toJSONString());
+            response = request.send();
+
+            // send to Multicast to share
+            // flag | id; type | share; url | uuuu; from | uuuu; to | tttt;
+            // flag | id; type | share; response | y/n
+            String uuid = UUID.randomUUID().toString();
+            String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+
+            String msg = "flag|"+id+";type|share;artist|"+artist+";album|"+album+";track|" + musicTitle + ";shareTo|" + getDropMusicEmail(emailToShare) + ";uploader|" + email + ";";
+
+            sendUDPDatagram(msg);
+
+            while (!exit) {
+                String rspMulticast = receiveUDPDatagram(msg);
+                ArrayList<String[]> cleanMessage = cleanTokens(rspMulticast);
+
+                if (cleanMessage.get(0)[1].equals(id)) {
+                    if(cleanMessage.get(2)[1].equals("y")){
+                        rsp = true;
+                    } else {
+                        rsp = false;
+                    }
+                    exit = true;
+                }
+            }
+
+        }catch (RemoteException | NullPointerException n) {
+            // no need to do anything rsp already false
+            System.out.println(n);
+        }
+
+
+
+        return rsp;
+
+    }
+
+    public String getDropMusicEmail(String emailDropbox) {
+
+        boolean exit = false;
+        String rsp = "null";
+
+
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|getEmail;email|"+emailDropbox+";";
+
+        sendUDPDatagram(msg);
+
+        while (!exit) {
+            rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals(id)) {
+                if(cleanMessage.get(2)[1].equals("y")){
+                    rsp = cleanMessage.get(3)[1];
+                } else {
+                    rsp = "null";
+                }
+                exit = true;
+            }
+        }
+
+        System.out.println("getDropMusicEmail - " + rsp);
+        return rsp;
+
+
+    }
+
+
     public boolean associateMusic(String email, String artist, String album, String musicTitle, String fileName) throws RemoteException {
 
+        // flag | id; type | associate; email | eeee; artist | aaaa; album | aaaa; music | tttt; url | uuuu;
+        // flag | id; type | associate; rsp | y/n
 
-
+        boolean r = false, exit = false;
+        String msg = "";
         // get acess Token of email from multicast
         String userToken = getTokenFromMulticast(email);
 
@@ -1294,13 +1421,36 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         Response response = request.send();
 
         JSONObject rj = (JSONObject) JSONValue.parse(response.getBody());
-        String url = rj.get("url").toString();
+        System.out.println(response.getBody());
 
-        System.out.println("URL: " + url);
+        try {
+            String uuid = UUID.randomUUID().toString();
+            String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
+            String url = rj.get("url").toString();
+            url = url.replace("dl=0","raw=1");
+            msg = "flag|"+id+";type|associate;email|"+email+";artist|"+artist+";album|"+album+";music|"+musicTitle+";url|"+url+";";
+            sendUDPDatagram(msg);
 
-        return true;
+            while (!exit) {
+                String rsp = receiveUDPDatagram(msg);
+                ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
+                if (cleanMessage.get(0)[1].equals(id)) {
+                    if(cleanMessage.get(2)[1].equals("y")){
+                        r = true;
+                    } else {
+                        r = false;
+                    }
+                    exit = true;
+                }
+            }
+
+        } catch(NullPointerException n) {
+            r = false;
+        }
+
+        return r;
     }
 
 

@@ -14,6 +14,7 @@
     <li><a href="dropmusic" class="active">Home</a></li>
     <li><a href="manage">Manage</a></li>
     <li><a href="profile">Profile</a></li>
+    <li><a href="logout">Logout</a></li>
     <li id="search-bar">
         <s:form action="searchAll" method="GET">
             <s:textfield name="inputObject.keyword" />

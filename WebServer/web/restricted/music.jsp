@@ -9,6 +9,55 @@
     <jsp:include page="header.jsp"/>
     <script src="https://code.jquery.com/jquery-1.10.2.js" type="text/javascript"></script>
     <script>
+
+
+        $(document).ready(function(){
+
+            $("#associateDropboxButton").click(function() {
+
+                $.ajax({
+                type: 'POST',
+                    url:'associateMusicAction.action?' +
+                        '&albumTitle='+ document.getElementById('albumName').innerText +
+                        '&artistName=' + document.getElementById('artistName').innerText +
+                        '&musicTitle='+ document.getElementById('musicTitle').innerText +
+                        '&fileName='+ document.getElementById('fileName').value
+                ,
+                dataType: 'text',
+                success: function(data){
+                    document.getElementById('rsp').innerHTML = data;
+                }, error: function(data) {
+                    document.getElementById('rsp').innerHTML = data;
+                }
+                });
+                return false;
+            });
+
+
+            $("#shareDropboxButton").click(function() {
+
+                $.ajax({
+                    type: 'POST',
+                    url:'shareMusicDropbox.action?' +
+                        '&email='+ document.getElementById('email').value +
+                        '&albumTitle='+ document.getElementById('albumName').innerText +
+                        '&artistName=' + document.getElementById('artistName').innerText +
+                        '&musicTitle='+ document.getElementById('musicTitle').innerText
+                    ,
+                    dataType: 'text',
+                    success: function(data){
+                        document.getElementById('rspShare').innerHTML = data;
+                    }, error: function(data) {
+                        document.getElementById('rspShare').innerHTML = data;
+                    }
+                });
+                return false;
+            });
+
+
+
+        })
+
         $(document).ready(function() {
             $("#playButton").click(function(){
                 $.ajax({
@@ -62,7 +111,25 @@
                 </div>
             </s:form>
             <br />
+            <br/>
+
+            <p hidden id="artistName" >${item.artistName}</p>
+            <p hidden id="albumName" >${item.albumTitle}</p>
+            <p hidden id="musicTitle" >${item.title}</p>
+
         </c:forEach>
+        <s:text name="Name of file in DropBox" />
+        <s:textfield id="fileName" />
+        <button type="button" id="associateDropboxButton">Associate</button>
+        <div id="rsp"></div><br>
+
+
+        <hr>
+        <s:text name="Share with" />
+        <s:textfield id="email" />
+        <button type="button" id="shareDropboxButton">Share</button>
+        <div id="rspShare"></div><br>
+
     </c:otherwise>
 </c:choose>
 
