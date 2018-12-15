@@ -23,7 +23,7 @@
                         + '&reviewModel.critic='+document.getElementById('critic').value
                         + '&reviewModel.artist='+document.getElementById('artist').value
                         + '&reviewModel.album='+document.getElementById('album').value
-                        + '&reviewModel.email='+document.getElementById('reviewEmail').value
+                        + '&reviewModel.email='+document.getElementById('email').value
                     ,
                     dataType: 'text',
                     success: function(data){
@@ -69,7 +69,7 @@
                     <c:otherwise>
                         <h2>User reviews</h2>
                         <c:forEach items="${item.reviews}" var="review">
-                            <p id="${review.email}">
+                            <p id="review${review.email}">
                             <b>Rating:</b> <c:out value="${review.rating}"  /> <br/>
                             <b>Email:</b> <c:out value="${review.email}" /> <br/>
                             <b>Review:</b> <c:out value="${review.critic}" /> <br/>
@@ -93,7 +93,7 @@
 
                         <s:hidden name="reviewModel.artist" value="%{#artistName}" id="artist"/>
                         <s:hidden name="reviewModel.album" value="%{#albumName}" id="album"/>
-                        <s:hidden name="reviewModel.email" value="%{#session.email}" id="reviewEmail" />
+                        <s:hidden name="reviewModel.email" value="%{#session.email}" id="email" />
                         <button type="button" id="addReviewButton">Review!</button>
                         <div id="reviewStatus"></div>
                     </s:form>

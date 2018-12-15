@@ -67,7 +67,7 @@ function writeRating(message) {
 
     if (result[1] === album) {
         var rating = document.getElementById('avgRating');
-        var reviewByUser = document.getElementById(result[3]);
+        var reviewByUser = document.getElementById('review'+result[3]);
 
         var rawHTML = '<b>Rating: </b>' + result[2] + '<br/>' +
                         '<b>Email: </b>' + result[3] + '<br/>' +
@@ -76,7 +76,7 @@ function writeRating(message) {
         if (reviewByUser == null) { // i.e. if there is no review then create one
             var reviews = document.getElementById('reviews');
             var rev = document.createElement('p');
-            rev.setAttribute('id', email);
+            rev.setAttribute('id', 'review'+email);
             rev.innerHTML = rawHTML;
             reviews.appendChild(rev);
         } else {
