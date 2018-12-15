@@ -2,6 +2,7 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
+import shared.manage.ShareModel;
 import webserver.services.ShareMusicDropboxService;
 
 import java.rmi.RemoteException;
@@ -9,10 +10,10 @@ import java.util.Map;
 
 public class ShareMusicDropboxAction extends ActionSupport implements SessionAware {
 
-    private String email;
-    private String albumTitle;
-    private String artistName;
-    private String musicTitle;
+    private ShareModel model = new ShareModel();
+
+
+
     private Map<String, Object> session;
     ShareMusicDropboxService service = new ShareMusicDropboxService();
 
@@ -24,7 +25,7 @@ public class ShareMusicDropboxAction extends ActionSupport implements SessionAwa
 
         try {
 
-            if(getService().shareMusic(email, artistName, albumTitle, musicTitle, (String) session.get("email"))) {
+            if(getService().shareMusic(model.getEmail(), model.getArtistName(), model.getAlbumTitle(), model.getMusicTitle(), (String) session.get("email"))) {
                 rsp = "success";
             }
             else
@@ -40,36 +41,12 @@ public class ShareMusicDropboxAction extends ActionSupport implements SessionAwa
 
     }
 
-    public String getEmail() {
-        return email;
+    public ShareModel getModel() {
+        return model;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getAlbumTitle() {
-        return albumTitle;
-    }
-
-    public void setAlbumTitle(String albumTitle) {
-        this.albumTitle = albumTitle;
-    }
-
-    public String getArtistName() {
-        return artistName;
-    }
-
-    public void setArtistName(String artistName) {
-        this.artistName = artistName;
-    }
-
-    public String getMusicTitle() {
-        return musicTitle;
-    }
-
-    public void setMusicTitle(String musicTitle) {
-        this.musicTitle = musicTitle;
+    public void setModel(ShareModel model) {
+        this.model = model;
     }
 
     public Map<String, Object> getSession() {

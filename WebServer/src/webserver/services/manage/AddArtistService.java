@@ -31,7 +31,7 @@ public class AddArtistService implements ManageService {
                     ArrayList<String> editors = new ArrayList<>();
                     editors = server.getEditors(artist.getName());
                     for (String ed : editors)
-                        WebSocketAnnotation.sendNotification(ed, "Artist " + artist.getName() +"was edited\" by " + email);
+                        WebSocketAnnotation.sendNotification(ed, "Artist " + artist.getName() +" was edited by " + email);
 
                     return true;
                 } else {

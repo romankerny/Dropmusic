@@ -18,10 +18,10 @@
                 $.ajax({
                 type: 'POST',
                     url:'associateMusicAction.action?' +
-                        '&albumTitle='+ document.getElementById('albumName').innerText +
-                        '&artistName=' + document.getElementById('artistName').innerText +
-                        '&musicTitle='+ document.getElementById('musicTitle').innerText +
-                        '&fileName='+ document.getElementById('fileName').value
+                        '&model.albumTitle='+ document.getElementById('albumName').innerText +
+                        '&model.artistName=' + document.getElementById('artistName').innerText +
+                        '&model.musicTitle='+ document.getElementById('musicTitle').innerText +
+                        '&model.fileName='+ document.getElementById('fileName').value
                 ,
                 dataType: 'text',
                 success: function(data){
@@ -39,10 +39,10 @@
                 $.ajax({
                     type: 'POST',
                     url:'shareMusicDropbox.action?' +
-                        '&email='+ document.getElementById('email').value +
-                        '&albumTitle='+ document.getElementById('albumName').innerText +
-                        '&artistName=' + document.getElementById('artistName').innerText +
-                        '&musicTitle='+ document.getElementById('musicTitle').innerText
+                        '&model.email='+ document.getElementById('email').value +
+                        '&model.albumTitle='+ document.getElementById('albumName').innerText +
+                        '&model.artistName=' + document.getElementById('artistName').innerText +
+                        '&model.musicTitle='+ document.getElementById('musicTitle').innerText
                     ,
                     dataType: 'text',
                     success: function(data){
