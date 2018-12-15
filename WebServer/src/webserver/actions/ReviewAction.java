@@ -4,6 +4,7 @@ import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import shared.Review;
 import webserver.services.ReviewService;
+import ws.WebSocketAnnotation;
 
 import java.util.Map;
 
@@ -17,7 +18,8 @@ public class ReviewAction extends ActionSupport {
     @Override
     public String execute() {
         result = reviewService.addReview(reviewModel);
-        System.out.println(result);
+        String msg = result+"#"+reviewModel.getAlbum()+"#"+reviewModel.getRating()+"#"+reviewModel.getEmail()+"#"+reviewModel.getCritic();
+        WebSocketAnnotation.updateAlbumRating(msg);
         return Action.SUCCESS;
     }
 

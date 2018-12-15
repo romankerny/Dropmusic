@@ -1,5 +1,6 @@
 var websocket = null;
 var email = "";
+var album = "";
 
 
 window.onload = function() { // URI = ws://10.16.0.165:8080/WebSocket/ws
@@ -8,6 +9,10 @@ window.onload = function() { // URI = ws://10.16.0.165:8080/WebSocket/ws
 
 function setEmail(email) {
     this.email = email;
+}
+
+function setAlbum(album) {
+    this.album = album;
 }
 
 
@@ -35,7 +40,12 @@ function onClose(event) {
 
 
 function onMessage(message) { // print the received message
-    writeNotification(message.data);
+    var msg = message.data;
+    console.log(message.data);
+    if (isNaN(msg.charAt(0)))
+        writeNotification(msg);
+    else
+        writeRating(msg);
 }
 
 function onError(event) {
@@ -50,5 +60,29 @@ function writeNotification(text) {
     line.innerHTML = text;
     history.appendChild(line);
     history.scrollTop = history.scrollHeight;
+}
+
+function writeRating(message) {
+    var result = message.split('#'); // Message comes as [rating]#[albumName]#[newRating]#[reviewerEmail]#[reviewText]
+
+    if (result[1] === album) {
+        var rating = document.getElementById('avgRating');
+        var reviewByUser = document.getElementById(result[3]);
+
+        var rawHTML = '<b>Rating: </b>' + result[2] + '<br/>' +
+                        '<b>Email: </b>' + result[3] + '<br/>' +
+                        '<b>Review: </b>' + result[4] + '<br/>';
+
+        if (reviewByUser == null) { // i.e. if there is no review then create one
+            var reviews = document.getElementById('reviews');
+            var rev = document.createElement('p');
+            rev.setAttribute('id', email);
+            rev.innerHTML = rawHTML;
+            reviews.appendChild(rev);
+        } else {
+            reviewByUser.innerHTML = rawHTML;
+        }
+        rating.innerText = result[0];
+    }
 }
 

@@ -39,13 +39,22 @@ public class WebSocketAnnotation {
 
         Session s = clients.get(email);
 
-
         try {
             s.getBasicRemote().sendText(notification);
         } catch (IOException e) {
             System.out.println("IOExeption in WebSocketAnnotation");
         }
 
+    }
+
+    public static void updateAlbumRating(String msg) {
+        for (Session s : clients.values()) {
+            try {
+                s.getBasicRemote().sendText(msg);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 

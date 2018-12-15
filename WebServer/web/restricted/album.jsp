@@ -54,10 +54,11 @@
                 <b>Description:</b> <c:out value="${item.description}" /> <br/>
                 <b>Genre:</b> <c:out value="${item.genre}" /> <br/>
                 <b>Launch Date:</b> <c:out value="${item.launchDate}" /> <br/>
-                <b>Editor Label:</b> <c:out value="${item.editorLabel}" /> <br/>
-                <b>Averate Rating:</b> <c:out value="${item.avgRating}" /> <br/>
-
-                <c:choose>
+                <b>Editor Label:</b> <c:out value="${item.editorLabel}" /> <br />
+                <b>Averate Rating:</b> <span id="avgRating"><c:out value="${item.avgRating}" /> </span>
+            </div>
+            <div id="reviews">
+            <c:choose>
                     <c:when test="${item.reviews == null}">
                         A problem occurred during the search!
                     </c:when>
@@ -68,15 +69,19 @@
                     <c:otherwise>
                         <h2>User reviews</h2>
                         <c:forEach items="${item.reviews}" var="review">
+                            <p id="${review.email}">
                             <b>Rating:</b> <c:out value="${review.rating}"  /> <br/>
                             <b>Email:</b> <c:out value="${review.email}" /> <br/>
                             <b>Review:</b> <c:out value="${review.critic}" /> <br/>
+                            </p>
                             <p></p>
                         </c:forEach>
                     </c:otherwise>
                 </c:choose>
+            </div>
                 <s:set var="artistName">${item.artist}</s:set>
                 <s:set var="albumName">${item.title}</s:set>
+                <script>setAlbum('${item.title}')</script>
                 <h2>
                     Write a review
                 </h2>
@@ -92,7 +97,6 @@
                         <button type="button" id="addReviewButton">Review!</button>
                         <div id="reviewStatus"></div>
                     </s:form>
-            </div>
         </c:forEach>
     </c:otherwise>
 </c:choose>

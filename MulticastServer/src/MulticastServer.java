@@ -591,7 +591,6 @@ public class MulticastServer extends Thread {
 
             rs = pstmt.executeUpdate();
             if (rs >= 1) {
-                System.out.println("Gonna run query");
                 double avg = 0.0;
                 ResultSet rsAvg;
                 pstmt = con.prepareStatement("select avg(rating) " +
