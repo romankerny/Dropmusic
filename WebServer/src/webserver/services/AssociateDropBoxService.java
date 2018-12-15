@@ -33,16 +33,13 @@ public class AssociateDropBoxService {
         }
 
         try {
-            System.out.println();
-            if(session.get("loggedin") != null) {
-                return server.associateDropBox();
-            } else {
-                return server.associateDropBoxBeforeLogin();
-            }
+
+            return server.associateDropBox();
+
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-
+        System.out.println("vou dar pritn de erro");
         return "localhost:8080/restricted/error.jsp";
     }
 }

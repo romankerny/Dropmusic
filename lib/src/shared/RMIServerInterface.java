@@ -40,9 +40,8 @@ public interface RMIServerInterface extends Remote {
     public boolean shareMusic(String emailToShare, String artist, String album, String musicTitle, String email) throws RemoteException;
 
     public String associateDropBox() throws RemoteException;
-    public String associateDropBoxBeforeLogin() throws RemoteException;
     public boolean setToken(String email, String code) throws RemoteException;
-    public String canLogin(String code) throws RemoteException;
+    public String canLogin(String email) throws RemoteException;
     public boolean associateMusic(String email, String artist, String album, String musicTitle, String fileName) throws RemoteException;
 
 

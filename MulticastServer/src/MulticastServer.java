@@ -850,7 +850,7 @@ public class MulticastServer extends Thread {
         // Response -> flag | r; type | addart; email | dddd; result | (y/n); notif_count | n; notif | email; notif | email; [etc...]; msg | mmmmm;
 
         // ------------- BD
-        PreparedStatement pstmt = null, pstmtEd = null, pstmtNot = null;
+        PreparedStatement pstmt = null, pstmtEd = null, pstmtNot = null, pstmt2;
         String usrIsEditor = "", rsp = "flag|"+id+";type|addart;email|"+email+";result|n;msg|Failed to add artist;", notify  = "", bfNot = "";
         ResultSet qSet;
         int rs, notifCount = 0;
@@ -887,6 +887,16 @@ public class MulticastServer extends Thread {
 
                 System.out.println("Artist " + name + " added to DB with success");
                 System.out.println("Inserted " + rs + " new artist(s).");
+
+                // add editor
+                // user_email = email will ignore the duplicate key
+                // the user will only have 1 instance in the table of Editors
+                pstmt2 = con.prepareStatement("INSERT INTO editor (user_email, artist_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE user_email = ?");
+
+                pstmt2.setString(1, email);
+                pstmt2.setString(2, name);
+                pstmt2.setString(3, email);
+                pstmt2.executeUpdate();
 
             } else {
                 // user is not editor
@@ -983,12 +993,15 @@ public class MulticastServer extends Thread {
                 bfNot = "notif_count|" + Integer.toString(notifCount) + ";" + notify;
                 rsp = "flag|"+id+";type|addalb;email|"+email+";result|y;"+bfNot+"msg|Album info added with success;";
 
+                // add editor
                 // user_email = email will ignore the duplicate key
                 // the user will only have 1 instance in the table of Editors
                 pstmt2 = con.prepareStatement("INSERT INTO editor (user_email, artist_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE user_email = ?");
+
                 pstmt2.setString(1, email);
-                pstmt2.setString(2, albName);
+                pstmt2.setString(2, artName);
                 pstmt2.setString(3, email);
+                pstmt2.executeUpdate();
 
                 System.out.println("Info of Artist " + artName + " added to DB with success");
 
@@ -1100,8 +1113,9 @@ public class MulticastServer extends Thread {
                 pstmt2 = con.prepareStatement("INSERT INTO editor (user_email, artist_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE user_email = ?");
 
                 pstmt2.setString(1, email);
-                pstmt2.setString(2, albName);
+                pstmt2.setString(2, artiName);
                 pstmt2.setString(3, email);
+                pstmt2.executeUpdate();
 
                 System.out.println("Info of music " + title + " added to DB with success");
 

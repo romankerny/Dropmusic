@@ -41,7 +41,6 @@ function onClose(event) {
 
 function onMessage(message) { // print the received message
     var msg = message.data;
-    console.log(message.data);
     if (isNaN(msg.charAt(0)))
         writeNotification(msg);
     else

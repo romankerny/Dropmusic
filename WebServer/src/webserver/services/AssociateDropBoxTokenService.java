@@ -21,6 +21,32 @@ public class AssociateDropBoxTokenService {
         String userToken = "";
     }
 
+    public String canLogin(String code) {
+
+        String r = "";
+        RMIServerInterface server = null;
+
+        System.out.println("LoginDropboxService - execute()");
+
+        try
+        {
+            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
+        }
+        catch(NotBoundException | RemoteException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            return server.canLogin(code);
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        return r;
+
+    }
+
 
     public boolean setUserToken(Map<String, Object> session, String code) {
 

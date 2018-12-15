@@ -64,8 +64,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public static ArrayList<String> multicastHashes = new ArrayList<>();
     public static int globalCounter = 0;
 
-    private static final String API_APP_KEY = "38rui0xr3sccsdp";
-    private static final String API_APP_SECRET = "tp9cimdal84i23l";
+    private static final String API_APP_KEY = "wbwulmkt4ykv4ry";
+    private static final String API_APP_SECRET = "n1kg0x7177alqbv";
     private OAuthService service = new ServiceBuilder()
             .provider(DropBoxApi2.class)
             .apiKey(API_APP_KEY)
@@ -74,12 +74,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             .build();
 
 
-    private OAuthService serviceBeforeLogin = new ServiceBuilder()
-            .provider(DropBoxApi2.class)
-            .apiKey(API_APP_KEY)
-            .apiSecret(API_APP_SECRET)
-            .callback("http://localhost:8080/loginDropbox") //
-            .build();
 
 
     public RMIServer() throws RemoteException {
@@ -1093,20 +1087,14 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     }
 
-
     public String associateDropBox() throws RemoteException{
 
-        String urlAuth = "";
+
 
         return service.getAuthorizationUrl(null);
+
     }
 
-    public String associateDropBoxBeforeLogin() throws RemoteException{
-
-        String urlAuth = "";
-
-        return serviceBeforeLogin.getAuthorizationUrl(null);
-    }
 
     public String canLogin(String code) throws RemoteException {
         // flag | id; type | logindropbox; emaildropbox | eeee;
@@ -1115,20 +1103,23 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String dropMusicEmail = "";
 
         // Get account_id and access_token from API
-        OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/oauth2/token", serviceBeforeLogin);
+        OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/oauth2/token", service);
         request.addParameter("code", code);
         request.addParameter("grant_type","authorization_code");
         request.addParameter("client_id","wbwulmkt4ykv4ry");
         request.addParameter("client_secret","n1kg0x7177alqbv");
-        request.addParameter("redirect_uri", "http://localhost:8080/loginDropbox");
+        request.addParameter("redirect_uri", "http://localhost:8080/associateDropBoxTokenAction");
         Response response = request.send();
         JSONObject rj = (JSONObject) JSONValue.parse(response.getBody());
+        System.out.println(response.getBody());
         String account_id = rj.get("account_id").toString();
         String acessToken = rj.get("access_token").toString();
 
 
+
+
         // Get email from user's Dropbox acc
-        request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/2/users/get_account", serviceBeforeLogin);
+        request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/2/users/get_account", service);
         request.addHeader("Authorization", "Bearer " + acessToken);
         request.addHeader("Content-Type",  "application/json");
         request.addPayload("{\"account_id\": \"" + account_id + "\"}");
@@ -1175,8 +1166,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/oauth2/token", service);
             request.addParameter("code", code);
             request.addParameter("grant_type","authorization_code");
-            request.addParameter("client_id","38rui0xr3sccsdp");
-            request.addParameter("client_secret","tp9cimdal84i23l");
+            request.addParameter("client_id","wbwulmkt4ykv4ry");
+            request.addParameter("client_secret","n1kg0x7177alqbv");
             request.addParameter("redirect_uri", "http://localhost:8080/associateDropBoxTokenAction");
             Response response = request.send();
             JSONObject rj = (JSONObject) JSONValue.parse(response.getBody());

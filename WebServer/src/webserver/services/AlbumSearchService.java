@@ -24,6 +24,7 @@ public class AlbumSearchService implements SearchService {
             e.printStackTrace();
         }
     }
+
     @Override
     public ArrayList<Object> search(SearchModel searchModel) {
         ArrayList<Object> results = null;

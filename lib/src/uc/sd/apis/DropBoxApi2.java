@@ -16,7 +16,7 @@ public class DropBoxApi2 extends DefaultApi20 {
 	 
 	    @Override
 	    public String getAuthorizationUrl(OAuthConfig config) {
-	        return String.format("https://www.dropbox.com/1/oauth2/authorize?client_id=%s&response_type=code&redirect_uri=%s", config.getApiKey(), config.getCallback());
+	        return String.format("https://www.dropbox.com/1/oauth2/authorize?client_id=%s&response_type=code&redirect_uri=%s&force_reapprove=false", config.getApiKey(), config.getCallback());
 	    }
 	 
 	     @Override

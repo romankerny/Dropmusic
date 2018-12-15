@@ -29,10 +29,9 @@ public class AddArtistService implements ManageService {
                 rsp = server.addArtist(artist.getName(), artist.getDetails(), email);
                 if(rsp.equals("Artist created") || rsp.equals("Artist `" + artist.getName() + "` was edited") || rsp.equals("Artist info added with success")) {
                     ArrayList<String> editors = new ArrayList<>();
-                    System.out.println("NO ADD CRL");
                     editors = server.getEditors(artist.getName());
                     for (String ed : editors)
-                        WebSocketAnnotation.sendNotification(ed, "Artist `\" + artist.getName() + \"` was edited\") by " + email);
+                        WebSocketAnnotation.sendNotification(ed, "Artist " + artist.getName() +"was edited\" by " + email);
 
                     return true;
                 } else {

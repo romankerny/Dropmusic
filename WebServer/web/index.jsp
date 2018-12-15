@@ -20,7 +20,7 @@
 </s:form><br>
 
 <s:form action="associateDropBoxAction" method="post">
-  <s:submit value="Sign Up w/ Dropbox" />
+  <s:submit value="Login w/ Dropbox" />
 </s:form>
 </body>
 </html>
