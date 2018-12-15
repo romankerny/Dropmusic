@@ -23,7 +23,7 @@
                         + '&reviewModel.critic='+document.getElementById('critic').value
                         + '&reviewModel.artist='+document.getElementById('artist').value
                         + '&reviewModel.album='+document.getElementById('album').value
-                        + '&reviewModel.email='+document.getElementById('email').value
+                        + '&reviewModel.email='+document.getElementById('reviewEmail').value
                     ,
                     dataType: 'text',
                     success: function(data){
@@ -93,7 +93,7 @@
 
                         <s:hidden name="reviewModel.artist" value="%{#artistName}" id="artist"/>
                         <s:hidden name="reviewModel.album" value="%{#albumName}" id="album"/>
-                        <s:hidden name="reviewModel.email" value="%{#session.email}" id="email" />
+                        <s:hidden name="reviewModel.email" value="%{#session.email}" id="reviewEmail" />
                         <button type="button" id="addReviewButton">Review!</button>
                         <div id="reviewStatus"></div>
                     </s:form>
