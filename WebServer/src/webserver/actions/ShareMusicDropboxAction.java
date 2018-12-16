@@ -3,7 +3,6 @@ package webserver.actions;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
 import shared.manage.ShareModel;
-import webserver.services.ShareMusicDropboxService;
 
 import java.rmi.RemoteException;
 import java.util.Map;
@@ -11,11 +10,8 @@ import java.util.Map;
 public class ShareMusicDropboxAction extends ActionSupport implements SessionAware {
 
     private ShareModel model = new ShareModel();
-
-
-
     private Map<String, Object> session;
-    ShareMusicDropboxService service = new ShareMusicDropboxService();
+
 
     @Override
     public String execute()  {
@@ -25,7 +21,7 @@ public class ShareMusicDropboxAction extends ActionSupport implements SessionAwa
 
         try {
 
-            if(getService().shareMusic(model.getEmail(), model.getArtistName(), model.getAlbumTitle(), model.getMusicTitle(), (String) session.get("email"))) {
+            if(getModel().shareMusic(model.getEmail(), model.getArtistName(), model.getAlbumTitle(), model.getMusicTitle(), (String) session.get("email"))) {
                 rsp = "success";
             }
             else
@@ -58,11 +54,4 @@ public class ShareMusicDropboxAction extends ActionSupport implements SessionAwa
         this.session = session;
     }
 
-    public ShareMusicDropboxService getService() {
-        return service;
-    }
-
-    public void setService(ShareMusicDropboxService service) {
-        this.service = service;
-    }
 }

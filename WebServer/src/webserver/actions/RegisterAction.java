@@ -4,7 +4,6 @@ package webserver.actions;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
 import shared.LoginModel;
-import webserver.services.RegisterService;
 
 
 import java.rmi.RemoteException;
@@ -13,9 +12,6 @@ import java.util.Map;
 public class RegisterAction extends ActionSupport implements SessionAware {
     private static final long serialVersionUID = 4L;
     private Map<String, Object> session;
-
-
-    private RegisterService registerService;
 
     private LoginModel inputObject = new LoginModel();
 
@@ -27,7 +23,7 @@ public class RegisterAction extends ActionSupport implements SessionAware {
 
         try
         {
-            if(getRegisterService().register(getInputObject()))
+            if(getInputObject().register(getInputObject()))
             {
                 r = "success";
             }
@@ -43,13 +39,6 @@ public class RegisterAction extends ActionSupport implements SessionAware {
         return r;
     }
 
-    public RegisterService getRegisterService() {
-        return registerService;
-    }
-
-    public void setRegisterService(RegisterService registerService) {
-        this.registerService = registerService;
-    }
 
     public LoginModel getInputObject() {
         return inputObject;

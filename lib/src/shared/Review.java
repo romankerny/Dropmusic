@@ -1,6 +1,10 @@
 package shared;
 
 import java.io.Serializable;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 
 public class Review implements Serializable {
 
@@ -9,6 +13,8 @@ public class Review implements Serializable {
     private String email;
     private String artist;
     private String album;
+
+    private RMIServerInterface server;
 
     public Review(int rating, String critic, String email, String artist, String album) {
         this.critic = critic;
@@ -65,5 +71,29 @@ public class Review implements Serializable {
     @Override
     public String toString() {
         return "email: " + email + " rating: " + rating + " critic: " + critic;
+    }
+
+    public ReviewService() {
+        try {
+            server = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmiserver");
+        } catch (
+                AccessException e) {
+            e.printStackTrace();
+        } catch (
+                RemoteException e) {
+            e.printStackTrace();
+        } catch (
+                NotBoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public double addReview(Review review) {
+        try {
+            return server.rateAlbum(review.getRating(), review.getArtist(), review.getAlbum(), review.getCritic(), review.getEmail());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return 0.0;
+        }
     }
 }

@@ -40,6 +40,34 @@ public class LoginModel {
         return r;
     }
 
+    public boolean register(LoginModel loginModel) throws RemoteException {
+
+        boolean r;
+        RMIServerInterface server = null;
+        String rsp;
+
+        try
+        {
+            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
+        }
+        catch(NotBoundException |RemoteException e) {
+            e.printStackTrace();
+        }
+
+        rsp = server.register(loginModel.getEmail(), loginModel.getPassword());
+
+        if (rsp.equals("User " + loginModel.getEmail() + " registered successfully"))
+        {
+            r = true;
+        }
+        else
+        {
+            r = false;
+        }
+
+        return r;
+    }
+
     public LoginModel()
     {
         this(null, null);
