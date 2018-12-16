@@ -11,8 +11,6 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
         <bean id="musicModel" class="shared.manage.Music" scope="prototype" />
 
     <!-- Services -->
-        <bean id="registerService" class="webserver.services.RegisterService" />
-
         <!-- Search Services -->
         <bean id="artistSearchService" class="webserver.services.search.ArtistSearchService" />
         <bean id="albumSearchService"  class="webserver.services.search.AlbumSearchService" />
@@ -26,10 +24,6 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 
     <!-- Actions -->
-        <bean id="registerAction" class="webserver.actions.RegisterAction" scope="prototype">
-            <property name="registerService" ref="registerService" />
-        </bean>
-
 
         <!-- Search Actions -->
         <bean id="artistSearchAction" class="webserver.actions.SearchAction" scope="prototype">

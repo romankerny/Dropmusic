@@ -73,7 +73,8 @@ public class Review implements Serializable {
         return "email: " + email + " rating: " + rating + " critic: " + critic;
     }
 
-    public ReviewService() {
+
+    public double addReview(Review review) {
         try {
             server = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmiserver");
         } catch (
@@ -86,9 +87,7 @@ public class Review implements Serializable {
                 NotBoundException e) {
             e.printStackTrace();
         }
-    }
 
-    public double addReview(Review review) {
         try {
             return server.rateAlbum(review.getRating(), review.getArtist(), review.getAlbum(), review.getCritic(), review.getEmail());
         } catch (RemoteException e) {
