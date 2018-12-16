@@ -18,6 +18,7 @@ public class Artist implements Serializable, ManageModel {
        setAlbums(new ArrayList<Album>());
     }
 
+
     public Artist()
     {
         this(null, null);

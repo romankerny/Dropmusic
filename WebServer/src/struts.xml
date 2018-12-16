@@ -84,11 +84,6 @@
             <result name="success">/index.jsp</result>
         </action>
 
-        <action name="loginDropboxAction" class="webserver.actions.LoginDropboxAction" method="execute">
-            <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
-            <result name="success">/restricted/dropmusic.jsp</result>
-            <result name="login">/index.jsp</result>
-        </action>
 
         <action name="register-direct">
             <interceptor-ref name="defaultStack"></interceptor-ref>
@@ -175,6 +170,11 @@
         </action>
 
         <action name="addReview" class="webserver.actions.ReviewAction">
+            <result name="success">/restricted/success.html</result>
+            <result name="failed">/restricted/fail.html</result>
+        </action>
+
+        <action name="removeArtistAction" class="webserver.actions.RemoveArtistAction">
             <result name="success">/restricted/success.html</result>
             <result name="failed">/restricted/fail.html</result>
         </action>

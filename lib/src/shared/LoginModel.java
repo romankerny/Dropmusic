@@ -6,7 +6,7 @@ import java.rmi.registry.LocateRegistry;
 
 public class LoginModel {
 
-    private String email; // email and password supplied by the user
+    private String email;
     private String password;
 
     public LoginModel(String email, String password) {
@@ -14,35 +14,10 @@ public class LoginModel {
         setPassword(password);
     }
 
-    public boolean login() throws RemoteException {
+    public boolean login() throws RemoteException
+    {
 
-        boolean r;
-        RMIServerInterface server = null;
-        String rsp;
-
-        try {
-            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
-        }
-        catch(NotBoundException |RemoteException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println();
-        rsp = server.login(getEmail(), getPassword());
-        if (rsp.equals("Logged in successfully " + getEmail()))
-        {
-            r = true;
-        } else
-        {
-            r = false;
-        }
-
-        return r;
-    }
-
-    public boolean register(LoginModel loginModel) throws RemoteException {
-
-        boolean r;
+        boolean r = false;
         RMIServerInterface server = null;
         String rsp;
 
@@ -54,15 +29,42 @@ public class LoginModel {
             e.printStackTrace();
         }
 
-        rsp = server.register(loginModel.getEmail(), loginModel.getPassword());
 
-        if (rsp.equals("User " + loginModel.getEmail() + " registered successfully"))
+        if(getEmail() != null && getPassword() != null && getEmail() != "" && getPassword() != "")
         {
-            r = true;
+            System.out.println(email + password +"pp");
+            rsp = server.login(getEmail(), getPassword());
+            if (rsp.equals("Logged in successfully " + getEmail())) {
+                r = true;
+            } else {
+                r = false;
+            }
         }
-        else
+
+        return r;
+    }
+
+    public boolean register(LoginModel loginModel) throws RemoteException {
+
+        boolean r = false;
+        RMIServerInterface server = null;
+        String rsp;
+
+        try
         {
-            r = false;
+            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
+        }
+        catch(NotBoundException |RemoteException e) {
+            e.printStackTrace();
+        }
+        if(getEmail() != null && getPassword() != null && getEmail() != "" && getPassword() != "") {
+            rsp = server.register(loginModel.getEmail(), loginModel.getPassword());
+
+            if (rsp.equals("User " + loginModel.getEmail() + " registered successfully")) {
+                r = true;
+            } else {
+                r = false;
+            }
         }
 
         return r;

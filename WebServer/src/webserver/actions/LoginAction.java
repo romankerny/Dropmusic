@@ -26,12 +26,15 @@ public class LoginAction extends ActionSupport implements SessionAware {
 		String r = "";
 
 		System.out.println("Executing LoginAction - execute()");
+
+
 		this.getLoginModel().setEmail(this.email);
 		this.getLoginModel().setPassword(this.password);
 
 		System.out.println(this.getLoginModel().getEmail());
 
 		try {
+
 			if(this.getLoginModel().login())
 			{   // if true then user can log
 				// set session parameters

@@ -1510,6 +1510,42 @@ public class MulticastServer extends Thread {
 
     }
 
+    /**
+     * This method deletes an Artist from Database.
+     *
+     * @param id Packet's unique ID
+     * @param artist artist's name
+     * @param code Hash sent by RMIServer
+     */
+
+    public void removeArtist(String id, String artist, String code) {
+
+        PreparedStatement deleteQuery;
+        int rs = 0;
+
+        String rsp ="flag|"+id+";type|deleteartist;result|";
+        String result = "n;";
+
+        try {
+
+            deleteQuery = con.prepareStatement("DELETE FROM artist where name = ?;");
+            deleteQuery.setString(1, artist);
+
+            rs = deleteQuery.executeUpdate();
+            if(rs > 0) {
+                result = "y;";
+            }
+
+
+
+        } catch (SQLException e) {
+            System.out.println("DeleteQuery failed");
+        }
+
+        sendResponseMulticast(rsp + result, code);
+
+    }
+
 
     /**
      * Thread that receives a packet, parses it with cleanTokens() and calls the respective function depending on type of packet
@@ -1554,6 +1590,9 @@ public class MulticastServer extends Thread {
                 break;
             case "getToken":
                 getToken(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1]);
+                break;
+            case "deleteartist":
+                removeArtist(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1]);
                 break;
             case "logindropbox":
                 canLogin(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1]);

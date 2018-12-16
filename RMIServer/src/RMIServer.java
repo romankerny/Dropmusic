@@ -1312,6 +1312,32 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return url;
     }
 
+    public boolean removeArtist(String artist) throws RemoteException {
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+
+        String msg = "flag|"+id+";type|deleteartist;name|"+artist+";";
+
+        sendUDPDatagram(msg);
+        boolean response = false;
+        boolean exit = false;
+        String url = "";
+
+        while (!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals(id)) {
+                if (cleanMessage.get(2)[1].equals("y")) {
+                    response = true;
+                }
+                exit = true;
+            }
+        }
+
+        return response;
+    }
+
 
     public boolean shareMusic(String emailToShare, String artist, String album, String musicTitle, String email) throws RemoteException {
 
