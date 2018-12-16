@@ -41,8 +41,8 @@ public class WebSocketAnnotation {
 
         try {
             s.getBasicRemote().sendText(notification);
-        } catch (IOException e) {
-            System.out.println("IOExeption in WebSocketAnnotation");
+        } catch (IOException | NullPointerException t) {
+            System.out.println("O user está logado pelo Terminal cliente");
         }
 
     }
