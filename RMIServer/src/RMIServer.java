@@ -391,16 +391,16 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     try {
                         clients.get(regular).printOnClient("You got promoted to Editor by " + editor);
                     } catch (RemoteException re) {
-                        /*
+
                         clients.remove(regular);
                         System.out.println("Client is off");
                         sendUDPDatagram("flag|"+idNotify+";type|notifyfail;email|" + regular + ";message|" + "You got promoted to Editor by " + editor + ";");
-                        */
+
                     } catch (NullPointerException npe) {
-                        /*
+
                         System.out.println("Client is off");
                         sendUDPDatagram("flag|"+idNotify+";type|notifyfail;email|" + regular + ";message|" + "You got promoted to Editor by " + editor + ";");
-                        */
+                        
                     }
                 } else {
                     rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
