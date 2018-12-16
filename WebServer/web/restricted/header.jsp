@@ -10,14 +10,14 @@
 </head>
 <body>
 
-<ul>
-    <li><a href="dropmusic" class="active">Home</a></li>
-    <li><a href="manage">Manage</a></li>
-    <li><a href="profile">Profile</a></li>
-    <li><a href="logout">Logout</a></li>
-    <li id="search-bar">
+<ul id="header">
+    <li class="head"><a href="dropmusic" class="active">Home</a></li>
+    <li class="head"><a href="manage">Manage</a></li>
+    <li class="head"><a href="profile">Profile</a></li>
+    <li class="head"><a href="logout">Logout</a></li>
+    <li class="head" id="search-bar">
         <s:form action="searchAll" method="GET">
-            <s:textfield name="inputObject.keyword" />
+            <s:textfield name="keyword" />
         </s:form>
     </li>
 

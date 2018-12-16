@@ -3,32 +3,34 @@ package webserver.actions;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import shared.SearchModel;
-import webserver.services.SearchService;
+import shared.manage.ManageModel;
+import webserver.services.search.SearchService;
 
 import java.util.ArrayList;
 
 public class SearchAction extends ActionSupport {
 
-    private SearchModel inputObject =  new SearchModel();
+    private ManageModel inputObject;
     private SearchService searchService;
 
-    private ArrayList<Object> results;
+    private Object result;
 
     public SearchAction(){
     }
 
     @Override
     public String execute() {
-        setResults(getSearchService().search(getInputObject()));
+        setResult(getSearchService().search(getInputObject()));
+        System.out.println(result);
 
         return Action.SUCCESS;
     }
 
-    public SearchModel getInputObject() {
+    public ManageModel getInputObject() {
         return inputObject;
     }
 
-    public void setInputObject(SearchModel inputObject) {
+    public void setInputObject(ManageModel inputObject) {
         this.inputObject = inputObject;
     }
 
@@ -40,11 +42,11 @@ public class SearchAction extends ActionSupport {
         this.searchService = searchService;
     }
 
-    public ArrayList<Object> getResults() {
-        return results;
+    public Object getResult() {
+        return result;
     }
 
-    public void setResults(ArrayList<Object> results) {
-        this.results = results;
+    public void setResult(Object result) {
+        this.result = result;
     }
 }

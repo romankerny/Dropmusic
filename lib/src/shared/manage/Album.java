@@ -2,7 +2,7 @@ package shared.manage;
 import shared.Review;
 
 import java.io.Serializable;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.ArrayList;
 
 public class Album implements Serializable, ManageModel {
     private static final long serialVersionUID = 1123124L;
@@ -13,7 +13,8 @@ public class Album implements Serializable, ManageModel {
     private          String launchDate;
     private          String editorLabel;
     private          float avgRating;
-    private          CopyOnWriteArrayList<Review> reviews;
+    private          ArrayList<Review> reviews;
+    private         ArrayList<Music> songs;
 
     public Album(String title, String description, String genre, String artist, String launchDate, String editorLabel) {
         setTitle(title);
@@ -22,12 +23,18 @@ public class Album implements Serializable, ManageModel {
         setEditorLabel(editorLabel);
         setDescription(description);
         setGenre(genre);
-        setReviews(new CopyOnWriteArrayList<Review>());
+        setReviews(new ArrayList<Review>());
+        setSongs(new ArrayList<Music>());
     }
 
     public Album()
     {
         this(null, null, null, null, null, null);
+    }
+
+    public Album(String title, String launchDate) {
+        setTitle(title);
+        setLaunchDate(launchDate);
     }
 
     public void setDescription(String description) {
@@ -104,11 +111,19 @@ public class Album implements Serializable, ManageModel {
         this.genre = genre;
     }
 
-    public CopyOnWriteArrayList<Review> getReviews() {
+    public ArrayList<Review> getReviews() {
         return reviews;
     }
 
-    public void setReviews(CopyOnWriteArrayList<Review> reviews) {
+    public void setReviews(ArrayList<Review> reviews) {
         this.reviews = reviews;
+    }
+
+    public ArrayList<Music> getSongs() {
+        return songs;
+    }
+
+    public void setSongs(ArrayList<Music> songs) {
+        this.songs = songs;
     }
 }

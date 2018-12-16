@@ -1,7 +1,10 @@
-package webserver.services;
+package webserver.services.search;
 
 import shared.RMIServerInterface;
 import shared.SearchModel;
+import shared.manage.ManageModel;
+import shared.manage.Music;
+import webserver.services.search.SearchService;
 
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
@@ -25,10 +28,11 @@ public class MusicSearchService implements SearchService {
     }
 
     @Override
-    public ArrayList<Object> search(SearchModel searchModel) {
-        ArrayList<Object> result = null;
+    public Object search(ManageModel searchModel) {
+        Music musicModel = (Music) searchModel;
+        Object result = null;
         try {
-            result = server.searchMusic(searchModel.getKeyword());
+            result = server.searchMusic(musicModel.getArtistName(), musicModel.getAlbumTitle(), musicModel.getTitle());
         } catch (RemoteException e) {
             e.printStackTrace();
         }

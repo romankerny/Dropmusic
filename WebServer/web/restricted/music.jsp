@@ -80,52 +80,47 @@
 <body>
 
 <c:choose>
-    <c:when test="${results == null}">
-        A problem occurred during the search!
-    </c:when>
-    <c:when test="${results.isEmpty()}">
-        No results found!
+    <c:when test="${result == null}">
+        No result found!
     </c:when>
     <c:otherwise>
-        <c:forEach items="${results}" var="item">
-            <h1>
-                <c:out value="${item.title}" /> from <c:out value="${item.albumTitle}" /> by <c:out value="${item.artistName}" /> <br />
-            </h1>
-            <div>
-                <b>Track:</b> <c:out value="${item.title}" /> <br/>
-                <b>Title:</b> <c:out value="${item.track}" /> <br/>
-                <b>Lyrics:</b> <c:out value="${item.lyrics}" /> <br/>
+        <h1>
+            <c:out value="${result.title}" /> from <c:out value="${result.albumTitle}" /> by <c:out value="${result.artistName}" /> <br />
+        </h1>
+        <div>
+            <b>Track:</b> <c:out value="${result.title}" /> <br/>
+            <b>Title:</b> <c:out value="${result.track}" /> <br/>
+            <b>Lyrics:</b> <c:out value="${result.lyrics}" /> <br/>
+        </div>
+
+        <s:set var="artistName">${result.artistName}</s:set>
+        <s:set var="albumName">${result.albumTitle}</s:set>
+        <s:set var="title">${result.title}</s:set>
+
+        <s:form action="playAction">
+            <s:hidden name="inputModel.artistName" value="%{#artistName}" id="artist"/>
+            <s:hidden name="inputModel.albumTitle" value="%{#albumName}" id="album"/>
+            <s:hidden name="inputModel.title" value="%{#title}" id="title" />
+            <button type="button" id="playButton">Play song!</button>
+            <div id="playBar">
+
             </div>
+        </s:form>
+        <br />
+        <br/>
 
-            <s:set var="artistName">${item.artistName}</s:set>
-            <s:set var="albumName">${item.albumTitle}</s:set>
-            <s:set var="title">${item.title}</s:set>
+        <p hidden id="artistName" >${result.artistName}</p>
+        <p hidden id="albumName" >${result.albumTitle}</p>
+        <p hidden id="musicTitle" >${result.title}</p>
 
-            <s:form action="playAction">
-                <s:hidden name="inputModel.artistName" value="%{#artistName}" id="artist"/>
-                <s:hidden name="inputModel.albumTitle" value="%{#albumName}" id="album"/>
-                <s:hidden name="inputModel.title" value="%{#title}" id="title" />
-                <button type="button" id="playButton">Play song!</button>
-                <div id="playBar">
-
-                </div>
-            </s:form>
-            <br />
-            <br/>
-
-            <p hidden id="artistName" >${item.artistName}</p>
-            <p hidden id="albumName" >${item.albumTitle}</p>
-            <p hidden id="musicTitle" >${item.title}</p>
-
-        </c:forEach>
-        <s:text name="Name of file in DropBox" />
+        Name of file in DropBox:
         <s:textfield id="fileName" />
         <button type="button" id="associateDropboxButton">Associate</button>
         <div id="rsp"></div><br>
 
 
         <hr>
-        <s:text name="Share with" />
+        Share with:
         <s:textfield id="email" />
         <button type="button" id="shareDropboxButton">Share</button>
         <div id="rspShare"></div><br>

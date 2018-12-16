@@ -2,94 +2,92 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import shared.RMIServerInterface;
 import shared.SearchModel;
-import webserver.services.AlbumSearchService;
-import webserver.services.ArtistSearchService;
-import webserver.services.MusicSearchService;
+import shared.manage.Album;
+import shared.manage.Artist;
+import shared.manage.Music;
+import webserver.services.search.AlbumSearchService;
+import webserver.services.search.ArtistSearchService;
+import webserver.services.search.MusicSearchService;
+import webserver.services.search.SearchAllService;
 
+import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 
 public class SearchAllAction extends ActionSupport {
 
-    private SearchModel inputObject;
-    private ArtistSearchService artistSearchService;
-    private AlbumSearchService albumSearchService;
-    private MusicSearchService musicSearchService;
+    private String keyword;
 
-    private ArrayList<Object> artistResults;
-    private ArrayList<Object> albumResults;
-    private ArrayList<Object> musicResults;
+    private ArrayList<Artist> artistResults;
+    private ArrayList<Album> albumResults;
+    private ArrayList<Music> musicResults;
 
-
-    public SearchAllAction() {
-        inputObject = new SearchModel();
-        artistSearchService = new ArtistSearchService();
-        albumSearchService = new AlbumSearchService();
-        musicSearchService = new MusicSearchService();
-    }
+    private SearchAllService service = new SearchAllService();
 
     @Override
     public String execute() {
-        setArtistResults(getArtistSearchService().search(inputObject));
-        setAlbumResults(getAlbumSearchService().search(inputObject));
-        setMusicResults(getMusicSearchService().search(inputObject));
+        setResults(getService().searchAll(getKeyword()));
         return Action.SUCCESS;
     }
 
-    public ArtistSearchService getArtistSearchService() {
-        return artistSearchService;
+    public void setResults(ArrayList<Object> objects) {
+        ArrayList<Artist> artists = new ArrayList<>();
+        ArrayList<Album> albums = new ArrayList<>();
+        ArrayList<Music> songs = new ArrayList<>();
+        for (Object o : objects) {
+            if (o instanceof Artist)
+                artists.add((Artist) o);
+
+            if (o instanceof Album)
+                albums.add((Album) o);
+
+            if (o instanceof Music)
+                songs.add((Music) o);
+        }
+
+        setArtistResults(artists);
+        setAlbumResults(albums);
+        setMusicResults(songs);
     }
 
-    public void setArtistSearchService(ArtistSearchService artistSearchService) {
-        this.artistSearchService = artistSearchService;
+    public String getKeyword() {
+        return keyword;
     }
 
-    public AlbumSearchService getAlbumSearchService() {
-        return albumSearchService;
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
-    public void setAlbumSearchService(AlbumSearchService albumSearchService) {
-        this.albumSearchService = albumSearchService;
-    }
-
-    public MusicSearchService getMusicSearchService() {
-        return musicSearchService;
-    }
-
-    public void setMusicSearchService(MusicSearchService musicSearchService) {
-        this.musicSearchService = musicSearchService;
-    }
-
-    public ArrayList<Object> getArtistResults() {
+    public ArrayList<Artist> getArtistResults() {
         return artistResults;
     }
 
-    public void setArtistResults(ArrayList<Object> artistResults) {
+    public void setArtistResults(ArrayList<Artist> artistResults) {
         this.artistResults = artistResults;
     }
 
-    public ArrayList<Object> getAlbumResults() {
+    public ArrayList<Album> getAlbumResults() {
         return albumResults;
     }
 
-    public void setAlbumResults(ArrayList<Object> albumResults) {
+    public void setAlbumResults(ArrayList<Album> albumResults) {
         this.albumResults = albumResults;
     }
 
-    public ArrayList<Object> getMusicResults() {
+    public ArrayList<Music> getMusicResults() {
         return musicResults;
     }
 
-    public void setMusicResults(ArrayList<Object> musicResults) {
+    public void setMusicResults(ArrayList<Music> musicResults) {
         this.musicResults = musicResults;
     }
 
-    public SearchModel getInputObject() {
-        return inputObject;
+    public SearchAllService getService() {
+        return service;
     }
 
-    public void setInputObject(SearchModel inputObject) {
-        this.inputObject = inputObject;
+    public void setService(SearchAllService service) {
+        this.service = service;
     }
-
 }

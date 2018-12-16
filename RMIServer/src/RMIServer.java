@@ -357,10 +357,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-    public boolean loginDropbox() throws RemoteException {
-        return false;
-    }
-
     /**
      * Request  -> flag | id; type | privilege; user1 | username; user2; username;
      * Response -> flag | id; type | privilege; result | (y/n): user1 | username; user2 | username; msg | mmmmmmmm;
@@ -656,136 +652,184 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rspToClient;
     }
 
-    /**
-     * Request  -> flag | id; type | details; param | art; keyword | kkkk;
-     * Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
-     * @param keyword
-     * @return
-     */
-
-    public ArrayList<Object> searchArtist(String keyword) throws RemoteException {
+    public ArrayList<Object> search(String keyword) throws RemoteException{
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
-        ArrayList<Object> results = new ArrayList<>();
 
-        String msg = "flag|"+id+";type|details;param|art;keyword|" + keyword + ";";
+        String msg = "flag|"+id+";type|details;keyword|" + keyword + ";";
         boolean exit = false;
 
         sendUDPDatagram(msg);
 
+        ArrayList<Object> results = new ArrayList<>();
 
         while (!exit) {
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(0)[1].equals(id)) {
-                int nArtists = Integer.parseInt(cleanMessage.get(5)[1]);
+
+                int nArtists = Integer.parseInt(cleanMessage.get(4)[1]);
+                int nAlbums = Integer.parseInt(cleanMessage.get(5+nArtists)[1]);
+                int nSongs = Integer.parseInt(cleanMessage.get(6+nArtists+nAlbums*2)[1]);
 
                 for (int i = 0; i < nArtists; i++) {
+                    results.add(new Artist(cleanMessage.get(5+i)[1], ""));
+                }
 
-                    Artist art = new Artist(cleanMessage.get(6 + i)[1], cleanMessage.get(7 + i)[1]);
-                    System.out.println(art);
-                    results.add(art);
+                for (int i = 0; i < nAlbums; i++) {
+                    String albumName = cleanMessage.get((5+nArtists)+1+i*2)[1];
+                    String artistName = cleanMessage.get((5+nArtists)+2+i*2)[1];
+                    results.add(new Album(albumName, "", "", artistName, "", ""));
+                }
+
+
+                for (int i = 0; i < nSongs; i++) {
+                    String title = cleanMessage.get((6+nArtists+nAlbums*2)+1+i*3)[1];
+                    String albumTitle = cleanMessage.get((6+nArtists+nAlbums*2)+2+i*3)[1];
+                    String artistName = cleanMessage.get((6+nArtists+nAlbums*2)+3+i*3)[1];
+
+                    results.add(new Music("", title, "",albumTitle, artistName));
+                }
+
+                exit = true;
+
+            }
+        }
+
+        return results;
+    }
+
+    /**
+     * Request  -> flag | id; type | details; param | art; keyword | kkkk;
+     * Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
+     * @param
+     * @return
+     */
+
+    public Artist searchArtist(String name) throws RemoteException {
+
+        String uuid = UUID.randomUUID().toString();
+        String id = uuid.substring(0, Math.min(uuid.length(), 8));
+        ArrayList<Object> results = new ArrayList<>();
+
+        String msg = "flag|"+id+";type|getArt;name|" + name + ";";
+        boolean exit = false;
+
+        sendUDPDatagram(msg);
+
+        Artist result = null;
+
+        while (!exit) {
+            String rsp = receiveUDPDatagram(msg);
+            ArrayList<String[]> cleanMessage = cleanTokens(rsp);
+
+            if (cleanMessage.get(0)[1].equals(id)) {
+                int nAlbums = Integer.parseInt(cleanMessage.get(6)[1]);
+
+                result = new Artist(cleanMessage.get(4)[1], cleanMessage.get(5)[1]);
+
+                for (int i = 0; i < nAlbums; i++) {
+                    result.getAlbums().add(new Album(cleanMessage.get(8+i)[1], cleanMessage.get(7+i)[1]));
                 }
 
                 exit = true;
             }
         }
-        return results;
+        return result;
     }
 
     /**
      * Request  -> flag | id; type | details; param | alb; keyword | kkkk;
      * Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
-     * @param keyword
+     * @param
      * @return
      */
 
-    public ArrayList<Object> searchAlbum(String keyword) throws RemoteException {
+    public Album searchAlbum(String artist, String title) throws RemoteException {
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
-        String msg = "flag|"+id+";type|details;param|alb;keyword|" + keyword + ";", rspToClient = "";
+        String msg = "flag|"+id+";type|getAlb;artist|"+artist+";title|"+title+ ";";
         boolean exit = false;
 
         sendUDPDatagram(msg);
 
-        ArrayList<Object> results = new ArrayList<>();
+        Album result = null;
 
         while (!exit) {
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
             if (cleanMessage.get(0)[1].equals(id)) {
 
-                int nAlbums = Integer.parseInt(cleanMessage.get(5)[1]);
+                int nAlbums = Integer.parseInt(cleanMessage.get(3)[1]);
+                int nTracks = Integer.parseInt(cleanMessage.get(11)[1]);
+                int offset = 12+nTracks*2;
+                int nReviews = Integer.parseInt(cleanMessage.get(offset)[1]);
 
-                for (int i = 0; i < nAlbums; i++) {
 
-                    int nReviews = Integer.parseInt(cleanMessage.get(13)[1]);
+                String albumName = cleanMessage.get(4)[1];
+                String artistName = cleanMessage.get(10)[1];
 
-                    int offset = i*(8+nReviews*3);
+                result = new Album(albumName, cleanMessage.get(5)[1], cleanMessage.get(6)[1], artistName, cleanMessage.get(7)[1], cleanMessage.get(8)[1]);
+                result.setAvgRating(Float.parseFloat(cleanMessage.get(9)[1]));
 
-                    String albumName = cleanMessage.get(6+offset)[1];
-                    String artistName = cleanMessage.get(12+offset)[1];
+                System.out.println(result);
 
-                    Album foundAlbum = new Album(albumName, cleanMessage.get(7+offset)[1], cleanMessage.get(8+offset)[1], artistName, cleanMessage.get(9+offset)[1], cleanMessage.get(10+offset)[1]);
-                    foundAlbum.setAvgRating(Float.parseFloat(cleanMessage.get(11+offset)[1]));
+                for (int i = 0; i < nTracks; i++) {
+                    result.getSongs().add(new Music(cleanMessage.get(12+i*2)[1], cleanMessage.get(13+i*2)[1], "", albumName, artistName));
+                }
 
-                    System.out.println(foundAlbum);
-
-                    for (int j = 0; j < nReviews; j++) {
-                        foundAlbum.getReviews().add(new Review(Integer.parseInt(cleanMessage.get(14+j*3+offset)[1]), cleanMessage.get(15+j*3+offset)[1], cleanMessage.get(16+j*3+offset)[1], artistName, albumName));
-                    }
-                    results.add(foundAlbum);
-
+                for (int j = 0; j < nReviews; j++) {
+                    result.getReviews().add(new Review(Integer.parseInt(cleanMessage.get(offset+1+j*3)[1]), cleanMessage.get(offset+2+j*3)[1], cleanMessage.get(offset+3+j*3)[1], artistName, albumName));
                 }
 
                 exit = true;
             }
         }
-        return results;
+        return result;
     }
 
     /**
      * Request  -> flag | id; type | details; param | mus; keyword | kkkk;
      * Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
-     * @param keyword
+     * @param
      * @return
      */
 
-    public ArrayList<Object> searchMusic(String keyword) throws RemoteException {
+    public Music searchMusic(String artist, String album, String title) throws RemoteException {
 
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
-        String msg = "flag|"+id+";type|details;param|mus;keyword|" + keyword + ";";;
+        String msg = "flag|"+id+";type|getMus;artist|"+artist+";album|"+album+";title|"+title+";";
         boolean exit = false;
 
         sendUDPDatagram(msg);
 
-        ArrayList<Object> results = new ArrayList<>();
+        Music result = null;
 
         while (!exit) {
             String rsp = receiveUDPDatagram(msg);
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(0)[1].equals(id)) {
+                if (cleanMessage.get(2)[1].equals("y")) {
 
-            int nMusics = Integer.parseInt(cleanMessage.get(5)[1]);
+                    int nMusics = Integer.parseInt(cleanMessage.get(3)[1]);
 
-                for (int i = 0; i < nMusics; i++) {
+                    for (int i = 0; i < nMusics; i++) {
 
-                    Music mus = new Music(cleanMessage.get(6 + i)[1], cleanMessage.get(7 + i)[1], cleanMessage.get(8 + i)[1], cleanMessage.get(9+i)[1], cleanMessage.get(10+i)[1]);
-                    System.out.println(mus);
-                    results.add(mus);
+                        result = new Music(cleanMessage.get(4 + i)[1], cleanMessage.get(5 + i)[1], cleanMessage.get(6 + i)[1], cleanMessage.get(7 + i)[1], cleanMessage.get(8 + i)[1]);
 
-                }
-                exit = true;
+                    }
+                    exit = true;
                 }
             }
-        return results;
+            }
+        return result;
         }
 
 

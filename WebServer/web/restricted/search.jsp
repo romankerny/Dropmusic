@@ -28,16 +28,15 @@
         <c:otherwise>
             Found ${artistResults.size()} artists!
             <br />
+            <ul>
             <c:forEach items="${artistResults}" var="item">
-                <div>
-                    Name: <s:url value="artistSearch.action" method="execute" var="urlTag">
-                                <s:param name="inputObject.keyword">${item.name}</s:param>
-                            </s:url>
-                    <s:a href="%{urlTag}">${item.name}</s:a>
-                    <br />
-                </div>
-                <br />
+                <li><s:url value="artistSearch.action" method="execute" var="urlTag">
+                            <s:param name="inputObject.name">${item.name}</s:param>
+                        </s:url>
+                <s:a href="%{urlTag}">${item.name}</s:a></li>
+                <br/>
             </c:forEach>
+            </ul>
         </c:otherwise>
     </c:choose>
 
@@ -53,16 +52,16 @@
         <c:otherwise>
             Found ${albumResults.size()} albums!
             <br />
+            <ul>
             <c:forEach items="${albumResults}" var="item">
-                <div>
-                Title: <s:url value="albumSearch.action" method="execute" var="urlTag">
-                             <s:param name="inputObject.keyword">${item.title}</s:param>
-                        </s:url>
-                    <s:a href="%{urlTag}">${item.title}</s:a>
-                      <br />
-                </div>
+                <li><s:url value="albumSearch.action" method="execute" var="urlTag">
+                             <s:param name="inputObject.artist">${item.artist}</s:param>
+                            <s:param name="inputObject.title">${item.title}</s:param>
+                    </s:url>
+                    <s:a href="%{urlTag}">${item.title}</s:a> </li>
                 <br />
             </c:forEach>
+            </ul>
         </c:otherwise>
     </c:choose>
 
@@ -78,16 +77,17 @@
         <c:otherwise>
             Found ${musicResults.size()} songs!
             <br />
+            <ul>
             <c:forEach items="${musicResults}" var="item">
-                <div>
-                    Title: <s:url value="musicSearch.action" method="execute" var="urlTag">
-                    <s:param name="inputObject.keyword">${item.title}</s:param>
-                </s:url>
-                    <s:a href="%{urlTag}">${item.title}</s:a>
+                    <li><s:url value="musicSearch.action" method="execute" var="urlTag">
+                            <s:param name="inputObject.artistName">${item.artistName}</s:param>
+                            <s:param name="inputObject.albumTitle">${item.albumTitle}</s:param>
+                            <s:param name="inputObject.title">${item.title}</s:param>
+                        </s:url>
+                        <s:a href="%{urlTag}">${item.title}</s:a> </li>
                     <br />
-                </div>
-                <br />
             </c:forEach>
+            </ul>
         </c:otherwise>
     </c:choose>
 </div>

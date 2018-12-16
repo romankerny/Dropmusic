@@ -1,7 +1,10 @@
 package shared;
 
+import shared.manage.Album;
+import shared.manage.Artist;
 import shared.manage.Music;
 
+import java.awt.image.AreaAveragingScaleFilter;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -32,9 +35,10 @@ public interface RMIServerInterface extends Remote {
 
     // 3.
     public String search(String param, String keyword) throws RemoteException;
-    ArrayList<Object> searchArtist(String keyword) throws RemoteException;
-    ArrayList<Object> searchAlbum(String keyword) throws RemoteException;
-    ArrayList<Object> searchMusic(String keyword) throws RemoteException;
+    public ArrayList<Object> search(String keyword) throws RemoteException;
+    Artist searchArtist(String keyword) throws RemoteException;
+    Album searchAlbum(String artist, String title) throws RemoteException;
+    Music searchMusic(String artist, String album, String title) throws RemoteException;
     String getMusicURL(String artist, String album, String title, String email) throws RemoteException;
     public ArrayList<String> getEditors(String artistName)  throws RemoteException;
     public boolean shareMusic(String emailToShare, String artist, String album, String musicTitle, String email) throws RemoteException;

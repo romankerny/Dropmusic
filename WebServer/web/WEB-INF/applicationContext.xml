@@ -5,35 +5,23 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 
     <!-- Models -->
-        <bean id="searchModel" class="shared.SearchModel" scope="prototype" />
-
         <!-- Manage Models -->
         <bean id="artistModel" class="shared.manage.Artist" scope="prototype" />
         <bean id="albumModel" class="shared.manage.Album" scope="prototype" />
         <bean id="musicModel" class="shared.manage.Music" scope="prototype" />
 
-
-
-
-
-
-
     <!-- Services -->
         <bean id="registerService" class="webserver.services.RegisterService" />
 
         <!-- Search Services -->
-        <bean id="artistSearchService" class="webserver.services.ArtistSearchService" />
-        <bean id="albumSearchService"  class="webserver.services.AlbumSearchService" />
-        <bean id="musicSearchService"  class="webserver.services.MusicSearchService" />
+        <bean id="artistSearchService" class="webserver.services.search.ArtistSearchService" />
+        <bean id="albumSearchService"  class="webserver.services.search.AlbumSearchService" />
+        <bean id="musicSearchService"  class="webserver.services.search.MusicSearchService" />
 
         <!-- Manage Services -->
         <bean id="addArtistService" class="webserver.services.manage.AddArtistService" />
         <bean id="addAlbumService"  class="webserver.services.manage.AddAlbumService" />
         <bean id="addMusicService"  class="webserver.services.manage.AddMusicService" />
-
-
-
-
 
 
 
@@ -45,14 +33,17 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
         <!-- Search Actions -->
         <bean id="artistSearchAction" class="webserver.actions.SearchAction" scope="prototype">
+            <property name="inputObject" ref="artistModel" />
             <property name="searchService" ref="artistSearchService" />
         </bean>
 
         <bean id="albumSearchAction" class="webserver.actions.SearchAction" scope="prototype">
+            <property name="inputObject" ref="albumModel" />
             <property name="searchService" ref="albumSearchService" />
         </bean>
 
         <bean id="musicSearchAction" class="webserver.actions.SearchAction" scope="prototype">
+            <property name="inputObject" ref="musicModel" />
             <property name="searchService" ref="musicSearchService" />
         </bean>
 
@@ -72,9 +63,6 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
             <property name="manageService" ref="addMusicService" />
             <property name="manageModel" ref="musicModel" />
         </bean>
-
-
-
 
 </beans>
 
