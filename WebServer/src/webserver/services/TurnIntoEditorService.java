@@ -47,6 +47,5 @@ public class TurnIntoEditorService {
         
         return r;
 
-
     }
 }

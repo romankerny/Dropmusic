@@ -27,6 +27,7 @@ public class AlbumSearchService implements SearchService {
             e.printStackTrace();
         }
     }
+
     @Override
     public Object search(ManageModel searchModel) {
         Album albumModel = (Album) searchModel;

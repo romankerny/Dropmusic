@@ -86,8 +86,11 @@
 <div id="artist">
     <h1>Artist</h1>
     <s:form method="GET">
-        <s:text name="Name:"    /><s:textfield     id="AartistName" /><br>
-        <s:text name="Details:" /><s:textfield     id="AartistDetails" /><br>
+
+    <table style="width:500px">
+        <tr><td>Name:</td>    <td><s:textfield id="AartistName" /></td></tr>
+        <tr><td>Details:</td> <td><s:textfield id="AartistDetails" /></td></tr>
+    </table>
         <button type="button" id="searchArtistButton">Add</button>
     </s:form>
     <div id="rspArt"></div>
@@ -98,12 +101,14 @@
 <div id="album">
 <h1>Album</h1>
 <s:form method="GET">
-    <s:text name="Artist:" />       <s:textfield id="AAartistName" /><br>
-    <s:text name="Title:" />        <s:textfield id="AAtitle" /><br>
-    <s:text name="Description:" />  <s:textfield id="AAdescription" /><br>
-    <s:text name="Genre:" />        <s:textfield id="AAgenre" /><br>
-    <s:text name="Launch Date:" />  <s:textfield id="AAlaunchDate" /><br>
-    <s:text name="Editor Label:" /> <s:textfield id="AAeditorLabel" /><br>
+    <table style="width:500px">
+        <tr><td>Artist:</td>       <td><s:textfield id="AAartistName" /></td></tr>
+        <tr><td>Title:</td>        <td><s:textfield id="AAtitle" /></td></tr>
+        <tr><td>Description:</td>  <td><s:textfield id="AAdescription" /></td></tr>
+        <tr><td>Genre:</td>        <td><s:textfield id="AAgenre" /></td></tr>
+        <tr><td>Launch Date:</td>  <td><s:textfield id="AAlaunchDate" /></td></tr>
+        <tr><td>Editor Label:</td> <td><s:textfield id="AAeditorLabel" /></td></tr>
+    </table>
     <button type="button" id="searchAlbumButton">Add</button>
     <div id="rspAlb"></div>
 </s:form>
@@ -114,11 +119,13 @@
 <h1>Music</h1>
 <div id="Music">
 <s:form method="GET">
-    <s:text name="Artist Name:" /> <s:textfield id="MartistName" /><br>
-    <s:text name="Album Name:" />  <s:textfield id="MalbumTitle" /><br>
-    <s:text name="Track:" />       <s:textfield id="Mtrack" /><br>
-    <s:text name="Title:" />       <s:textfield id="Mtitle" /><br>
-    <s:text name="Lyrics:" />      <s:textfield id="Mlyrics" /><br>
+    <table style="width:500px">
+    <tr><td>Artist Name:</td>  <td><s:textfield id="MartistName" /></td></tr>
+    <tr><td>Album Name:</td>   <td><s:textfield id="MalbumTitle" /></td></tr>
+    <tr><td>Track:</td>        <td><s:textfield id="Mtrack" /></td></tr>
+    <tr><td>Title:</td>        <td><s:textfield id="Mtitle" /></td></tr>
+    <tr><td>Lyrics:</td>       <td><s:textfield id="Mlyrics" /></td></tr>
+    </table>
     <button type="button" id="searchMusicButton">Add</button>
     <div id="rspMus"></div>
 </s:form>

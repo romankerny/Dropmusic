@@ -11,7 +11,7 @@
 <body>
 
 <ul id="header">
-    <li class="head"><a href="dropmusic" class="active">Home</a></li>
+    <li class="head"><a href="dropmusic">Home</a></li>
     <li class="head"><a href="manage">Manage</a></li>
     <li class="head"><a href="profile">Profile</a></li>
     <li class="head"><a href="logout">Logout</a></li>

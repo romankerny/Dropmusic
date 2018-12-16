@@ -6,21 +6,28 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Login</title>
-  <!-- Required meta tags -->
+
+
 </head>
+
 <body>
+
+<table width="100%">
+
 <s:form action="loginAction" method="POST">
-  <s:textfield name="email" label="Email" />
-  <s:password name="password" label="Password" />
-  <s:submit label="Log in" />
+  <tr><td><s:textfield name="email" label="Email" /></td></tr>
+  <tr><td><s:password name="password" label="Password" /></td></tr>
+  <tr><td> <s:submit label="Log in" /></td></tr>
 </s:form>
 
 <s:form action="register-direct" method="post">
-<s:submit value="Sign Up"/>
-</s:form><br>
+<tr><td><s:submit value="Sign Up"/></td></tr>
+</s:form>
 
 <s:form action="associateDropBoxAction" method="post">
-  <s:submit value="Sign Up w/ Dropbox" />
+  <tr><td><s:submit value="Login w/ Dropbox" /></td> </tr>
 </s:form>
+
+</table>
 </body>
 </html>
