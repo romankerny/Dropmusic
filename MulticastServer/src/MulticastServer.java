@@ -1154,6 +1154,22 @@ public class MulticastServer extends Thread {
 
     // META-2
 
+    /**
+     *
+     *
+     * Returns the list of editors of an Artist with the following Protocol
+     *
+     *    Request  -> flag | id; type | getEditors; name | nnnn;
+     *    Response  -> flag | id; type | getEditors; notif_count | n; Aname | nnn; Aname | nnn; [etc...];
+     *
+     *
+     * @param id Packet's unique ID
+     * @param artName Artist's name
+     * @param code Hash sent by RMIServer
+     *
+     * @see #sendResponseMulticast(String, String)
+     */
+
     public void getEditors(String id, String artName, String code) {
 
         // Request  -> flag | id; type | getEditors; name | nnnn;
@@ -1187,6 +1203,23 @@ public class MulticastServer extends Thread {
         sendResponseMulticast(rsp, code);
     }
 
+    /**
+     *  Returns the URL of a given Song in DropBox, searched by artist, album and title
+     *
+     *  The user needs to be allowed to have access to the given URL
+     *  this kind of permission is maintained in the 'allowed' table
+     *
+     *
+     *
+     * @param id Packet's unique ID
+     * @param artist Artist's name
+     * @param album Album's Title
+     * @param title Music's Title
+     * @param email User requesting the URL
+     * @param code Hash sent by RMIServer
+     * @see #sendResponseMulticast(String, String)
+     */
+
     public void getURL(String id, String artist, String album, String title, String email, String code) {
         String rsp = "flag|"+id+";type|musURL;"+"result|";
         String result;
@@ -1195,12 +1228,12 @@ public class MulticastServer extends Thread {
         ResultSet rs;
 
         try {
-            pstmt = con.prepareStatement("select musicfilename " +
-                    "from upload u join allowed a on u.music_id = a.upload_music_id join music m on u.music_id = m.id join album a2 on m.album_id = a2.id " +
-                    "where a.allowed_email = ? " +
-                    "and m.title = ? " +
-                    "and a2.title = ? " +
-                    "and a2.artist_name = ?;");
+            pstmt = con.prepareStatement(   "select musicfilename " +
+                                                 "from upload u join allowed a on u.music_id = a.upload_music_id join music m on u.music_id = m.id join album a2 on m.album_id = a2.id " +
+                                                 "where a.allowed_email = ? " +
+                                                 "and m.title = ? " +
+                                                 "and a2.title = ? " +
+                                                 "and a2.artist_name = ?;");
 
             pstmt.setString(1, email);
             pstmt.setString(2, title);
@@ -1226,6 +1259,18 @@ public class MulticastServer extends Thread {
 
     }
 
+    /**
+     *  This method is used to save a user's Token in the Database.
+     *  The table used is named 'user'.
+     *
+     * @param id Packet's unique ID
+     * @param userToken Token to put in Data Base
+     * @param email User's email
+     * @param emailDropbox User's Dropbox email gotten from the API
+     * @param code Hash sent by RMIServer
+     * @see #sendResponseMulticast(String, String)
+     */
+
     public void setToken(String id, String userToken, String email, String emailDropbox, String code) {
 
         // flag | id; type | token; token | tttt; email | eeee; emaildropbox | eeee;
@@ -1238,8 +1283,8 @@ public class MulticastServer extends Thread {
         PreparedStatement pstmt;
         int rs;
 
-        System.out.println("token"+userToken);
-        System.out.println("emaildp"+emailDropbox);
+        System.out.println("token "+userToken);
+        System.out.println("email dp "+emailDropbox);
 
         try {
             pstmt = con.prepareStatement(  "UPDATE user AS u "+
@@ -1271,6 +1316,17 @@ public class MulticastServer extends Thread {
         sendResponseMulticast(rsp+aux, code); // -> RMIServer
 
     }
+
+    /**
+     * This method checks if a given emailDropbox is in the user Table.
+     * If it is, then the user can login.
+     * The user's DropMusic email is returned.
+     *
+     *
+     * @param id Packet's unique ID
+     * @param emailDropbox User's Dropbox email gotten from the API
+     * @param code Hash sent by RMIServer
+     */
 
     public void canLogin(String id, String emailDropbox, String code) {
 
@@ -1305,6 +1361,16 @@ public class MulticastServer extends Thread {
 
     }
 
+    /**
+     *
+     * This method is used to fetch the user's DropMusic email based on the Dropbox email.
+     * The table user is used.
+     *
+     * @param id Packet's unique ID
+     * @param dropboxEmail User's Dropbox email gotten from the API
+     * @param code Hash sent by RMIServer
+     */
+
     public void getDropMusicEmail(String id, String dropboxEmail, String code) {
 
         PreparedStatement pstmt;
@@ -1333,6 +1399,15 @@ public class MulticastServer extends Thread {
 
 
     }
+
+    /**
+     * This method is used to fetch the user's token based on their email.
+     * The table user is used.
+     *
+     * @param id Packet's unique ID
+     * @param email User's email
+     * @param code Hash sent by RMIServer
+     */
 
     public void getToken(String id, String email, String code) {
 
@@ -1368,6 +1443,21 @@ public class MulticastServer extends Thread {
         sendResponseMulticast(rsp, code);
     }
 
+    /**
+     *
+     * This method is used to associate a Music between DropMusic and Dropbox.
+     * First the music is added to the 'upload' table.
+     * Second the user who upload the music is inserted into the 'allowed' table. Basically, he is sharing the music
+     * with himself.
+     *
+     * @param id Packet's unique ID
+     * @param email User's email
+     * @param artist Artist's name
+     * @param album Album's Title
+     * @param musicTitle Music's Title
+     * @param url Url of song in Dropbox
+     * @param code Hash sent by RMIServer
+     */
 
     public void associateMusic(String id, String email, String artist, String album, String musicTitle, String url, String code) {
 
