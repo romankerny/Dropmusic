@@ -368,7 +368,7 @@ public class MulticastServer extends Thread {
         int rs;
         try {
             pstmt = con.prepareStatement("INSERT INTO allowed (upload_music_id, allowed_email, user_email) " +
-                    "SELECT upload.music_id, upload.user_email, ? " +
+                    "SELECT upload.music_id, ?, upload.user_email" +
                     "FROM upload, album a, music m " +
                     "WHERE upload.music_id = m.id " +
                     "AND a.title = ? " +

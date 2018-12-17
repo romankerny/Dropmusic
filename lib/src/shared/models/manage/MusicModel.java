@@ -128,7 +128,8 @@ public class MusicModel implements Serializable, ManageModel {
      * @return Whether operation was successful or not
      */
 
-    public boolean shareMusic(String email) {
+    public boolean shareMusic(String emailModel, String email) {
+        System.out.println("Recebi "+emailModel);
 
         boolean r = false, exit = false;
         RMIServerInterface server = RMICall.waitForServer();
@@ -139,7 +140,7 @@ public class MusicModel implements Serializable, ManageModel {
             try
             {
 
-                if (server.shareMusic(this.email, this.artistName, this.albumTitle, this.title, email))
+                if (server.shareMusic(emailModel, this.artistName, this.albumTitle, this.title, email))
                 {
                     r = true;
                 }

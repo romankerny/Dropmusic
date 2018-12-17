@@ -36,10 +36,11 @@
 
             $("#shareDropboxButton").click(function() {
 
+
                 $.ajax({
                     type: 'POST',
                     url:'shareMusicDropbox.action?' +
-                        '&model.email='+ document.getElementById('email').value +
+                        '&email='+ document.getElementById('email').value +
                         '&model.albumTitle='+ document.getElementById('albumName').innerText +
                         '&model.artistName=' + document.getElementById('artistName').innerText +
                         '&model.title='+ document.getElementById('musicTitle').innerText

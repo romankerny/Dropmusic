@@ -14,6 +14,7 @@ import java.util.Map;
 public class AssociateMusicAction extends ActionSupport implements SessionAware {
 
     private Map<String, Object> session;
+    private String email;
     private MusicModel model = new MusicModel();
 
 
@@ -31,6 +32,13 @@ public class AssociateMusicAction extends ActionSupport implements SessionAware 
 
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public MusicModel getModel() {
         return model;
