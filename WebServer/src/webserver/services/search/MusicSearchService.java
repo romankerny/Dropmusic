@@ -23,7 +23,7 @@ public class MusicSearchService implements SearchService {
 
         while (!exit) {
             try {
-                result = server.searchAlbum(musicModel.getArtistName(), musicModel.getTitle());
+                result = server.searchMusic(musicModel.getArtistName(), musicModel.getAlbumTitle(), musicModel.getTitle());
                 exit = true;
             } catch (RemoteException e) {
                 server = RMICall.waitForServer();
