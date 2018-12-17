@@ -1,4 +1,7 @@
-package shared;
+package shared.models;
+
+import shared.RMICall;
+import shared.RMIServerInterface;
 
 import java.rmi.ConnectException;
 import java.rmi.NotBoundException;

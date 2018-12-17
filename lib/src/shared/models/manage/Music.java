@@ -1,13 +1,12 @@
-package shared.manage;
+package shared.models.manage;
 
 import shared.RMIServerInterface;
 
 import java.io.Serializable;
-import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.util.ArrayList;
+
 import java.util.Map;
 
 public class Music implements Serializable, ManageModel {
@@ -19,7 +18,7 @@ public class Music implements Serializable, ManageModel {
     private String albumTitle;
     private String artistName;
     private String fileName;
-    private String email;
+    private String email; // used in shareMusic
 
 
     public Music(String track, String title, String lyrics, String albumTitle, String artistName) {

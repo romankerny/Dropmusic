@@ -1,16 +1,13 @@
 package webserver.services.search;
 
 import shared.RMIServerInterface;
-import shared.SearchModel;
-import shared.manage.Album;
-import shared.manage.ManageModel;
+import shared.models.manage.Album;
+import shared.models.manage.ManageModel;
 
-import java.io.ObjectInputStream;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.util.ArrayList;
 
 public class AlbumSearchService implements SearchService {
 

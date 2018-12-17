@@ -1,5 +1,5 @@
-package shared.manage;
-import shared.Review;
+package shared.models.manage;
+import shared.models.Review;
 
 import java.io.Serializable;
 import java.util.ArrayList;

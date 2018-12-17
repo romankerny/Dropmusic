@@ -1,6 +1,6 @@
 package webserver.services.manage;
 
-import shared.manage.ManageModel;
+import shared.models.manage.ManageModel;
 
 public interface ManageService {
 

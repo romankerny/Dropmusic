@@ -2,7 +2,7 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
-import shared.manage.Music;
+import shared.models.manage.Music;
 
 import java.util.Map;
 

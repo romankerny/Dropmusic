@@ -1,10 +1,9 @@
 package shared;
 
-import shared.manage.Album;
-import shared.manage.Artist;
-import shared.manage.Music;
+import shared.models.manage.Album;
+import shared.models.manage.Artist;
+import shared.models.manage.Music;
 
-import java.awt.image.AreaAveragingScaleFilter;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
-package shared.manage;
+package shared.models.manage;
 
 import shared.RMIServerInterface;
-import shared.User;
+
 
 import java.io.Serializable;
 import java.rmi.NotBoundException;
@@ -28,9 +28,6 @@ public class Artist implements Serializable, ManageModel {
         this(null, null);
     }
 
-    public void setDetails(String details, User s) {
-        this.details = details;
-    }
 
     public boolean removeArtist() {
 

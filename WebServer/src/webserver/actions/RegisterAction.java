@@ -3,7 +3,7 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
-import shared.LoginModel;
+import shared.models.LoginModel;
 
 
 import java.rmi.RemoteException;

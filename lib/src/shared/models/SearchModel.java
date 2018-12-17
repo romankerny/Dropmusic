@@ -1,4 +1,4 @@
-package shared;
+package shared.models;
 
 public class SearchModel {
     private String type;

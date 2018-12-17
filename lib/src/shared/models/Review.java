@@ -1,4 +1,6 @@
-package shared;
+package shared.models;
+
+import shared.RMIServerInterface;
 
 import java.io.Serializable;
 import java.rmi.AccessException;

@@ -1,4 +1,4 @@
-package shared.manage;
+package shared.models.manage;
 
 public interface ManageModel {
 }

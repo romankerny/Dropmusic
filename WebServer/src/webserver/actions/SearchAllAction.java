@@ -2,17 +2,11 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
-import shared.RMIServerInterface;
-import shared.SearchModel;
-import shared.manage.Album;
-import shared.manage.Artist;
-import shared.manage.Music;
-import webserver.services.search.AlbumSearchService;
-import webserver.services.search.ArtistSearchService;
-import webserver.services.search.MusicSearchService;
+import shared.models.manage.Album;
+import shared.models.manage.Artist;
+import shared.models.manage.Music;
 import webserver.services.search.SearchAllService;
 
-import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 
 public class SearchAllAction extends ActionSupport {

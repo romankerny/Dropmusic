@@ -1,7 +1,7 @@
 package webserver.actions;
 
 import com.opensymphony.xwork2.ActionSupport;
-import shared.manage.Artist;
+import shared.models.manage.Artist;
 
 public class RemoveArtistAction extends ActionSupport {
 

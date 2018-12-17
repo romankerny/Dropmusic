@@ -1,7 +1,7 @@
 package webserver.services.manage;
 
-import shared.manage.Artist;
-import shared.manage.ManageModel;
+import shared.models.manage.Artist;
+import shared.models.manage.ManageModel;
 import shared.RMIServerInterface;
 import ws.WebSocketAnnotation;
 

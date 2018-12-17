@@ -2,11 +2,8 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
-import shared.SearchModel;
-import shared.manage.ManageModel;
+import shared.models.manage.ManageModel;
 import webserver.services.search.SearchService;
-
-import java.util.ArrayList;
 
 public class SearchAction extends ActionSupport {
 

@@ -1,9 +1,8 @@
 package webserver.services.manage;
 
 import shared.RMIServerInterface;
-import shared.manage.Album;
-import shared.manage.Artist;
-import shared.manage.ManageModel;
+import shared.models.manage.Album;
+import shared.models.manage.ManageModel;
 import ws.WebSocketAnnotation;
 
 import java.rmi.NotBoundException;

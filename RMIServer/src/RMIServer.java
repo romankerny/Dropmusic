@@ -1,9 +1,7 @@
 import java.io.IOException;
 import java.net.*;
-import java.nio.DoubleBuffer;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -19,17 +17,16 @@ import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.exceptions.OAuthException;
 import com.github.scribejava.core.model.*;
 import com.github.scribejava.core.oauth.OAuthService;
-import jdk.nashorn.internal.parser.JSONParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import shared.*;
-import shared.manage.Album;
-import shared.manage.Artist;
-import shared.manage.Music;
+import shared.models.manage.Album;
+import shared.models.manage.Artist;
+import shared.models.manage.Music;
+import shared.models.Review;
 import uc.sd.apis.DropBoxApi2;
 
-import static java.lang.Thread.activeCount;
 import static java.lang.Thread.sleep;
 
 
