@@ -25,11 +25,11 @@ public class AddArtistService implements ManageService {
                     ArtistModel artist = (ArtistModel) manageModel;
                     if (artist.getName() != "" && artist.getDetails() != "") {
                         rsp = server.addArtist(artist.getName(), artist.getDetails(), email);
-                        if (rsp.equals("ArtistModel created") || rsp.equals("ArtistModel `" + artist.getName() + "` was edited") || rsp.equals("ArtistModel info added with success")) {
+                        if (rsp.equals("Artist created") || rsp.equals("Artist `" + artist.getName() + "` was edited") || rsp.equals("Artist info added with success")) {
                             ArrayList<String> editors = new ArrayList<>();
                             editors = server.getEditors(artist.getName());
                             for (String ed : editors)
-                                WebSocketAnnotation.sendNotification(ed, "ArtistModel " + artist.getName() + " was edited by " + email);
+                                WebSocketAnnotation.sendNotification(ed, "Artist " + artist.getName() + " was edited by " + email);
 
                             return true;
                         } else {

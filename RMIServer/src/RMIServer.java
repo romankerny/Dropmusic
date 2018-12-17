@@ -901,8 +901,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                             */
                         }
                     }
-                } else if(rspToClient.equals("ArtistModel created")) {
-                    rspToClient = "ArtistModel created";
+                } else if(rspToClient.equals("Artist created")) {
+                    rspToClient = "Artist created";
                 }
 
                 exit = true;
