@@ -641,7 +641,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             ArrayList<String[]> cleanMessage = cleanTokens(rsp);
 
             if (cleanMessage.get(0)[1].equals(id)) {
-                rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];
+                int nItems = Integer.parseInt(cleanMessage.get(5)[1]);
+
+                rspToClient += "Found "+nItems+" items\n";
+                for (int  i = 6; i < cleanMessage.size()-1; i++) {
+                    rspToClient += cleanMessage.get(i)[1] +"\n";
+                }
                 exit = true;
             }
         }
@@ -653,7 +658,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
 
-        String msg = "flag|"+id+";type|details;keyword|" + keyword + ";";
+        String msg = "flag|"+id+";type|search;keyword|" + keyword + ";";
         boolean exit = false;
 
         sendUDPDatagram(msg);
@@ -697,13 +702,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return results;
     }
 
-    /**
-     * Request  -> flag | id; type | details; param | art; keyword | kkkk;
-     * Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
-     * @param
-     * @return
-     */
-
     public Artist searchArtist(String name) throws RemoteException {
 
         String uuid = UUID.randomUUID().toString();
@@ -735,13 +733,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
         return result;
     }
-
-    /**
-     * Request  -> flag | id; type | details; param | alb; keyword | kkkk;
-     * Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
-     * @param
-     * @return
-     */
 
     public Album searchAlbum(String artist, String title) throws RemoteException {
 
@@ -787,13 +778,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
         return result;
     }
-
-    /**
-     * Request  -> flag | id; type | details; param | mus; keyword | kkkk;
-     * Response -> flag | id; type | details; result | (y/n); param | (art, gen, tit); keyword | kkkk; item_count | n; iten_x_name | name; [...] msg | mmmmmm;
-     * @param
-     * @return
-     */
 
     public Music searchMusic(String artist, String album, String title) throws RemoteException {
 

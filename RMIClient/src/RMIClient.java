@@ -184,7 +184,8 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                         if (!result.equals("Incorrect user/password"))
                             email = tokens[1];
                     } else {
-                        System.out.println("Usage: login [email]");                    }
+                        System.out.println("Usage: login [email]");
+                    }
 
 
                 } else if (tokens[0].equals("logout")) {

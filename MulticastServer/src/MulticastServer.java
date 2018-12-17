@@ -791,6 +791,181 @@ public class MulticastServer extends Thread {
      * If keyword matches then it is added as a new found item to be sent as answer. If nothing is found then returns
      * an error message.
      * @param id Packet's unique ID
+     * @param type Either 'art', 'alb' or 'gen' for artist, album and genre respectively
+     * @param keyword Keyword used for the search query
+     * @param code Hash sent by RMIServer
+     * @see #sendResponseMulticast(String, String)
+     */
+    public void getDetailsOld(String id, String type, String keyword, String code) {
+        // Request  -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk;
+        // Response -> flag | id; type | search; param | (art, alb, gen); keyword | kkkk; item_count | n; item_x_name | name; [...] msg | mmmmmm;
+
+        PreparedStatement pstmtCritics = null, pstmtAlbInfo = null, pstmtArtInfo = null, pstmtMus = null;
+        ResultSet rsCritics, rsAlbInfo, rsArtInfo, rsMus;
+        String response = "", message = "", rsp, result = "n", aux = "";
+        String artistInfo = "", musicInfo = "";
+        int itemCount = 0;
+
+        try {
+
+            if (type.equals("art")) {
+
+                pstmtArtInfo = con.prepareStatement("SELECT name 'Name', details 'Details' FROM artist WHERE name like ?;");
+
+                pstmtAlbInfo = con.prepareStatement("SELECT title 'Title', description 'Description', genre 'Genre', launch_date 'Launch date', editor_label 'Editor label', IFNULL(albrate.rat,0) 'Rating'" +
+                        "                        FROM album AS alb" +
+                        "                        LEFT JOIN (select album_id, avg(rating) AS rat" +
+                        "                                            from review" +
+                        "                                            group by album_id" +
+                        "                                            having album_id IN (select id from album" +
+                        "                                                                where artist_name = ?)) AS albrate ON albrate.album_id = alb.id" +
+                        "                        WHERE alb.artist_name = ?;");
+
+                pstmtAlbInfo.setString(1, keyword);
+                pstmtAlbInfo.setString(2, keyword);
+
+                pstmtArtInfo.setString(1, "%" + keyword + "%");
+                rsAlbInfo = pstmtAlbInfo.executeQuery();
+                rsArtInfo = pstmtArtInfo.executeQuery();
+
+                if (rsArtInfo.next()) {
+                    result = "y";
+                    ResultSetMetaData rsmdArtInfo = rsArtInfo.getMetaData();
+                    int columNumberArtistInfo = rsmdArtInfo.getColumnCount();
+
+                    do {
+                        itemCount++;
+                        for (int i =1 ; i < columNumberArtistInfo + 1; i++) {
+                            aux += rsmdArtInfo.getColumnLabel(i) + "|" + rsArtInfo.getString(i) + ";";
+                        }
+                        artistInfo += aux;
+                        aux = "";
+
+                    } while(rsArtInfo.next());
+
+                    /*
+                    ResultSetMetaData rsmdAlbInfo = rsAlbInfo.getMetaData();
+                    int columNumberAlbumInfo = rsmdAlbInfo.getColumnCount();
+
+                    aux += "Discography: \n";
+                    while(rsAlbInfo.next()) {
+                        for (int i = 1; i < columNumberAlbumInfo + 1; i++)
+                            aux += rsmdAlbInfo.getColumnLabel(i) + ":" + rsAlbInfo.getString(i) + "\n";
+                    }
+                    message = aux;
+                    */
+
+                    message = "item_count|"+itemCount+";" + artistInfo;
+
+                } else {
+                    result = "n";
+                    message = "item_count|0;";
+                }
+
+
+
+            } else if (type.equals("alb")) {
+                pstmtAlbInfo = con.prepareStatement("select a.id, a.title, a.description, a.genre, a.launch_date, a.editor_label, IFNULL(avgRates.avgrating, 0) 'Average Rating', a.artist_name " +
+                        "from album a " +
+                        "left join (select album_id, avg(rating) as avgrating from review group by album_id) as avgRates on a.id = avgRates.album_id " +
+                        "where a.title = ? or a.genre = ? or a.editor_label = ?;");
+
+                pstmtAlbInfo.setString(1, keyword);
+                pstmtAlbInfo.setString(2, keyword);
+                pstmtAlbInfo.setString(3, keyword);
+
+                rsAlbInfo = pstmtAlbInfo.executeQuery();
+
+                if (rsAlbInfo.next()) {
+                    int nAlbums = 0; // Used to print `Found n items`
+                    String albumInfo = "";
+                    result = "y";
+                    ResultSetMetaData albumsMD = rsAlbInfo.getMetaData();
+                    ResultSet rsSongs;
+                    ResultSetMetaData songsMD;
+                    ResultSet rsReviews;
+                    ResultSetMetaData reviewsMD;
+
+                    do {
+                        nAlbums++;
+
+                        int albumID = rsAlbInfo.getInt("id");
+
+                        for (int i = 2; i <= albumsMD.getColumnCount(); i++) {
+                            albumInfo += albumsMD.getColumnLabel(i)+"|"+rsAlbInfo.getString(i) + ";";
+                        }
+                        message += albumInfo;
+
+                        // Reviews
+                        PreparedStatement reviewsStatement = con.prepareStatement("select r.rating, r.critic, r.user_email " +
+                                "from review r where r.album_id = ?");
+
+                        reviewsStatement.setInt(1, albumID);
+                        rsReviews = reviewsStatement.executeQuery();
+
+                        if (rsReviews.next()) {
+                            int nReviews = 0;
+                            String reviews = "";
+                            reviewsMD = rsReviews.getMetaData();
+                            do {
+                                nReviews++;
+                                for (int i = 1; i <= reviewsMD.getColumnCount(); i++)
+                                    reviews += reviewsMD.getColumnLabel(i) + "|"+rsReviews.getString(i) +';';
+
+                            } while (rsReviews.next());
+                            message += "item_count|"+nReviews+";"+reviews;
+                        }
+                    } while (rsAlbInfo.next());
+                    message = "item_count|"+nAlbums+";"+message;
+                } else {
+                    // No album found
+                    message = "item_count|0;";
+                }
+
+            } else if(type.equals("mus")) {
+
+                pstmtMus = con.prepareStatement("select m.track, m.title, m.lyrics, a.title, a.artist_name" +
+                        "                from music m join album a on m.album_id = a.id" +
+                        "                where m.title = ?;");
+                pstmtMus.setString(1, keyword);
+                rsMus = pstmtMus.executeQuery();
+
+                ResultSetMetaData rsmdMus = rsMus.getMetaData();
+                int columNumberMus = rsmdMus.getColumnCount();
+
+                if (rsMus.next()) {
+                    result = "y";
+                    do {
+                        itemCount++;
+                        for (int i =1 ; i <= columNumberMus; i++) {
+                            aux += rsmdMus.getColumnLabel(i) + "|" + rsMus.getString(i) + ";";
+                        }
+
+                        musicInfo += aux;
+                        aux = "";
+
+                    } while (rsMus.next());
+                    message = "item_count|"+itemCount+";" + musicInfo;
+                } else {
+                    result = "n";
+                    message = "item_count|0;";
+                }
+            }
+        } catch (SQLException e) {
+            result = "n";
+            e.printStackTrace();
+            message = "item_count|0;";
+        }
+
+        rsp = "flag|"+id+";type|details;result|"+result+";param|"+type+";keyword|"+keyword+";"+message;
+        sendResponseMulticast(rsp, code);
+
+    }
+
+    /**
+     * Method to search artists, albums and songs by keyword
+     * If keyword matches then it is added as a new found item to be sent as answer.
+     * @param id Packet's unique ID
      * @param keyword Keyword used for the search query
      * @param code Hash sent by RMIServer
      * @see #sendResponseMulticast(String, String)
@@ -829,7 +1004,7 @@ public class MulticastServer extends Thread {
             e.printStackTrace();
         }
 
-        rsp = "flag|"+id+";type|details;result|"+result+";keyword|"+keyword+";"+message;
+        rsp = "flag|"+id+";type|search;result|"+result+";keyword|"+keyword+";"+message;
         sendResponseMulticast(rsp, code);
 
     }
@@ -1580,7 +1755,10 @@ public class MulticastServer extends Thread {
                 getMusic(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
                 break;
             case "details":
-                getDetails(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (Artist or Album, keyword)
+                getDetailsOld(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(cleanMessage.size()-1)[1]); // (Artist or Album, keyword)
+                break;
+            case "search":
+                getDetails(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(cleanMessage.size()-1)[1]);
                 break;
             case "token":
                 setToken(cleanMessage.get(0)[1], cleanMessage.get(2)[1], cleanMessage.get(3)[1], cleanMessage.get(4)[1], cleanMessage.get(5)[1]);
