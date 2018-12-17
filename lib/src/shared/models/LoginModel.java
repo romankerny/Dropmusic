@@ -8,6 +8,11 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
+/**
+ * Model of credentials, folllowing JavaBean convention
+ * Connects to RMI
+ */
+
 public class LoginModel {
 
     private String email;
@@ -17,6 +22,12 @@ public class LoginModel {
         setEmail(email);
         setPassword(password);
     }
+
+    /**
+     * Calls RMI's .login()
+     * If RemoteException then tries again
+     * @return whether logged in successfully or not
+     */
 
     public boolean login()
     {
@@ -48,6 +59,12 @@ public class LoginModel {
 
         return r;
     }
+
+    /**
+     * Calls RMI's .register()
+     * If RemoteException then tries again
+     * @return whether registered successfully or not
+     */
 
     public boolean register(LoginModel loginModel) {
 

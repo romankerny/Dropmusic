@@ -6,6 +6,12 @@ import shared.models.ReviewModel;
 import webserver.services.ReviewService;
 import ws.WebSocketAnnotation;
 
+/**
+ *  This action uses a ReviewModel to store user's review and calls
+ *  Review Service to interact with database.
+ *  Result is stored in `result`, if error occurs it's set to -1 and action returns ERROR, otherwise SUCCESS.
+ */
+
 public class ReviewAction extends ActionSupport {
 
     private ReviewModel reviewModel;

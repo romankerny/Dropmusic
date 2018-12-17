@@ -2,6 +2,10 @@ package shared.models;
 
 import java.io.Serializable;
 
+/**
+ * Model of a review, following JavaBean convention
+ */
+
 public class ReviewModel implements Serializable {
 
     private String critic;

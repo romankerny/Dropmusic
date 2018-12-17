@@ -6,6 +6,10 @@ import shared.RMIServerInterface;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+/**
+ * Model to search by keyword, connects to RMI
+ */
+
 public class SearchModel {
     private String keyword;
 
@@ -16,6 +20,11 @@ public class SearchModel {
     public SearchModel(String keyword) {
         setKeyword(keyword);
     }
+
+    /**
+     * Calls RMI's .search()
+     * @return artists, albums and songs in one arraylist
+     */
 
     public ArrayList<Object> searchAll() {
 
