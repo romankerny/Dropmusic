@@ -13,12 +13,13 @@ import java.util.Map;
 public class Music implements Serializable, ManageModel {
     private static final long serialVersionUID = 1234675L;
 
-    private String   track;
+    private String track;
     private String title;
     private String lyrics;
     private String albumTitle;
     private String artistName;
     private String fileName;
+    private String email;
 
 
     public Music(String track, String title, String lyrics, String albumTitle, String artistName) {
@@ -78,6 +79,35 @@ public class Music implements Serializable, ManageModel {
 
     }
 
+    public boolean shareMusic(String emailToShare, String artist, String album, String title, String email) {
+
+        boolean r = false;
+        RMIServerInterface server = null;
+        String rsp;
+
+        try
+        {
+            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
+
+
+
+            if (server.shareMusic(emailToShare, artist, album, title, email))
+            {
+                r = true;
+            }
+            else
+            {
+                r = false;
+            }
+        }
+        catch(NotBoundException | RemoteException e) {
+            e.printStackTrace();
+        }
+
+
+        return r;
+    }
+
     @Override
     public String toString() {
         return track+ " - "+title;
@@ -122,6 +152,14 @@ public class Music implements Serializable, ManageModel {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getLyrics() {

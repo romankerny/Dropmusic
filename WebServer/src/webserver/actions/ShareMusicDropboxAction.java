@@ -1,47 +1,39 @@
 package webserver.actions;
-
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
-import shared.manage.ShareModel;
-
-import java.rmi.RemoteException;
+import shared.manage.Music;
 import java.util.Map;
 
 public class ShareMusicDropboxAction extends ActionSupport implements SessionAware {
 
-    private ShareModel model = new ShareModel();
+    private Music model = new Music();
     private Map<String, Object> session;
 
 
     @Override
     public String execute()  {
-
         System.out.println("ShareMusicDropboxAction - execute()");
-        String rsp = "failed";
+        String rsp;
 
-        try {
 
-            if(getModel().shareMusic(model.getEmail(), model.getArtistName(), model.getAlbumTitle(), model.getMusicTitle(), (String) session.get("email"))) {
-                rsp = "success";
-            }
-            else
-            {
-                rsp = "failed";
-            }
-
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        if(getModel().shareMusic(model.getEmail(), model.getArtistName(), model.getAlbumTitle(), model.getTitle(), (String) session.get("email"))) {
+            rsp = "success";
         }
+        else
+        {
+            rsp = "failed";
+        }
+
 
         return rsp;
 
     }
 
-    public ShareModel getModel() {
+    public Music getModel() {
         return model;
     }
 
-    public void setModel(ShareModel model) {
+    public void setModel(Music model) {
         this.model = model;
     }
 
