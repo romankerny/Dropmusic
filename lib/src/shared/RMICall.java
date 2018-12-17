@@ -10,7 +10,7 @@ import java.rmi.registry.LocateRegistry;
 import static java.lang.Thread.sleep;
 
 /**
- * Class to handle lookup of an RMIServer.
+ * Class to handle lookup of an RMIServer
  */
 
 public class RMICall {
@@ -19,7 +19,7 @@ public class RMICall {
 
     /**
      * Models and Services call this method whenever they need RMI server's interface, if fails to lookup then keeps
-     * trying every second until succeeds.
+     * trying every second until succeds
      *
      * @return valid RMIServerInterface
      */

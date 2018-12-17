@@ -63,11 +63,22 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     private static final String API_APP_KEY = "wbwulmkt4ykv4ry";
     private static final String API_APP_SECRET = "n1kg0x7177alqbv";
+
+    private static String ip = "localhost";
+
+    static {
+        try {
+            ip = Inet4Address.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+    }
+
     private OAuthService service = new ServiceBuilder()
             .provider(DropBoxApi2.class)
             .apiKey(API_APP_KEY)
             .apiSecret(API_APP_SECRET)
-            .callback("http://localhost:8080/associateDropBoxTokenAction") //
+            .callback("http://"+ip+":8080/associateDropBoxTokenAction") //
             .build();
 
 
@@ -1146,7 +1157,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         request.addParameter("grant_type","authorization_code");
         request.addParameter("client_id","wbwulmkt4ykv4ry");
         request.addParameter("client_secret","n1kg0x7177alqbv");
-        request.addParameter("redirect_uri", "http://localhost:8080/associateDropBoxTokenAction");
+        request.addParameter("redirect_uri", "http://"+ip+":8080/associateDropBoxTokenAction");
         Response response = request.send();
         JSONObject rj = (JSONObject) JSONValue.parse(response.getBody());
         System.out.println(response.getBody());
@@ -1216,7 +1227,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             request.addParameter("grant_type","authorization_code");
             request.addParameter("client_id","wbwulmkt4ykv4ry");
             request.addParameter("client_secret","n1kg0x7177alqbv");
-            request.addParameter("redirect_uri", "http://localhost:8080/associateDropBoxTokenAction");
+            request.addParameter("redirect_uri", "http://"+ip+":8080/associateDropBoxTokenAction");
             Response response = request.send();
             JSONObject rj = (JSONObject) JSONValue.parse(response.getBody());
             String account_id = rj.get("account_id").toString();
