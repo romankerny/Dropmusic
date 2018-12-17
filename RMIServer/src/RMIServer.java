@@ -64,22 +64,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     private static final String API_APP_KEY = "wbwulmkt4ykv4ry";
     private static final String API_APP_SECRET = "n1kg0x7177alqbv";
 
-    private static String ip = "localhost";
+    private static String ip;
 
-    static {
-        try {
-            ip = Inet4Address.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private OAuthService service = new ServiceBuilder()
-            .provider(DropBoxApi2.class)
-            .apiKey(API_APP_KEY)
-            .apiSecret(API_APP_SECRET)
-            .callback("https://"+ip+":8080/associateDropBoxTokenAction") //
-            .build();
+    public static OAuthService service ;
 
 
 
@@ -1602,6 +1589,14 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
         socket.joinGroup(group);
 
+        if(args.length < 0) {
+            System.out.println("Insert WebServer Ip as arg");
+            System.exit(0);
+        } else {
+            ip = args[1];
+        }
+
+        System.out.println("Connecting to WebServer with ip: " + ip);
 
 
         try {
@@ -1609,6 +1604,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             boolean failedLastTime = false, takeOver = false;
             Registry r = null;
             rmiServer = new RMIServer();
+
+            service = new ServiceBuilder()
+                    .provider(DropBoxApi2.class)
+                    .apiKey(API_APP_KEY)
+                    .apiSecret(API_APP_SECRET)
+                    .callback("https://"+ip+":8080/associateDropBoxTokenAction") //
+                    .build();
 
             System.getProperties().put("java.security.policy", "policy.all");
             System.setSecurityManager(new SecurityManager());
