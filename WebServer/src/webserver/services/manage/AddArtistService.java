@@ -1,5 +1,6 @@
 package webserver.services.manage;
 
+import shared.RMICall;
 import shared.models.manage.Artist;
 import shared.models.manage.ManageModel;
 import shared.RMIServerInterface;
@@ -12,38 +13,37 @@ import java.util.ArrayList;
 
 public class AddArtistService implements ManageService {
 
-
+    @Override
     public boolean add(ManageModel manageModel, String email) {
 
-        boolean r;
-        RMIServerInterface server = null;
+        boolean exit = false;
+        RMIServerInterface server = RMICall.waitForServer();
         String rsp;
 
-        try {
-            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
+        while(!exit) {
 
-            if (manageModel instanceof Artist) {
-                Artist artist = (Artist) manageModel;
-                if (artist.getName() != "" && artist.getDetails() != "") {
-                    rsp = server.addArtist(artist.getName(), artist.getDetails(), email);
-                    if (rsp.equals("Artist created") || rsp.equals("Artist `" + artist.getName() + "` was edited") || rsp.equals("Artist info added with success")) {
-                        ArrayList<String> editors = new ArrayList<>();
-                        editors = server.getEditors(artist.getName());
-                        for (String ed : editors)
-                            WebSocketAnnotation.sendNotification(ed, "Artist " + artist.getName() + " was edited by " + email);
+            try {
+                if (manageModel instanceof Artist) {
+                    Artist artist = (Artist) manageModel;
+                    if (artist.getName() != "" && artist.getDetails() != "") {
+                        rsp = server.addArtist(artist.getName(), artist.getDetails(), email);
+                        if (rsp.equals("Artist created") || rsp.equals("Artist `" + artist.getName() + "` was edited") || rsp.equals("Artist info added with success")) {
+                            ArrayList<String> editors = new ArrayList<>();
+                            editors = server.getEditors(artist.getName());
+                            for (String ed : editors)
+                                WebSocketAnnotation.sendNotification(ed, "Artist " + artist.getName() + " was edited by " + email);
 
-                        return true;
-                    } else {
-                        return false;
+                            return true;
+                        } else {
+                            return false;
+                        }
                     }
-
                 }
+                exit = true;
 
+            } catch (RemoteException e) {
+                server = RMICall.waitForServer();
             }
-
-
-        } catch(NotBoundException |RemoteException e) {
-            e.printStackTrace();
         }
         return false;
     }

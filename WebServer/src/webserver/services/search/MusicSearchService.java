@@ -1,5 +1,6 @@
 package webserver.services.search;
 
+import shared.RMICall;
 import shared.RMIServerInterface;
 import shared.models.manage.ManageModel;
 import shared.models.manage.Music;
@@ -13,25 +14,23 @@ public class MusicSearchService implements SearchService {
     private RMIServerInterface server;
 
     public MusicSearchService() {
-        try {
-            server = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmiserver");
-        } catch (AccessException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        }
+        server = RMICall.waitForServer();
+
     }
 
     @Override
     public Object search(ManageModel searchModel) {
         Music musicModel = (Music) searchModel;
         Object result = null;
-        try {
-            result = server.searchMusic(musicModel.getArtistName(), musicModel.getAlbumTitle(), musicModel.getTitle());
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        boolean exit = false;
+
+        while (!exit) {
+            try {
+                result = server.searchAlbum(musicModel.getArtistName(), musicModel.getTitle());
+                exit = true;
+            } catch (RemoteException e) {
+                server = RMICall.waitForServer();
+            }
         }
         return result;
 

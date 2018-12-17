@@ -4,6 +4,7 @@ import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.Token;
 import com.github.scribejava.core.model.Verifier;
 import com.github.scribejava.core.oauth.OAuthService;
+import shared.RMICall;
 import shared.RMIServerInterface;
 import uc.sd.apis.DropBoxApi2;
 
@@ -24,23 +25,19 @@ public class AssociateDropBoxTokenService {
     public String canLogin(String code) {
 
         String r = "";
-        RMIServerInterface server = null;
+        boolean exit = false;
+        RMIServerInterface server = RMICall.waitForServer();
 
-        System.out.println("LoginDropboxService - execute()");
+        System.out.println("LoginDropboxService - canLogin()");
 
-        try
-        {
-            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
-        }
-        catch(NotBoundException | RemoteException e) {
-            e.printStackTrace();
-        }
+        while(!exit) {
 
-        try {
-            return server.canLogin(code);
+            try {
+                return server.canLogin(code);
 
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            } catch (RemoteException e) {
+                server = RMICall.waitForServer();
+            }
         }
 
         return r;

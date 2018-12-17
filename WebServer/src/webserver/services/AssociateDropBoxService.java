@@ -1,6 +1,7 @@
 package webserver.services;
 
 
+import shared.RMICall;
 import shared.RMIServerInterface;
 
 
@@ -21,23 +22,16 @@ public class AssociateDropBoxService {
         // AssociateDropBoxAction - loggedin == true
         // LoginDropBoxAction - loggedin == false
 
-        boolean r = false;
-        RMIServerInterface server = null;
+        boolean r = false, exit = false;
+        RMIServerInterface server = RMICall.waitForServer();
 
-        try
-        {
-            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
-        }
-        catch(NotBoundException |RemoteException e) {
-            e.printStackTrace();
-        }
+        while (!exit) {
+            try {
+                return server.associateDropBox();
 
-        try {
-
-            return server.associateDropBox();
-
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            } catch (RemoteException e) {
+                server = RMICall.waitForServer();
+            }
         }
         System.out.println("vou dar pritn de erro");
         return "localhost:8080/restricted/error.jsp";

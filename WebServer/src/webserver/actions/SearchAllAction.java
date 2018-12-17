@@ -2,26 +2,24 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import shared.models.SearchModel;
 import shared.models.manage.Album;
 import shared.models.manage.Artist;
 import shared.models.manage.Music;
-import webserver.services.search.SearchAllService;
 
 import java.util.ArrayList;
 
 public class SearchAllAction extends ActionSupport {
 
-    private String keyword;
+    private SearchModel model;
 
     private ArrayList<Artist> artistResults;
     private ArrayList<Album> albumResults;
     private ArrayList<Music> musicResults;
 
-    private SearchAllService service = new SearchAllService();
-
     @Override
     public String execute() {
-        setResults(getService().searchAll(getKeyword()));
+        setResults(getModel().searchAll());
         return Action.SUCCESS;
     }
 
@@ -45,12 +43,12 @@ public class SearchAllAction extends ActionSupport {
         setMusicResults(songs);
     }
 
-    public String getKeyword() {
-        return keyword;
+    public SearchModel getModel() {
+        return model;
     }
 
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
+    public void setModel(SearchModel model) {
+        this.model = model;
     }
 
     public ArrayList<Artist> getArtistResults() {
@@ -77,11 +75,4 @@ public class SearchAllAction extends ActionSupport {
         this.musicResults = musicResults;
     }
 
-    public SearchAllService getService() {
-        return service;
-    }
-
-    public void setService(SearchAllService service) {
-        this.service = service;
-    }
 }

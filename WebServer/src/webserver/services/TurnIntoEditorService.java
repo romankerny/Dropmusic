@@ -1,5 +1,6 @@
 package webserver.services;
 
+import shared.RMICall;
 import shared.RMIServerInterface;
 import ws.WebSocketAnnotation;
 
@@ -16,34 +17,32 @@ public class TurnIntoEditorService {
         System.out.println("Starting TurnIntoEditorService()");
     }
 
-    public boolean regularToEditor(String editor, String regular) throws RemoteException {
+    public boolean regularToEditor(String editor, String regular) {
 
-        boolean r = false;
-        RMIServerInterface server = null;
+        boolean r = false, exit = false;
+        RMIServerInterface server = RMICall.waitForServer();
         String rsp;
 
+        while(!exit) {
+            try {
+                if (regular != "") {
 
-        try {
-            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
-        }
-        catch(NotBoundException | RemoteException e) {
-            e.printStackTrace();
-        }
+                    rsp = server.regularToEditor(editor, regular);
 
-        if(regular != "")
-        {
+                    if (rsp.equals(regular + " casted to Editor with success")) {
+                        r = true;
+                        System.out.println("no service true" + regular + editor);
+                        // notifications
+                        WebSocketAnnotation.sendNotification(regular, "[*] You've promoted to Editor by " + editor + ".\n You can now edit materials!");
 
-            rsp = server.regularToEditor(editor, regular);
-
-            if (rsp.equals(regular + " casted to Editor with success")) {
-                r = true;
-                System.out.println("no service true" + regular + editor);
-                // notifications
-                WebSocketAnnotation.sendNotification(regular, "[*] You've promoted to Editor by " + editor + ".\n You can now edit materials!");
-
-            } else {
-                System.out.println("No service false");
-                r = false;
+                    } else {
+                        System.out.println("No service false");
+                        r = false;
+                    }
+                    exit = true;
+                }
+            } catch (RemoteException e) {
+                server = RMICall.waitForServer();
             }
         }
         

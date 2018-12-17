@@ -1,25 +1,38 @@
 package shared.models;
 
+import shared.RMICall;
+import shared.RMIServerInterface;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+
 public class SearchModel {
-    private String type;
     private String keyword;
 
     public SearchModel() {
-        setType(null);
         setKeyword(null);
     }
 
-    public SearchModel(String type, String keyword) {
-        setType(type);
+    public SearchModel(String keyword) {
         setKeyword(keyword);
     }
 
-    public String getType() {
-        return type;
-    }
+    public ArrayList<Object> searchAll() {
 
-    public void setType(String type) {
-        this.type = type;
+        RMIServerInterface server = RMICall.waitForServer();
+
+        ArrayList<Object> results = new ArrayList<>();
+        boolean exit = false;
+
+        while(!exit) {
+            try {
+                results = server.search(this.keyword);
+                exit = true;
+            } catch (RemoteException e) {
+                server = RMICall.waitForServer();
+            }
+        }
+        return results;
     }
 
     public String getKeyword() {
