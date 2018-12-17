@@ -21,13 +21,13 @@ public class LoginModel {
     public boolean login() throws RemoteException
     {
 
-        boolean r = false;
+        boolean r = false, exit = false;
         RMIServerInterface server = null;
         String rsp;
 
 
         server = RMICall.waitForServer();
-        boolean exit = false;
+
         while(!exit) {
 
             try {
@@ -54,25 +54,34 @@ public class LoginModel {
 
     public boolean register(LoginModel loginModel) throws RemoteException {
 
-        boolean r = false;
+        boolean r = false, exit = false;
         RMIServerInterface server = null;
         String rsp;
 
-        try
-        {
-            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
-        }
-        catch(NotBoundException |RemoteException e) {
-            e.printStackTrace();
-        }
-        if(getEmail() != null && getPassword() != null && getEmail() != "" && getPassword() != "") {
-            rsp = server.register(loginModel.getEmail(), loginModel.getPassword());
+        server = RMICall.waitForServer();
 
-            if (rsp.equals("User " + loginModel.getEmail() + " registered successfully")) {
-                r = true;
-            } else {
-                r = false;
+        while(!exit)
+        {
+
+            try
+            {
+
+                if(getEmail() != null && getPassword() != null && getEmail() != "" && getPassword() != "") {
+                    rsp = server.register(loginModel.getEmail(), loginModel.getPassword());
+
+                    if (rsp.equals("User " + loginModel.getEmail() + " registered successfully")) {
+                        r = true;
+                    } else {
+                        r = false;
+                    }
+                }
+
+            } catch (ConnectException e) {
+                System.out.println("RMI server down, retrying...");
+            } catch (RemoteException tt) {
+                System.out.println("RMI server down, retrying...");
             }
+            server = RMICall.waitForServer();
         }
 
         return r;

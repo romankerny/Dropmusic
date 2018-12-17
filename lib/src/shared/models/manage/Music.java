@@ -1,8 +1,10 @@
 package shared.models.manage;
 
+import shared.RMICall;
 import shared.RMIServerInterface;
 
 import java.io.Serializable;
+import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -42,65 +44,86 @@ public class Music implements Serializable, ManageModel {
     }
 
     public String getURL(Music inputModel, String email) {
-        try {
-            RMIServerInterface server = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmiserver");
-            return server.getMusicURL(inputModel.getArtistName(), inputModel.getAlbumTitle(), inputModel.getTitle(), email);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (NotBoundException e) {
-            e.printStackTrace();
+
+        boolean r = false, exit = false;
+        RMIServerInterface server = RMICall.waitForServer();
+        String url = "";
+
+        while(!exit)
+        {
+
+            try
+            {
+                url = server.getMusicURL(inputModel.getArtistName(), inputModel.getAlbumTitle(), inputModel.getTitle(), email);
+                exit = true;
+            } catch (ConnectException e) {
+                System.out.println("RMI server down, retrying...");
+            } catch (RemoteException tt) {
+                System.out.println("RMI server down, retrying...");
+            }
+            server = RMICall.waitForServer();
         }
-        return "fail";
+
+        return url;
     }
 
     public boolean associateMusic(Map<String, Object> session, String artist, String album, String musicTitle, String fileName) {
 
-        String r = "";
-        RMIServerInterface server = null;
-
         System.out.println("AssociateMusicService - execute()");
 
-        try
+
+        boolean r = false, exit = false, rr = false;
+        RMIServerInterface server = RMICall.waitForServer();
+
+        while(!exit)
         {
-            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
-        }
-        catch(NotBoundException | RemoteException e) {
-            e.printStackTrace();
+
+            try
+            {
+                rr = server.associateMusic((String) session.get("email"), artist, album, musicTitle, fileName);
+                exit = true;
+
+            } catch (ConnectException e) {
+                System.out.println("RMI server down, retrying...");
+            } catch (RemoteException tt) {
+                System.out.println("RMI server down, retrying...");
+            }
+            server = RMICall.waitForServer();
         }
 
-        try {
-            return server.associateMusic((String) session.get("email"), artist, album, musicTitle, fileName);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
 
-        return false;
 
+        return rr;
     }
 
     public boolean shareMusic(String emailToShare, String artist, String album, String title, String email) {
 
-        boolean r = false;
-        RMIServerInterface server = null;
-        String rsp;
+        boolean r = false, exit = false;
+        RMIServerInterface server = RMICall.waitForServer();
 
-        try
+        while(!exit)
         {
-            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
 
-
-
-            if (server.shareMusic(emailToShare, artist, album, title, email))
+            try
             {
-                r = true;
+
+                if (server.shareMusic(emailToShare, artist, album, title, email))
+                {
+                    r = true;
+                }
+                else
+                {
+                    r = false;
+                }
+
+                exit = true;
+                
+            } catch (ConnectException e) {
+                System.out.println("RMI server down, retrying...");
+            } catch (RemoteException tt) {
+                System.out.println("RMI server down, retrying...");
             }
-            else
-            {
-                r = false;
-            }
-        }
-        catch(NotBoundException | RemoteException e) {
-            e.printStackTrace();
+            server = RMICall.waitForServer();
         }
 
 

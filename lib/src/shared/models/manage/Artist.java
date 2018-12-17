@@ -1,12 +1,12 @@
 package shared.models.manage;
 
+import shared.RMICall;
 import shared.RMIServerInterface;
 
 
 import java.io.Serializable;
-import java.rmi.NotBoundException;
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 
 public class Artist implements Serializable, ManageModel {
@@ -31,26 +31,33 @@ public class Artist implements Serializable, ManageModel {
 
     public boolean removeArtist() {
 
-        boolean r = false;
-        RMIServerInterface server = null;
+        boolean r = false,  exit = false;
+        RMIServerInterface server = RMICall.waitForServer();
         String rsp;
 
-        try
+
+        while(!exit)
         {
-            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
 
-            if(getName() != null && getName() != "")
+            try
             {
-                if (server.removeArtist(getName()) ) {
-                    r = true;
-                } else {
-                    r = false;
+                if(getName() != null && getName() != "")
+                {
+                    if (server.removeArtist(getName()) )
+                    {
+                        r = true;
+                    } else {
+                        r = false;
+                    }
                 }
-            }
+                exit = true;
 
-        }
-        catch(NotBoundException | RemoteException e) {
-            e.printStackTrace();
+            } catch (ConnectException e) {
+                System.out.println("RMI server down, retrying...");
+            } catch (RemoteException tt) {
+                System.out.println("RMI server down, retrying...");
+            }
+            server = RMICall.waitForServer();
         }
 
         return r;

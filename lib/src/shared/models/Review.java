@@ -1,9 +1,11 @@
 package shared.models;
 
+import shared.RMICall;
 import shared.RMIServerInterface;
 
 import java.io.Serializable;
 import java.rmi.AccessException;
+import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -77,24 +79,34 @@ public class Review implements Serializable {
 
 
     public double addReview(Review review) {
-        try {
-            server = (RMIServerInterface) LocateRegistry.getRegistry(1099).lookup("rmiserver");
-        } catch (
-                AccessException e) {
-            e.printStackTrace();
-        } catch (
-                RemoteException e) {
-            e.printStackTrace();
-        } catch (
-                NotBoundException e) {
-            e.printStackTrace();
+
+
+        boolean exit = false;
+        RMIServerInterface server = RMICall.waitForServer();
+
+        double rr = 0;
+
+        while(!exit)
+        {
+            try
+            {
+                rr = server.rateAlbum(review.getRating(), review.getArtist(), review.getAlbum(), review.getCritic(), review.getEmail());
+                exit = true;
+
+            } catch (ConnectException e) {
+                System.out.println("RMI server down, retrying...");
+            } catch (RemoteException tt) {
+                System.out.println("RMI server down, retrying...");
+            }
+            server = RMICall.waitForServer();
         }
 
-        try {
-            return server.rateAlbum(review.getRating(), review.getArtist(), review.getAlbum(), review.getCritic(), review.getEmail());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            return 0.0;
-        }
+        return rr;
+
     }
+
+
+
+
+
 }
