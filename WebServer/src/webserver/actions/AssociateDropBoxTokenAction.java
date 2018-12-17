@@ -37,11 +37,11 @@ public class AssociateDropBoxTokenAction extends ActionSupport implements Sessio
         System.out.println("Code for OAuth " + code);
         System.out.println("token  " + oauth_token);
 
-
         if(error == null && error_description == null)
         {
             // then we have a valid code
-
+            System.out.println(getSession().get("loggedin"));
+            System.out.println(getSession().get("email"));
             if (getSession().get("loggedin") != null)
             {
                 // inside App - associate
@@ -68,7 +68,7 @@ public class AssociateDropBoxTokenAction extends ActionSupport implements Sessio
                 }
             }
         }
-        System.out.println(error);
+        System.out.println("Error ");
 
         return "failed";
 

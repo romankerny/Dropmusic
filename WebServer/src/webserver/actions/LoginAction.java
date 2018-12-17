@@ -45,6 +45,9 @@ public class LoginAction extends ActionSupport implements SessionAware {
 			// set session parameters
 			session.put("email", email);
 			session.put("loggedin", true);
+
+			System.out.println(session.get("email"));
+			System.out.println(session.get("loggedin"));
 			r = "success";
 		}
 		else

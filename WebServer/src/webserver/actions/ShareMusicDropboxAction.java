@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class ShareMusicDropboxAction extends ActionSupport implements SessionAware {
 
-    private MusicModel model = new MusicModel();
+    private MusicModel model;
     private Map<String, Object> session;
 
 
@@ -22,8 +22,7 @@ public class ShareMusicDropboxAction extends ActionSupport implements SessionAwa
         System.out.println("ShareMusicDropboxAction - execute()");
         String rsp;
 
-
-        if(getModel().shareMusic(model.getEmail(), model.getArtistName(), model.getAlbumTitle(), model.getTitle(), (String) session.get("email")))
+        if(getModel().shareMusic((String) session.get("email")))
         {
             rsp = "success";
         }

@@ -1,7 +1,6 @@
 package webserver.actions;
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.struts2.interceptor.SessionAware;
 import webserver.services.AssociateDropBoxService;
 
 import java.util.Map;
@@ -12,11 +11,11 @@ import java.util.Map;
  *
  */
 
-public class AssociateDropBoxAction extends ActionSupport implements SessionAware {
+public class AssociateDropBoxAction extends ActionSupport {
 
-    private Map<String, Object> session;
     private AssociateDropBoxService service = new AssociateDropBoxService();
-    private String urlOauth;
+    private String urlOauth = "https://www.dropbox.com/1/oauth2/authorize?client_id=wbwulmkt4ykv4ry&response_type=code&redirect_uri=https://10.16.0.108:8443/associateDropBoxTokenAction&force_reapprove=false";
+
 
 
     /**
@@ -29,7 +28,7 @@ public class AssociateDropBoxAction extends ActionSupport implements SessionAwar
 
         System.out.println("Executing AssociateDropBoxAction - execute()");
 
-        setUrlOauth(getService().associateDropBox());
+        //setUrlOauth(getService().associateDropBox());
         System.out.println("vou dar redirect p/ " + urlOauth);
         return "redirect";
 
@@ -41,15 +40,6 @@ public class AssociateDropBoxAction extends ActionSupport implements SessionAwar
 
     public void setUrlOauth(String urlOauth) {
         this.urlOauth = urlOauth;
-    }
-
-    public Map<String, Object> getSession() {
-        return session;
-    }
-
-    @Override
-    public void setSession(Map<String, Object> session) {
-        this.session = session;
     }
 
     public AssociateDropBoxService getService() {

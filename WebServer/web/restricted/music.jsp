@@ -42,7 +42,7 @@
                         '&model.email='+ document.getElementById('email').value +
                         '&model.albumTitle='+ document.getElementById('albumName').innerText +
                         '&model.artistName=' + document.getElementById('artistName').innerText +
-                        '&model.musicTitle='+ document.getElementById('musicTitle').innerText
+                        '&model.title='+ document.getElementById('musicTitle').innerText
                     ,
                     dataType: 'text',
                     success: function(data){

@@ -26,17 +26,19 @@ public class MusicModel implements Serializable, ManageModel {
     private String email; // used in shareMusic
 
 
-    public MusicModel(String track, String title, String lyrics, String albumTitle, String artistName) {
+    public MusicModel(String track, String title, String lyrics, String albumTitle, String artistName, String email) {
         setTrack(track);
         setTitle(title);
         setLyrics(lyrics);
         setAlbumTitle(albumTitle);
         setArtistName(artistName);
+        setEmail(email);
+        System.out.println("constructior "+email );
     }
 
     public MusicModel()
     {
-        this(null , null, null, null, null);
+        this(null , null, null, null, null, null);
     }
 
     public MusicModel(String track, String title, String lyrics) {
@@ -122,15 +124,11 @@ public class MusicModel implements Serializable, ManageModel {
 
     /**
      * Allows an user access to this music's link
-     * @param emailToShare
-     * @param artist
-     * @param album
-     * @param title
      * @param email
      * @return Whether operation was successful or not
      */
 
-    public boolean shareMusic(String emailToShare, String artist, String album, String title, String email) {
+    public boolean shareMusic(String email) {
 
         boolean r = false, exit = false;
         RMIServerInterface server = RMICall.waitForServer();
@@ -141,7 +139,7 @@ public class MusicModel implements Serializable, ManageModel {
             try
             {
 
-                if (server.shareMusic(emailToShare, artist, album, title, email))
+                if (server.shareMusic(this.email, this.artistName, this.albumTitle, this.title, email))
                 {
                     r = true;
                 }

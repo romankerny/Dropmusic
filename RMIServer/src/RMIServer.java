@@ -699,7 +699,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     String albumTitle = cleanMessage.get((6+nArtists+nAlbums*2)+2+i*3)[1];
                     String artistName = cleanMessage.get((6+nArtists+nAlbums*2)+3+i*3)[1];
 
-                    results.add(new MusicModel("", title, "",albumTitle, artistName));
+                    results.add(new MusicModel("", title, "", albumTitle, artistName, ""));
                 }
 
                 exit = true;
@@ -774,7 +774,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 System.out.println(result);
 
                 for (int i = 0; i < nTracks; i++) {
-                    result.getSongs().add(new MusicModel(cleanMessage.get(12+i*2)[1], cleanMessage.get(13+i*2)[1], "", albumName, artistName));
+                    result.getSongs().add(new MusicModel(cleanMessage.get(12+i*2)[1], cleanMessage.get(13+i*2)[1], "", albumName, artistName, ""));
                 }
 
                 for (int j = 0; j < nReviews; j++) {
@@ -810,7 +810,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                     for (int i = 0; i < nMusics; i++) {
 
-                        result = new MusicModel(cleanMessage.get(4 + i)[1], cleanMessage.get(5 + i)[1], cleanMessage.get(6 + i)[1], cleanMessage.get(7 + i)[1], cleanMessage.get(8 + i)[1]);
+                        result = new MusicModel(cleanMessage.get(4 + i)[1], cleanMessage.get(5 + i)[1], cleanMessage.get(6 + i)[1], cleanMessage.get(7 + i)[1], cleanMessage.get(8 + i)[1], "");
 
                     }
                     exit = true;

@@ -34,7 +34,7 @@ function connect(host) { // connect to the host websocket
 
 function onClose(event) {
     console.log("closing socket");
-    document.getElementById('chat').onkeydown = null;
+    websocket.close();
 }
 
 
@@ -49,7 +49,7 @@ function onMessage(message) { // print the received message
 
 function onError(event) {
     writeNotification('WebSocket error.');
-    document.getElementById('chat').onkeydown = null;
+    websocket.close();
 }
 
 function writeNotification(text) {
@@ -85,3 +85,7 @@ function writeRating(message) {
     }
 }
 
+window.onbeforeunload = function (ev) {
+    console.log("Closing socket ... unload");
+    websocket.close();
+}

@@ -109,6 +109,7 @@
 
         <!-- used to redirect both association w platform and login -->
         <action name="associateDropBoxAction" class="webserver.actions.AssociateDropBoxAction" method="execute">
+            <interceptor-ref name="defaultStack"></interceptor-ref>
             <result name="redirect" type="redirect">${urlOauth}</result>
         </action>
 
