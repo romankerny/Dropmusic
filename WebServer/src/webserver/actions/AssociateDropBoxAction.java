@@ -14,7 +14,7 @@ import java.util.Map;
 public class AssociateDropBoxAction extends ActionSupport {
 
     private AssociateDropBoxService service = new AssociateDropBoxService();
-    private String urlOauth = "https://www.dropbox.com/1/oauth2/authorize?client_id=wbwulmkt4ykv4ry&response_type=code&redirect_uri=https://10.16.0.108:8443/associateDropBoxTokenAction&force_reapprove=false";
+    private String urlOauth;
 
 
 
@@ -28,7 +28,7 @@ public class AssociateDropBoxAction extends ActionSupport {
 
         System.out.println("Executing AssociateDropBoxAction - execute()");
 
-        //setUrlOauth(getService().associateDropBox());
+        setUrlOauth(getService().associateDropBox());
         System.out.println("vou dar redirect p/ " + urlOauth);
         return "redirect";
 
