@@ -1114,14 +1114,25 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     }
 
+    /**
+     * URL to redirect the user to Dropbox.
+     * @return URL
+     * @throws RemoteException
+     */
+
     public String associateDropBox() throws RemoteException{
-
-
 
         return service.getAuthorizationUrl(null);
 
     }
 
+    /**
+     * checks if a given user canLogin using dropbox. We fetch his Dropbox email with the api call:
+     * /2/users/get_account
+     * @param code
+     * @return
+     * @throws RemoteException
+     */
 
     public String canLogin(String code) throws RemoteException {
         // flag | id; type | logindropbox; emaildropbox | eeee;
@@ -1179,6 +1190,16 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         return dropMusicEmail;
     }
+
+    /**
+     *  Authenticates a user by calling
+     *  /oauth2/token and /2/users/get_account to get his email.
+     *
+     * @param email
+     * @param code
+     * @return successful / failed
+     * @throws RemoteException
+     */
 
     public boolean setToken(String email, String code) throws RemoteException {
 
@@ -1241,6 +1262,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return r;
     }
 
+    /**
+     * Gets the token of a user with a given email address.
+     * @param email
+     * @return - Token
+     */
+
     public String getTokenFromMulticast(String email) {
 
         // flag | id; type | getToken; email | eeee;
@@ -1272,6 +1299,18 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return token;
     }
 
+    /**
+     * Searches in DB for the URL of one song based on
+     * Artist, album and title.
+     *
+     * @param artist
+     * @param album
+     * @param title
+     * @param email
+     * @return - URL of a given song
+     * @throws RemoteException
+     */
+
     public String getMusicURL(String artist, String album, String title, String email) throws RemoteException {
         String uuid = UUID.randomUUID().toString();
         String id = uuid.substring(0, Math.min(uuid.length(), 8));
@@ -1294,6 +1333,14 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
         return url;
     }
+
+    /**
+     * This method calls Multicast to delete an artist.
+     *
+     * @param artist
+     * @return sucessful / failed
+     * @throws RemoteException
+     */
 
     public boolean removeArtist(String artist) throws RemoteException {
         String uuid = UUID.randomUUID().toString();
@@ -1320,6 +1367,21 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         return response;
     }
+
+    /**
+     * This method allows to get /2/sharing/get_shared_link_metadata
+     * and then associate that link in DB with the user with 'emailToShare'
+     * Then we call /2/sharing/add_file_member so that the user receives the music file in his dropbox.
+     *
+     *
+     * @param emailToShare
+     * @param artist
+     * @param album
+     * @param musicTitle
+     * @param email
+     * @return successful / failed
+     * @throws RemoteException
+     */
 
 
     public boolean shareMusic(String emailToShare, String artist, String album, String musicTitle, String email) throws RemoteException {
@@ -1351,7 +1413,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String fileIdDropbox = rs.get("id").toString(); // get the id of the file in Dropbox
 
 
-
             // clean JSONObject used before
             j = new JSONObject();
             j.put("file", fileIdDropbox);
@@ -1364,8 +1425,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             j.put("custom_message", "Someone shared a beautiful thing w/ you in DropMusic");
             j.put("quiet", false);
             j.put("access_level", "viewer");
-
-
 
 
             // /add_file_member - Dropbox HTTP - shares file with emailToShare
@@ -1411,6 +1470,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     }
 
+    /**
+     * This method just asks Multicast the Dropmusic email of an user given his Dropbox Email.
+     * @param emailDropbox
+     * @return email of user in DropMusic
+     */
+
     public String getDropMusicEmail(String emailDropbox) {
 
         boolean exit = false;
@@ -1443,6 +1508,20 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
     }
+
+    /**
+     *
+     * /2/sharing/create_shared_link_with_settings allows to store a link in DB that is associated with a music_id.
+     *
+     *
+     * @param email
+     * @param artist
+     * @param album
+     * @param musicTitle
+     * @param fileName
+     * @return success / failed
+     * @throws RemoteException
+     */
 
 
     public boolean associateMusic(String email, String artist, String album, String musicTitle, String fileName) throws RemoteException {
