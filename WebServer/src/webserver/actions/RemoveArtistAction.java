@@ -5,7 +5,7 @@ import shared.models.manage.Artist;
 
 public class RemoveArtistAction extends ActionSupport {
 
-    Artist model = new Artist();
+    private Artist model = new Artist();
 
     @Override
     public String execute() {

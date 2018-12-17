@@ -17,7 +17,7 @@
     <li class="head"><a href="logout">Logout</a></li>
     <li class="head" id="search-bar">
         <s:form action="searchAll" method="GET">
-            <s:textfield name="keyword" />
+            <s:textfield name="model.keyword" />
         </s:form>
     </li>
 
