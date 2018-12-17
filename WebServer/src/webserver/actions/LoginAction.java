@@ -1,12 +1,17 @@
 
 package webserver.actions;
-
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
 import shared.models.LoginModel;
-
-import java.rmi.RemoteException;
 import java.util.Map;
+
+/**
+ *
+ * Action that controls the login via DropMusic credentials
+ * The method sets the session for the user, which is used in the LoginInterceptor to allow or denny access
+ * to the contents in the site. The method login is called from the LoginModel.
+ *
+ */
 
 public class LoginAction extends ActionSupport implements SessionAware {
 	private static final long serialVersionUID = 4L;
@@ -27,7 +32,7 @@ public class LoginAction extends ActionSupport implements SessionAware {
 
 		System.out.println("Executing LoginAction - execute()");
 
-
+		// set user credentials in bean
 		this.getLoginModel().setEmail(this.email);
 		this.getLoginModel().setPassword(this.password);
 
@@ -35,14 +40,16 @@ public class LoginAction extends ActionSupport implements SessionAware {
 
 
 		if(this.getLoginModel().login())
-		{   // if true then user can log
+		{
+			// if true then user can log
 			// set session parameters
 			session.put("email", email);
 			session.put("loggedin", true);
 			r = "success";
 		}
 		else
-		{// if false make user log
+		{
+			// if false make user log
 			r = "login";
 		}
 

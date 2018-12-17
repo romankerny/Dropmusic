@@ -6,15 +6,20 @@ import shared.models.manage.MusicModel;
 
 import java.util.Map;
 
+/**
+ *
+ *  Action call's the associateMusic method in the Model.
+ *
+ */
 public class AssociateMusicAction extends ActionSupport implements SessionAware {
 
     private Map<String, Object> session;
-
-
     private MusicModel model = new MusicModel();
+
 
     @Override
     public String execute() {
+
 
         if(model.associateMusic(session, model.getArtistName(), model.getAlbumTitle(), model.getTitle(), model.getFileName())) {
             return "success";

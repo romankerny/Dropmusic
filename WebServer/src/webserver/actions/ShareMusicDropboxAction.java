@@ -5,6 +5,12 @@ import shared.models.manage.MusicModel;
 
 import java.util.Map;
 
+/**
+ *
+ * This action controls the execution of shareMusic.
+ * shareMusic() is contained in the MusicModel and accesses the RMI Server.
+ *
+ */
 public class ShareMusicDropboxAction extends ActionSupport implements SessionAware {
 
     private MusicModel model = new MusicModel();

@@ -6,12 +6,26 @@ import webserver.services.AssociateDropBoxTokenService;
 
 import java.util.Map;
 
+/**
+ *
+ *  This action receives the code asked for in the getUrl Call in RMI Server, by URI, this coded is then passed on
+ *  to the service, so that he can later be used to get an access token for the user.
+ *  If for some reason the URI call returns an error, we handle the error and basically stop the all operation,
+ *  this either means stoping an user from logging in, or not allowing an user to associate it's Dropbox acc with
+ *  DropMusic.
+ *  The controller then, either returns the user to the "success" result or to the "failed" result.
+ *
+ */
+
+
 public class AssociateDropBoxTokenAction extends ActionSupport implements SessionAware {
 
     private AssociateDropBoxTokenService service = new AssociateDropBoxTokenService();
+    private Map<String, Object> session;
+
+    // Gotten from the Dropbox API by URI
     private String oauth_token;
     private String code;
-    private Map<String, Object> session;
     private String error = null;
     private String error_description = null;
 
@@ -24,13 +38,16 @@ public class AssociateDropBoxTokenAction extends ActionSupport implements Sessio
         System.out.println("token  " + oauth_token);
 
 
-        if(error == null && error_description == null) {
+        if(error == null && error_description == null)
+        {
+            // then we have a valid code
 
-            if (getSession().get("loggedin") != null) {
-
+            if (getSession().get("loggedin") != null)
+            {
                 // inside App - associate
 
-                if (getService().setUserToken(session, getCode())) {
+                if (getService().setUserToken(session, getCode()))
+                {
                     return "profile";
                 } else {
                     return "failed";
@@ -41,7 +58,8 @@ public class AssociateDropBoxTokenAction extends ActionSupport implements Sessio
                 // outside App - login
                 String email = getService().canLogin(getCode());
 
-                if (!email.equals("null")) {
+                if (!email.equals("null"))
+                {
                     session.put("email", email);
                     session.put("loggedin", true);
                     return "dropmusic";

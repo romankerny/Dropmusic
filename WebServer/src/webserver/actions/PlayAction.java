@@ -9,13 +9,19 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Map;
 
+/**
+ * This action generates a HTML Tag that is returned to the music.jsp with the url of a given song.
+ *
+ */
+
 public class PlayAction extends ActionSupport implements SessionAware {
     private Map<String, Object> session;
 
-    private MusicModel inputModel;
+    private MusicModel  inputModel;  // model that maintains the information of the song to obtain
+                                     // artist, album, music
 
-    private String url;
-    private InputStream stream;
+    private String      url;         // url of the song to return, gotten from the RMI
+    private InputStream stream;      // HTML tag to return using the url gotten from the RMI
 
     @Override public String execute() {
         setUrl(getInputModel().getURL(inputModel, (String) session.get("email")));

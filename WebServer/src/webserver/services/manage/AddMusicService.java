@@ -8,8 +8,22 @@ import ws.WebSocketAnnotation;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+/**
+ * Service that implements a Service to add Music.
+ * Notifies users that previously added or edited the Artist.
+ */
 
 public class AddMusicService implements ManageService {
+
+    /**
+     * Checks for user input, if some field is empty then automatically fails operation.
+     * If not, calls the RMI method that adds the music. Then gets the Editors of the artist
+     * from RMI .getEditors() and sends the notification.
+     *
+     * @param manageModel - model holding input from user
+     * @param email       - gotten from the session of the user that requested the ManageAction
+     * @return boolean indicating if the user has been successful.
+     */
 
     @Override
     public boolean add(ManageModel manageModel, String email) {

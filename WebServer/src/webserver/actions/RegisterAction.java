@@ -9,7 +9,13 @@ import shared.models.LoginModel;
 import java.rmi.RemoteException;
 import java.util.Map;
 
+/**
+ * Action that controls the resgister operation.
+ * If successful returns the user to the index.jsp page, so that he can login.
+ */
+
 public class RegisterAction extends ActionSupport implements SessionAware {
+
     private static final long serialVersionUID = 4L;
     private Map<String, Object> session;
 
@@ -21,6 +27,7 @@ public class RegisterAction extends ActionSupport implements SessionAware {
         System.out.println("Executing RegisterAction - execute()");
         String r;
 
+        // register method is in the LoginModel Bean
         if(getInputObject().register(getInputObject()))
         {
             r = "success";

@@ -6,6 +6,13 @@ import com.opensymphony.xwork2.interceptor.Interceptor;
 
 import java.util.Map;
 
+/**
+ * This interceptor is added to the default Stack interceptor. It's only deactivated in the login and register actions.
+ * It prevents user that haven't logged in from accessing pages that are only meant to see by logged users.
+ * If the user isn't 'loggedin' then he's redirected to the index.jsp page.
+ * If he is then invocation.invoke() allows the user to continue.
+ *
+ */
 public class LoginInterceptors implements Interceptor {
 
     private static final long serialVersionUID = 189237412378L; // isto é preciso?

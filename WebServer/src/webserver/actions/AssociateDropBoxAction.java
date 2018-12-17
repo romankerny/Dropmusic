@@ -6,6 +6,12 @@ import webserver.services.AssociateDropBoxService;
 
 import java.util.Map;
 
+/**
+ * This action is used to return an url to the user's web browser so that he can give his credentials
+ * to Dropbox, and allow our app, DropMusic, the privileges to edit the user's Dropbox content.
+ *
+ */
+
 public class AssociateDropBoxAction extends ActionSupport implements SessionAware {
 
     private Map<String, Object> session;
@@ -13,6 +19,11 @@ public class AssociateDropBoxAction extends ActionSupport implements SessionAwar
     private String urlOauth;
 
 
+    /**
+     * Calls the service for an URL to return to the user
+     * @return Dropbox Page to the user
+     * @throws Exception
+     */
     @Override
     public String execute() throws Exception {
 
