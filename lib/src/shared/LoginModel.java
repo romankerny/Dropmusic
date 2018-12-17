@@ -1,5 +1,6 @@
 package shared;
 
+import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -21,24 +22,28 @@ public class LoginModel {
         RMIServerInterface server = null;
         String rsp;
 
-        try
-        {
-            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
-        }
-        catch(NotBoundException |RemoteException e) {
-            e.printStackTrace();
-        }
 
+        server = RMICall.waitForServer();
+        boolean exit = false;
+        while(!exit) {
 
-        if(getEmail() != null && getPassword() != null && getEmail() != "" && getPassword() != "")
-        {
-            System.out.println(email + password +"pp");
-            rsp = server.login(getEmail(), getPassword());
-            if (rsp.equals("Logged in successfully " + getEmail())) {
-                r = true;
-            } else {
-                r = false;
+            try {
+                if (getEmail() != null && getPassword() != null && getEmail() != "" && getPassword() != "") {
+
+                    rsp = server.login(getEmail(), getPassword());
+                    if (rsp.equals("Logged in successfully " + getEmail())) {
+                        r = true;
+                    } else {
+                        r = false;
+                    }
+                    exit = true;
+                }
+            } catch (ConnectException e) {
+                System.out.println("RMI server down, retrying...");
+            } catch (RemoteException tt) {
+                System.out.println("RMI server down, retrying...");
             }
+            server = RMICall.waitForServer();
         }
 
         return r;

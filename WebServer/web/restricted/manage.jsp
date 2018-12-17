@@ -73,7 +73,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url:'removeArtistAction.action?model.artist=' + document.getElementById('RAartistName').value
+                    url:'removeArtistAction.action?model.name=' + document.getElementById('RAartistName').value
                     ,
                     dataType: 'text',
                     success: function(data){
@@ -138,7 +138,7 @@
     <tr><td>Title:</td>        <td><s:textfield id="Mtitle" /></td></tr>
     <tr><td>Lyrics:</td>       <td><s:textfield id="Mlyrics" /></td></tr>
     <tr> <td><button type="button" id="searchMusicButton">Add</button></td> <td> <div id="rspMus"></div></td></tr>
-    </table>
+
 
 </s:form>
 </div>
@@ -151,7 +151,7 @@
     </s:form>
 </div>
 
-
+</table>
 
 </body>
 </html>

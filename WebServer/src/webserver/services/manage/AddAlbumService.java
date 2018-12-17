@@ -25,21 +25,18 @@ public class AddAlbumService implements ManageService {
             if (manageModel instanceof Album)
             {
                 Album album = (Album) manageModel;
-
-                rsp = server.addAlbum(album.getArtist(), album.getTitle(), album.getDescription(), album.getGenre(), album.getLaunchDate(),album.getEditorLabel(),email);
-                if(rsp.equals("Album info added with success"))
-                {
-                    ArrayList<String> editors;
-                    editors = server.getEditors(album.getArtist());
-                    for (String ed : editors)
-                    {
-                        WebSocketAnnotation.sendNotification(ed, "Album `" + album.getTitle() + "` by " + album.getArtist() + " was edited");
+                if (album.getArtist() != ""&& album.getTitle() != ""&& album.getDescription() != "" && album.getGenre() != "" && album.getLaunchDate() != "" && album.getEditorLabel() != "") {
+                    rsp = server.addAlbum(album.getArtist(), album.getTitle(), album.getDescription(), album.getGenre(), album.getLaunchDate(), album.getEditorLabel(), email);
+                    if (rsp.equals("Album info added with success")) {
+                        ArrayList<String> editors;
+                        editors = server.getEditors(album.getArtist());
+                        for (String ed : editors) {
+                            WebSocketAnnotation.sendNotification(ed, "Album `" + album.getTitle() + "` by " + album.getArtist() + " was edited");
+                        }
+                        r = true;
+                    } else {
+                        r = false;
                     }
-                    r = true;
-                }
-                else
-                {
-                    r = false;
                 }
 
             }

@@ -193,6 +193,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return rtArray;
     }
 
+
+
     /**
      * Receives a name and password
      * creates datagram with the following protocol:
@@ -400,7 +402,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                         System.out.println("Client is off");
                         sendUDPDatagram("flag|"+idNotify+";type|notifyfail;email|" + regular + ";message|" + "You got promoted to Editor by " + editor + ";");
-                        
+
                     }
                 } else {
                     rspToClient = cleanMessage.get(cleanMessage.size()-2)[1];

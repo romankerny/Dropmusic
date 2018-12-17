@@ -27,20 +27,19 @@ public class AddMusicService implements ManageService {
             {
                 Music music = (Music) manageModel;
 
-                rsp = server.addMusic(music.getTitle(), music.getTrack(), music.getAlbumTitle(), email, music.getLyrics(), music.getArtistName());
-                if(rsp.equals("Music info added with success"))
-                {
-                    ArrayList<String> editors;
-                    editors = server.getEditors(music.getArtistName());
-                    for (String ed : editors)
-                    {
-                        WebSocketAnnotation.sendNotification(ed, "An Album from " + music.getArtistName() + " has been edited!");
+                if(music.getTitle() != "" && music.getTrack() != "" && music.getAlbumTitle() != "" &&  music.getLyrics() != "" && music.getArtistName() != "") {
+
+                    rsp = server.addMusic(music.getTitle(), music.getTrack(), music.getAlbumTitle(), email, music.getLyrics(), music.getArtistName());
+                    if (rsp.equals("Music info added with success")) {
+                        ArrayList<String> editors;
+                        editors = server.getEditors(music.getArtistName());
+                        for (String ed : editors) {
+                            WebSocketAnnotation.sendNotification(ed, "An Album from " + music.getArtistName() + " has been edited!");
+                        }
+                        r = true;
+                    } else {
+                        r = false;
                     }
-                    r = true;
-                }
-                else
-                {
-                    r = false;
                 }
 
             }

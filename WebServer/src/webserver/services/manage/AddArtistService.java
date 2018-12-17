@@ -22,24 +22,24 @@ public class AddArtistService implements ManageService {
         try {
             server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
 
-            if (manageModel instanceof Artist)
-            {
+            if (manageModel instanceof Artist) {
                 Artist artist = (Artist) manageModel;
+                if (artist.getName() != "" && artist.getDetails() != "") {
+                    rsp = server.addArtist(artist.getName(), artist.getDetails(), email);
+                    if (rsp.equals("Artist created") || rsp.equals("Artist `" + artist.getName() + "` was edited") || rsp.equals("Artist info added with success")) {
+                        ArrayList<String> editors = new ArrayList<>();
+                        editors = server.getEditors(artist.getName());
+                        for (String ed : editors)
+                            WebSocketAnnotation.sendNotification(ed, "Artist " + artist.getName() + " was edited by " + email);
 
-                rsp = server.addArtist(artist.getName(), artist.getDetails(), email);
-                if(rsp.equals("Artist created") || rsp.equals("Artist `" + artist.getName() + "` was edited") || rsp.equals("Artist info added with success")) {
-                    ArrayList<String> editors = new ArrayList<>();
-                    editors = server.getEditors(artist.getName());
-                    for (String ed : editors)
-                        WebSocketAnnotation.sendNotification(ed, "Artist " + artist.getName() +" was edited by " + email);
+                        return true;
+                    } else {
+                        return false;
+                    }
 
-                    return true;
-                } else {
-                    return false;
                 }
 
             }
-
 
 
         } catch(NotBoundException |RemoteException e) {

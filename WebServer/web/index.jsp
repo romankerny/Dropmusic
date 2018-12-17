@@ -15,9 +15,9 @@
 <table width="100%">
 
 <s:form action="loginAction" method="POST">
-  <tr><td><s:textfield name="email" label="Email" /></td></tr>
-  <tr><td><s:password name="password" label="Password" /></td></tr>
-  <tr><td> <s:submit label="Log in" /></td></tr>
+  <tr><td>Email: </td><td><s:textfield name="email" label="Email" /></td></tr>
+  <tr><td>Password: </td><td><s:password name="password" label="Password" /></td></tr>
+  <tr><td> <s:submit value="Log in" /></td></tr>
 </s:form>
 
 <s:form action="register-direct" method="post">

@@ -1,8 +1,12 @@
 package shared.manage;
 
+import shared.RMIServerInterface;
 import shared.User;
 
 import java.io.Serializable;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 
 public class Artist implements Serializable, ManageModel {
@@ -28,6 +32,32 @@ public class Artist implements Serializable, ManageModel {
         this.details = details;
     }
 
+    public boolean removeArtist() {
+
+        boolean r = false;
+        RMIServerInterface server = null;
+        String rsp;
+
+        try
+        {
+            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
+
+            if(getName() != null && getName() != "")
+            {
+                if (server.removeArtist(getName()) ) {
+                    r = true;
+                } else {
+                    r = false;
+                }
+            }
+
+        }
+        catch(NotBoundException | RemoteException e) {
+            e.printStackTrace();
+        }
+
+        return r;
+    }
 
 
     @Override

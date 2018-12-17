@@ -18,7 +18,7 @@ public class TurnIntoEditorService {
 
     public boolean regularToEditor(String editor, String regular) throws RemoteException {
 
-        boolean r;
+        boolean r = false;
         RMIServerInterface server = null;
         String rsp;
 
@@ -30,19 +30,21 @@ public class TurnIntoEditorService {
             e.printStackTrace();
         }
 
-        rsp = server.regularToEditor(editor, regular);
-
-        if (rsp.equals(regular + " casted to Editor with success"))
+        if(regular != "")
         {
-            r = true;
-            System.out.println("no service true" + regular + editor);
-            // notifications
-            WebSocketAnnotation.sendNotification(regular, "[*] You've promoted to Editor by " + editor + ".\n You can now edit materials!");
 
-        } else
-        {
-            System.out.println("No service false");
-            r = false;
+            rsp = server.regularToEditor(editor, regular);
+
+            if (rsp.equals(regular + " casted to Editor with success")) {
+                r = true;
+                System.out.println("no service true" + regular + editor);
+                // notifications
+                WebSocketAnnotation.sendNotification(regular, "[*] You've promoted to Editor by " + editor + ".\n You can now edit materials!");
+
+            } else {
+                System.out.println("No service false");
+                r = false;
+            }
         }
         
         return r;

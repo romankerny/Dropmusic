@@ -70,6 +70,8 @@ public class ShareModel implements Serializable {
         {
             server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
 
+
+
             if (server.shareMusic(emailToShare, artist, album, title, email))
             {
                 r = true;
