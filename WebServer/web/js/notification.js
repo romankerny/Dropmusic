@@ -33,6 +33,7 @@ function connect(host) { // connect to the host websocket
 
 
 function onClose(event) {
+    websocket.close();
     console.log("closing socket");
     websocket.close();
 }
@@ -48,6 +49,7 @@ function onMessage(message) { // print the received message
 }
 
 function onError(event) {
+    websocket.close();
     writeNotification('WebSocket error.');
     websocket.close();
 }
