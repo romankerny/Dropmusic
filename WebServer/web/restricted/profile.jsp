@@ -57,8 +57,5 @@
     <s:text name="Associate with DropBox" />
     <s:submit />
 </s:form>
-
-<a href="https://www.dropbox.com/1/oauth2/authorize?client_id=wbwulmkt4ykv4ry&response_type=code&redirect_uri=https://10.16.0.108:8443/associateDropBoxTokenAction&force_reapprove=false">Link with Dropbox</a>
-
 </body>
 </html>
