@@ -749,7 +749,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if (cleanMessage.get(0)[1].equals(id)) {
 
                 int nAlbums = Integer.parseInt(cleanMessage.get(3)[1]);
-                int nTracks = Integer.parseInt(cleanMessage.get(11)[1]);
+                int nTracks = Integer.parseInt(cleanMessage.get(4+nAlbums*2)[1]);
                 int offset = 12+nTracks*2;
                 int nReviews = Integer.parseInt(cleanMessage.get(offset)[1]);
 
