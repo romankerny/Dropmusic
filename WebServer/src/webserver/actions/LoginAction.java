@@ -33,21 +33,17 @@ public class LoginAction extends ActionSupport implements SessionAware {
 
 		System.out.println(this.getLoginModel().getEmail());
 
-		try {
 
-			if(this.getLoginModel().login())
-			{   // if true then user can log
-				// set session parameters
-				session.put("email", email);
-				session.put("loggedin", true);
-				r = "success";
-			}
-			else
-			{// if false make user log
-				r = "login";
-			}
-		} catch (RemoteException e) {
-			e.printStackTrace();
+		if(this.getLoginModel().login())
+		{   // if true then user can log
+			// set session parameters
+			session.put("email", email);
+			session.put("loggedin", true);
+			r = "success";
+		}
+		else
+		{// if false make user log
+			r = "login";
 		}
 
 		return r;

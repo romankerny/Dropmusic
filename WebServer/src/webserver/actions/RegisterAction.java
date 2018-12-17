@@ -19,21 +19,15 @@ public class RegisterAction extends ActionSupport implements SessionAware {
     public String execute() {
 
         System.out.println("Executing RegisterAction - execute()");
-        String r = "";
+        String r;
 
-        try
+        if(getInputObject().register(getInputObject()))
         {
-            if(getInputObject().register(getInputObject()))
-            {
-                r = "success";
-            }
-            else
-            {
-                r = "register";
-            }
-
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            r = "success";
+        }
+        else
+        {
+            r = "register";
         }
 
         return r;

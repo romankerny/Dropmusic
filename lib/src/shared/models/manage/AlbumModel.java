@@ -1,10 +1,10 @@
 package shared.models.manage;
-import shared.models.Review;
+import shared.models.ReviewModel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Album implements Serializable, ManageModel {
+public class AlbumModel implements Serializable, ManageModel {
     private static final long serialVersionUID = 1123124L;
     private          String  title;
     private          String  artist;
@@ -13,26 +13,26 @@ public class Album implements Serializable, ManageModel {
     private          String launchDate;
     private          String editorLabel;
     private          float avgRating;
-    private          ArrayList<Review> reviews;
-    private         ArrayList<Music> songs;
+    private          ArrayList<ReviewModel> reviews;
+    private         ArrayList<MusicModel> songs;
 
-    public Album(String title, String description, String genre, String artist, String launchDate, String editorLabel) {
+    public AlbumModel(String title, String description, String genre, String artist, String launchDate, String editorLabel) {
         setTitle(title);
         setArtist(artist);
         setLaunchDate(launchDate);
         setEditorLabel(editorLabel);
         setDescription(description);
         setGenre(genre);
-        setReviews(new ArrayList<Review>());
-        setSongs(new ArrayList<Music>());
+        setReviews(new ArrayList<ReviewModel>());
+        setSongs(new ArrayList<MusicModel>());
     }
 
-    public Album()
+    public AlbumModel()
     {
         this(null, null, null, null, null, null);
     }
 
-    public Album(String title, String launchDate) {
+    public AlbumModel(String title, String launchDate) {
         setTitle(title);
         setLaunchDate(launchDate);
     }
@@ -49,7 +49,7 @@ public class Album implements Serializable, ManageModel {
 
         rsp += "\t===== Critics ===== \n Average rating: " + avgRating +"\n";
         if (this.reviews.size() > 0) {
-            for (Review r : reviews) {
+            for (ReviewModel r : reviews) {
                 rsp += r.toString();
             }
         } else {
@@ -111,19 +111,19 @@ public class Album implements Serializable, ManageModel {
         this.genre = genre;
     }
 
-    public ArrayList<Review> getReviews() {
+    public ArrayList<ReviewModel> getReviews() {
         return reviews;
     }
 
-    public void setReviews(ArrayList<Review> reviews) {
+    public void setReviews(ArrayList<ReviewModel> reviews) {
         this.reviews = reviews;
     }
 
-    public ArrayList<Music> getSongs() {
+    public ArrayList<MusicModel> getSongs() {
         return songs;
     }
 
-    public void setSongs(ArrayList<Music> songs) {
+    public void setSongs(ArrayList<MusicModel> songs) {
         this.songs = songs;
     }
 }

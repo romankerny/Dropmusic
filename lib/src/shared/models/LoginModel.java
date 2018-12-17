@@ -18,15 +18,12 @@ public class LoginModel {
         setPassword(password);
     }
 
-    public boolean login() throws RemoteException
+    public boolean login()
     {
 
         boolean r = false, exit = false;
-        RMIServerInterface server = null;
+        RMIServerInterface server = RMICall.waitForServer();
         String rsp;
-
-
-        server = RMICall.waitForServer();
 
         while(!exit) {
 
@@ -52,20 +49,17 @@ public class LoginModel {
         return r;
     }
 
-    public boolean register(LoginModel loginModel) throws RemoteException {
+    public boolean register(LoginModel loginModel) {
 
         boolean r = false, exit = false;
-        RMIServerInterface server = null;
         String rsp;
 
-        server = RMICall.waitForServer();
+        RMIServerInterface server = RMICall.waitForServer();
 
         while(!exit)
         {
-
             try
             {
-
                 if(getEmail() != null && getPassword() != null && getEmail() != "" && getPassword() != "") {
                     rsp = server.register(loginModel.getEmail(), loginModel.getPassword());
 
@@ -75,6 +69,7 @@ public class LoginModel {
                         r = false;
                     }
                 }
+                exit = true;
 
             } catch (ConnectException e) {
                 System.out.println("RMI server down, retrying...");

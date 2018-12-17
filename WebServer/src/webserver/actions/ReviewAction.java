@@ -2,12 +2,12 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
-import shared.models.Review;
+import shared.models.ReviewModel;
 import ws.WebSocketAnnotation;
 
 public class ReviewAction extends ActionSupport {
 
-    private Review reviewModel;
+    private ReviewModel reviewModel;
 
     private double result;
 
@@ -19,11 +19,11 @@ public class ReviewAction extends ActionSupport {
         return Action.SUCCESS;
     }
 
-    public Review getReviewModel() {
+    public ReviewModel getReviewModel() {
         return reviewModel;
     }
 
-    public void setReviewModel(Review reviewModel) {
+    public void setReviewModel(ReviewModel reviewModel) {
         this.reviewModel = reviewModel;
     }
 

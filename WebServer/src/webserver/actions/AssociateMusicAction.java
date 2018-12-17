@@ -2,7 +2,7 @@ package webserver.actions;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
-import shared.models.manage.Music;
+import shared.models.manage.MusicModel;
 
 import java.util.Map;
 
@@ -11,7 +11,7 @@ public class AssociateMusicAction extends ActionSupport implements SessionAware 
     private Map<String, Object> session;
 
 
-    private Music model = new Music();
+    private MusicModel model = new MusicModel();
 
     @Override
     public String execute() {
@@ -27,11 +27,11 @@ public class AssociateMusicAction extends ActionSupport implements SessionAware 
     }
 
 
-    public Music getModel() {
+    public MusicModel getModel() {
         return model;
     }
 
-    public void setModel(Music model) {
+    public void setModel(MusicModel model) {
         this.model = model;
     }
 

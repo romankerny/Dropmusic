@@ -5,13 +5,11 @@ import shared.RMIServerInterface;
 
 import java.io.Serializable;
 import java.rmi.ConnectException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 
 import java.util.Map;
 
-public class Music implements Serializable, ManageModel {
+public class MusicModel implements Serializable, ManageModel {
     private static final long serialVersionUID = 1234675L;
 
     private String track;
@@ -23,7 +21,7 @@ public class Music implements Serializable, ManageModel {
     private String email; // used in shareMusic
 
 
-    public Music(String track, String title, String lyrics, String albumTitle, String artistName) {
+    public MusicModel(String track, String title, String lyrics, String albumTitle, String artistName) {
         setTrack(track);
         setTitle(title);
         setLyrics(lyrics);
@@ -31,19 +29,19 @@ public class Music implements Serializable, ManageModel {
         setArtistName(artistName);
     }
 
-    public Music()
+    public MusicModel()
     {
         this(null , null, null, null, null);
     }
 
-    public Music(String track, String title, String lyrics) {
+    public MusicModel(String track, String title, String lyrics) {
         this.track = track;
         this.title = title;
         this.lyrics = lyrics;
         //  this.musicFiles = new ConcurrentHashMap<String, MusicFile>();
     }
 
-    public String getURL(Music inputModel, String email) {
+    public String getURL(MusicModel inputModel, String email) {
 
         boolean r = false, exit = false;
         RMIServerInterface server = RMICall.waitForServer();

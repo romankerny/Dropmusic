@@ -11,7 +11,7 @@ import static java.lang.Thread.sleep;
 
 public class RMICall {
 
-    static String ip = System.getenv("RMI_IP");
+    private static String ip = System.getenv("RMI_IP");
     public static RMIServerInterface waitForServer() {
 
         boolean exit = false;

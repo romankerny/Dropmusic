@@ -211,7 +211,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                         switch (tokens[1]) {
                             case "art": {
                                 String description;
-                                System.out.print("Artist description: ");
+                                System.out.print("ArtistModel description: ");
                                 description = sc.nextLine();
                                 System.out.println(client.serverInterface.addArtist(name, description, email));
                                 break;
@@ -254,7 +254,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     if (tokens.length == 2) {
                         int stars = Integer.parseInt(tokens[1]);
 
-                        System.out.print("Artist's name: ");
+                        System.out.print("ArtistModel's name: ");
                         String artistName = sc.nextLine();
                         System.out.print(artistName +"'s album name: ");
                         String albumName = sc.nextLine();
@@ -285,7 +285,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                         String musicTitle = strCatSpaces(tokens, 1);
                         System.out.print("Path/to/file: ");
                         String path = sc.nextLine();
-                        System.out.print("Artist's name: ");
+                        System.out.print("ArtistModel's name: ");
                         String artistName = sc.nextLine();
                         System.out.print(artistName +"'s album name: ");
                         String albumName = sc.nextLine();
@@ -327,12 +327,12 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                     if (tokens.length >= 3) {
                         String albumName, artistName;
                         String musicName = strCatSpaces(tokens, 2);
-                        System.out.print("Album name: ");
+                        System.out.print("AlbumModel name: ");
                         albumName = sc.nextLine();
-                        System.out.print("Artist name: ");
+                        System.out.print("ArtistModel name: ");
                         artistName = sc.nextLine();
                         String r = client.serverInterface.downloadMusic(musicName, tokens[1], email, albumName, artistName);
-                        if (!r.equals("Music file not found.")) {
+                        if (!r.equals("MusicModel file not found.")) {
 
                             String[] ipPort = r.split(" ");
 
@@ -364,7 +364,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                 } else if (tokens[0].equals("share") && !email.equals("")) {
 
                     if (tokens.length == 2) {
-                        System.out.print("Artist's name: ");
+                        System.out.print("ArtistModel's name: ");
                         String artistName = sc.nextLine();
                         System.out.print(artistName +"'s album name: ");
                         String albumName = sc.nextLine();

@@ -3,9 +3,9 @@ package webserver.actions;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import shared.models.SearchModel;
-import shared.models.manage.Album;
-import shared.models.manage.Artist;
-import shared.models.manage.Music;
+import shared.models.manage.AlbumModel;
+import shared.models.manage.ArtistModel;
+import shared.models.manage.MusicModel;
 
 import java.util.ArrayList;
 
@@ -13,9 +13,9 @@ public class SearchAllAction extends ActionSupport {
 
     private SearchModel model;
 
-    private ArrayList<Artist> artistResults;
-    private ArrayList<Album> albumResults;
-    private ArrayList<Music> musicResults;
+    private ArrayList<ArtistModel> artistResults;
+    private ArrayList<AlbumModel> albumResults;
+    private ArrayList<MusicModel> musicResults;
 
     @Override
     public String execute() {
@@ -24,18 +24,18 @@ public class SearchAllAction extends ActionSupport {
     }
 
     public void setResults(ArrayList<Object> objects) {
-        ArrayList<Artist> artists = new ArrayList<>();
-        ArrayList<Album> albums = new ArrayList<>();
-        ArrayList<Music> songs = new ArrayList<>();
+        ArrayList<ArtistModel> artists = new ArrayList<>();
+        ArrayList<AlbumModel> albums = new ArrayList<>();
+        ArrayList<MusicModel> songs = new ArrayList<>();
         for (Object o : objects) {
-            if (o instanceof Artist)
-                artists.add((Artist) o);
+            if (o instanceof ArtistModel)
+                artists.add((ArtistModel) o);
 
-            if (o instanceof Album)
-                albums.add((Album) o);
+            if (o instanceof AlbumModel)
+                albums.add((AlbumModel) o);
 
-            if (o instanceof Music)
-                songs.add((Music) o);
+            if (o instanceof MusicModel)
+                songs.add((MusicModel) o);
         }
 
         setArtistResults(artists);
@@ -51,27 +51,27 @@ public class SearchAllAction extends ActionSupport {
         this.model = model;
     }
 
-    public ArrayList<Artist> getArtistResults() {
+    public ArrayList<ArtistModel> getArtistResults() {
         return artistResults;
     }
 
-    public void setArtistResults(ArrayList<Artist> artistResults) {
+    public void setArtistResults(ArrayList<ArtistModel> artistResults) {
         this.artistResults = artistResults;
     }
 
-    public ArrayList<Album> getAlbumResults() {
+    public ArrayList<AlbumModel> getAlbumResults() {
         return albumResults;
     }
 
-    public void setAlbumResults(ArrayList<Album> albumResults) {
+    public void setAlbumResults(ArrayList<AlbumModel> albumResults) {
         this.albumResults = albumResults;
     }
 
-    public ArrayList<Music> getMusicResults() {
+    public ArrayList<MusicModel> getMusicResults() {
         return musicResults;
     }
 
-    public void setMusicResults(ArrayList<Music> musicResults) {
+    public void setMusicResults(ArrayList<MusicModel> musicResults) {
         this.musicResults = musicResults;
     }
 

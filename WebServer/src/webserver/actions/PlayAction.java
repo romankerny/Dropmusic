@@ -3,7 +3,7 @@ package webserver.actions;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
-import shared.models.manage.Music;
+import shared.models.manage.MusicModel;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -12,7 +12,7 @@ import java.util.Map;
 public class PlayAction extends ActionSupport implements SessionAware {
     private Map<String, Object> session;
 
-    private Music inputModel;
+    private MusicModel inputModel;
 
     private String url;
     private InputStream stream;
@@ -41,11 +41,11 @@ public class PlayAction extends ActionSupport implements SessionAware {
         return session;
     }
 
-    public Music getInputModel() {
+    public MusicModel getInputModel() {
         return inputModel;
     }
 
-    public void setInputModel(Music inputModel) {
+    public void setInputModel(MusicModel inputModel) {
         this.inputModel = inputModel;
     }
 

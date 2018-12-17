@@ -9,21 +9,21 @@ import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class Artist implements Serializable, ManageModel {
+public class ArtistModel implements Serializable, ManageModel {
     private static final long serialVersionUID = 1234L;
 
     private String name;
     private String details;
-    private ArrayList<Album> albums;
+    private ArrayList<AlbumModel> albums;
 
-    public Artist(String name, String details) {
+    public ArtistModel(String name, String details) {
        setDetails(details);
        setName(name);
-       setAlbums(new ArrayList<Album>());
+       setAlbums(new ArrayList<AlbumModel>());
     }
 
 
-    public Artist()
+    public ArtistModel()
     {
         this(null, null);
     }
@@ -66,14 +66,14 @@ public class Artist implements Serializable, ManageModel {
 
     @Override
     public String toString() {
-        return "Artist: "+name + "\nBio: "+details+"\n";
+        return "ArtistModel: "+name + "\nBio: "+details+"\n";
     }
 
-    public ArrayList<Album> getAlbums() {
+    public ArrayList<AlbumModel> getAlbums() {
         return albums;
     }
 
-    public void setAlbums(ArrayList<Album> albums) {
+    public void setAlbums(ArrayList<AlbumModel> albums) {
         this.albums = albums;
     }
 

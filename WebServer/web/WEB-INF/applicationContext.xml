@@ -6,9 +6,9 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
     <!-- Models -->
         <!-- Manage Models -->
-        <bean id="artistModel" class="shared.models.manage.Artist" scope="prototype" />
-        <bean id="albumModel" class="shared.models.manage.Album" scope="prototype" />
-        <bean id="musicModel" class="shared.models.manage.Music" scope="prototype" />
+        <bean id="artistModel" class="shared.models.manage.ArtistModel" scope="prototype" />
+        <bean id="albumModel" class="shared.models.manage.AlbumModel" scope="prototype" />
+        <bean id="musicModel" class="shared.models.manage.MusicModel" scope="prototype" />
 
     <!-- Services -->
         <!-- Search Services -->

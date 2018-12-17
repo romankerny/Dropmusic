@@ -2,13 +2,11 @@ package webserver.services.manage;
 
 import shared.RMICall;
 import shared.RMIServerInterface;
-import shared.models.manage.Album;
+import shared.models.manage.AlbumModel;
 import shared.models.manage.ManageModel;
 import ws.WebSocketAnnotation;
 
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 
 public class AddAlbumService implements ManageService {
@@ -25,15 +23,15 @@ public class AddAlbumService implements ManageService {
 
         while (!exit) {
             try {
-                if (manageModel instanceof Album) {
-                    Album album = (Album) manageModel;
+                if (manageModel instanceof AlbumModel) {
+                    AlbumModel album = (AlbumModel) manageModel;
                     if (album.getArtist() != "" && album.getTitle() != "" && album.getDescription() != "" && album.getGenre() != "" && album.getLaunchDate() != "" && album.getEditorLabel() != "") {
                         rsp = server.addAlbum(album.getArtist(), album.getTitle(), album.getDescription(), album.getGenre(), album.getLaunchDate(), album.getEditorLabel(), email);
-                        if (rsp.equals("Album info added with success")) {
+                        if (rsp.equals("AlbumModel info added with success")) {
                             ArrayList<String> editors;
                             editors = server.getEditors(album.getArtist());
                             for (String ed : editors) {
-                                WebSocketAnnotation.sendNotification(ed, "Album `" + album.getTitle() + "` by " + album.getArtist() + " was edited");
+                                WebSocketAnnotation.sendNotification(ed, "AlbumModel `" + album.getTitle() + "` by " + album.getArtist() + " was edited");
                             }
                             r = true;
                         }

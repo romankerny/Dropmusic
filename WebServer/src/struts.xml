@@ -127,14 +127,14 @@
 
 
 
-        <!-- Associate Music Dropbox - DropMusic -->
+        <!-- Associate MusicModel Dropbox - DropMusic -->
 
         <action name="associateMusicAction" class="webserver.actions.AssociateMusicAction" method="execute">
             <result name="success">/restricted/success.html</result>
             <result name="failed">/restricted/fail.html</result>
         </action>
 
-        <!-- Share Music Dropbox - DropMusic     -->
+        <!-- Share MusicModel Dropbox - DropMusic     -->
 
         <action name="shareMusicDropbox" class="webserver.actions.ShareMusicDropboxAction" method="execute">
             <result name="success">/restricted/success.html</result>

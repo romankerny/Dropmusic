@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public class TurnIntoEditorService {
-    private Map<String, Object> session;
 
     public TurnIntoEditorService() {
         System.out.println("Starting TurnIntoEditorService()");

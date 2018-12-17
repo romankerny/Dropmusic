@@ -1,11 +1,11 @@
 package webserver.actions;
 
 import com.opensymphony.xwork2.ActionSupport;
-import shared.models.manage.Artist;
+import shared.models.manage.ArtistModel;
 
 public class RemoveArtistAction extends ActionSupport {
 
-    private Artist model = new Artist();
+    private ArtistModel model = new ArtistModel();
 
     @Override
     public String execute() {
@@ -20,11 +20,11 @@ public class RemoveArtistAction extends ActionSupport {
     }
 
 
-    public Artist getModel() {
+    public ArtistModel getModel() {
         return model;
     }
 
-    public void setModel(Artist model) {
+    public void setModel(ArtistModel model) {
         this.model = model;
     }
 }

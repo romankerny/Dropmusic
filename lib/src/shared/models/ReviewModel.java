@@ -4,13 +4,10 @@ import shared.RMICall;
 import shared.RMIServerInterface;
 
 import java.io.Serializable;
-import java.rmi.AccessException;
 import java.rmi.ConnectException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 
-public class Review implements Serializable {
+public class ReviewModel implements Serializable {
 
     private String critic;
     private int rating;
@@ -20,7 +17,7 @@ public class Review implements Serializable {
 
     private RMIServerInterface server;
 
-    public Review(int rating, String critic, String email, String artist, String album) {
+    public ReviewModel(int rating, String critic, String email, String artist, String album) {
         this.critic = critic;
         this.rating = rating;
         this.email = email;
@@ -28,7 +25,7 @@ public class Review implements Serializable {
         this.album = album;
     }
 
-    public Review() {
+    public ReviewModel() {
 
     }
 
@@ -78,7 +75,7 @@ public class Review implements Serializable {
     }
 
 
-    public double addReview(Review review) {
+    public double addReview(ReviewModel review) {
 
 
         boolean exit = false;

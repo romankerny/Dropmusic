@@ -3,12 +3,9 @@ package webserver.services.search;
 import shared.RMICall;
 import shared.RMIServerInterface;
 import shared.models.manage.ManageModel;
-import shared.models.manage.Music;
+import shared.models.manage.MusicModel;
 
-import java.rmi.AccessException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 
 public class MusicSearchService implements SearchService {
     private RMIServerInterface server;
@@ -20,7 +17,7 @@ public class MusicSearchService implements SearchService {
 
     @Override
     public Object search(ManageModel searchModel) {
-        Music musicModel = (Music) searchModel;
+        MusicModel musicModel = (MusicModel) searchModel;
         Object result = null;
         boolean exit = false;
 

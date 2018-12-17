@@ -1,8 +1,8 @@
 package shared;
 
-import shared.models.manage.Album;
-import shared.models.manage.Artist;
-import shared.models.manage.Music;
+import shared.models.manage.AlbumModel;
+import shared.models.manage.ArtistModel;
+import shared.models.manage.MusicModel;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -35,9 +35,9 @@ public interface RMIServerInterface extends Remote {
     // 3.
     public String search(String param, String keyword) throws RemoteException;
     public ArrayList<Object> search(String keyword) throws RemoteException;
-    Artist searchArtist(String keyword) throws RemoteException;
-    Album searchAlbum(String artist, String title) throws RemoteException;
-    Music searchMusic(String artist, String album, String title) throws RemoteException;
+    ArtistModel searchArtist(String keyword) throws RemoteException;
+    AlbumModel searchAlbum(String artist, String title) throws RemoteException;
+    MusicModel searchMusic(String artist, String album, String title) throws RemoteException;
     String getMusicURL(String artist, String album, String title, String email) throws RemoteException;
     public ArrayList<String> getEditors(String artistName)  throws RemoteException;
     public boolean shareMusic(String emailToShare, String artist, String album, String musicTitle, String email) throws RemoteException;

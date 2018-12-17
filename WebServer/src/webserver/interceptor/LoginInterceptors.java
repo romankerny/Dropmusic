@@ -26,7 +26,7 @@ public class LoginInterceptors implements Interceptor {
         }
         else {
              // user is not logged
-            System.out.println("Isn't logged, redirirect");
+            System.out.println("Isn't logged, redirect");
             return "login";
         }
 

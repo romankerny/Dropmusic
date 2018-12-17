@@ -2,13 +2,10 @@ package webserver.services.search;
 
 import shared.RMICall;
 import shared.RMIServerInterface;
-import shared.models.manage.Album;
+import shared.models.manage.AlbumModel;
 import shared.models.manage.ManageModel;
 
-import java.rmi.AccessException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 
 public class AlbumSearchService implements SearchService {
 
@@ -20,7 +17,7 @@ public class AlbumSearchService implements SearchService {
 
     @Override
     public Object search(ManageModel searchModel) {
-        Album albumModel = (Album) searchModel;
+        AlbumModel albumModel = (AlbumModel) searchModel;
         Object result = null;
         boolean exit = false;
 
