@@ -8,6 +8,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Music implements Serializable, ManageModel {
     private static final long serialVersionUID = 1234675L;
@@ -52,6 +53,31 @@ public class Music implements Serializable, ManageModel {
         return "fail";
     }
 
+    public boolean associateMusic(Map<String, Object> session, String artist, String album, String musicTitle, String fileName) {
+
+        String r = "";
+        RMIServerInterface server = null;
+
+        System.out.println("AssociateMusicService - execute()");
+
+        try
+        {
+            server = (RMIServerInterface) LocateRegistry.getRegistry("localhost", 1099).lookup("rmiserver");
+        }
+        catch(NotBoundException | RemoteException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            return server.associateMusic((String) session.get("email"), artist, album, musicTitle, fileName);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+
+    }
+
     @Override
     public String toString() {
         return track+ " - "+title;
@@ -90,11 +116,13 @@ public class Music implements Serializable, ManageModel {
     }
 
 
+    public String getFileName() {
+        return fileName;
+    }
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-
 
     public String getLyrics() {
         return lyrics;

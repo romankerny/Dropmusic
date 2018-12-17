@@ -20,7 +20,7 @@
                     url:'associateMusicAction.action?' +
                         '&model.albumTitle='+ document.getElementById('albumName').innerText +
                         '&model.artistName=' + document.getElementById('artistName').innerText +
-                        '&model.musicTitle='+ document.getElementById('musicTitle').innerText +
+                        '&model.title='+ document.getElementById('musicTitle').innerText +
                         '&model.fileName='+ document.getElementById('fileName').value
                 ,
                 dataType: 'text',
