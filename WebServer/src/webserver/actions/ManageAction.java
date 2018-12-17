@@ -8,6 +8,13 @@ import webserver.services.manage.ManageService;
 
 import java.util.Map;
 
+/**
+ * This action sets the Model and Service to be used.
+ * Then sends the model to the service and returns the result.
+ * For config check applicationContext.xml
+ *
+ */
+
 public class ManageAction extends ActionSupport implements SessionAware {
 
 
@@ -21,6 +28,7 @@ public class ManageAction extends ActionSupport implements SessionAware {
     {
         System.out.println("Executing ManageAction - execute()");
         session = ActionContext.getContext().getSession();
+        // Calls the add method in the right Service
         boolean r = getManageService().add(getManageModel(), (String) session.get("email"));
 
         if(r)

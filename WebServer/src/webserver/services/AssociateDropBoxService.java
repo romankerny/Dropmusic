@@ -5,6 +5,10 @@ import shared.RMICall;
 import shared.RMIServerInterface;
 import java.rmi.RemoteException;
 
+/**
+ * This service calls the RMI associateDropBox method which returns an url to redirect the user to.
+ * The service is called in the login and when the user is associating is dropbox account with DropMusic.
+ */
 public class AssociateDropBoxService {
 
     public AssociateDropBoxService() {
@@ -13,22 +17,21 @@ public class AssociateDropBoxService {
     public String associateDropBox()  {
 
         // This service is meant to generate an URL to Dropbox auth
-        // is used by 2 actions
-        // AssociateDropBoxAction - loggedin == true
-        // LoginDropBoxAction - loggedin == false
 
         boolean r = false, exit = false;
+        String url = "";
         RMIServerInterface server = RMICall.waitForServer();
 
         while (!exit) {
             try {
-                return server.associateDropBox();
+                url = server.associateDropBox();
+                exit = true;
 
             } catch (RemoteException e) {
                 server = RMICall.waitForServer();
             }
         }
-        System.out.println("vou dar pritn de erro");
-        return "localhost:8080/restricted/error.jsp";
+
+        return url;
     }
 }

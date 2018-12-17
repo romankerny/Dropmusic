@@ -9,6 +9,11 @@ import javax.websocket.Session;
 import java.rmi.RemoteException;
 import java.util.Map;
 
+/**
+ * This actions turns a regular user into Editor.
+ * It uses a Service, TurnIntoEditorService, that connects with the WebSocket Class to send notifications to users.
+ *
+ */
 public class TurnIntoEditorAction extends ActionSupport implements SessionAware {
     private Map<String, Object> session;
 
@@ -26,17 +31,14 @@ public class TurnIntoEditorAction extends ActionSupport implements SessionAware 
 
         if(getTurnIntoEditorService().regularToEditor((String) session.get("email"), regular))
         {
-            System.out.println("sucesso no turn");
             r = "success";
         }
         else
         {
-            System.out.println("nao sucesso no turn");
             r = "failed";
         }
 
         return r;
-
 
     }
 

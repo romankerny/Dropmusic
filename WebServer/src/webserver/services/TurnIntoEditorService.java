@@ -10,12 +10,22 @@ import java.rmi.registry.LocateRegistry;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+/**
+ * Calls the RMI method that turns a user into Editor, and then notifies that user if the RMI method is successful.
+ */
 public class TurnIntoEditorService {
 
     public TurnIntoEditorService() {
         System.out.println("Starting TurnIntoEditorService()");
     }
 
+    /**
+     * Calls .regularToEditor() in RMI
+     * Then notifies the 'regular' user.
+     * @param editor
+     * @param regular
+     * @return successful / failed
+     */
     public boolean regularToEditor(String editor, String regular) {
 
         boolean r = false, exit = false;
