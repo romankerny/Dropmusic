@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  */
 
 public class MulticastServer extends Thread {
-    private static String MULTICAST_ADDRESS = "224.3.2.2";
+    private static String MULTICAST_ADDRESS = "224.3.2.1";
     private static int RECV_PORT = 5213;
     private static MulticastSocket socket = null;
 

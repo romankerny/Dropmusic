@@ -1,23 +1,16 @@
 package shared.models;
 
-import shared.RMICall;
-import shared.RMIServerInterface;
-
 import java.io.Serializable;
-import java.rmi.ConnectException;
-import java.rmi.RemoteException;
 
 public class ReviewModel implements Serializable {
 
     private String critic;
-    private int rating;
+    private String rating;
     private String email;
     private String artist;
     private String album;
 
-    private RMIServerInterface server;
-
-    public ReviewModel(int rating, String critic, String email, String artist, String album) {
+    public ReviewModel(String rating, String critic, String email, String artist, String album) {
         this.critic = critic;
         this.rating = rating;
         this.email = email;
@@ -37,11 +30,11 @@ public class ReviewModel implements Serializable {
         this.critic = critic;
     }
 
-    public int getRating() {
+    public String getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(String rating) {
         this.rating = rating;
     }
 
@@ -73,37 +66,5 @@ public class ReviewModel implements Serializable {
     public String toString() {
         return "email: " + email + " rating: " + rating + " critic: " + critic;
     }
-
-
-    public double addReview(ReviewModel review) {
-
-
-        boolean exit = false;
-        RMIServerInterface server = RMICall.waitForServer();
-
-        double rr = 0;
-
-        while(!exit)
-        {
-            try
-            {
-                rr = server.rateAlbum(review.getRating(), review.getArtist(), review.getAlbum(), review.getCritic(), review.getEmail());
-                exit = true;
-
-            } catch (ConnectException e) {
-                System.out.println("RMI server down, retrying...");
-            } catch (RemoteException tt) {
-                System.out.println("RMI server down, retrying...");
-            }
-            server = RMICall.waitForServer();
-        }
-
-        return rr;
-
-    }
-
-
-
-
 
 }

@@ -252,7 +252,7 @@ public class RMIClient extends UnicastRemoteObject implements RMIClientInterface
                 } else if (tokens[0].equals("rate") && !email.equals("")) {
 
                     if (tokens.length == 2) {
-                        int stars = Integer.parseInt(tokens[1]);
+                        String stars = tokens[1];
 
                         System.out.print("ArtistModel's name: ");
                         String artistName = sc.nextLine();

@@ -55,7 +55,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     private ConcurrentHashMap<String, RMIClientInterface> clients = new ConcurrentHashMap<String, RMIClientInterface>();
     private static final long serialVersionUID = 1L;
-    private static String MULTICAST_ADDRESS = "224.3.2.2";
+    private static String MULTICAST_ADDRESS = "224.3.2.1";
     private static int SEND_PORT = 5213, RCV_PORT = 5214;
     private static RMIServerInterface rmiServer;
     public static ArrayList<String> multicastHashes = new ArrayList<>();
@@ -585,7 +585,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
      * @return
      */
 
-    public double rateAlbum(int stars, String artistName, String albumName, String review, String email) {
+    public double rateAlbum(String stars, String artistName, String albumName, String review, String email) {
 
 
         String uuid = UUID.randomUUID().toString();
@@ -749,7 +749,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if (cleanMessage.get(0)[1].equals(id)) {
 
                 int nAlbums = Integer.parseInt(cleanMessage.get(3)[1]);
-                int nTracks = Integer.parseInt(cleanMessage.get(4+nAlbums*2)[1]);
+                int nTracks = Integer.parseInt(cleanMessage.get(4+nAlbums*7)[1]);
                 int offset = 12+nTracks*2;
                 int nReviews = Integer.parseInt(cleanMessage.get(offset)[1]);
 
@@ -767,7 +767,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 }
 
                 for (int j = 0; j < nReviews; j++) {
-                    result.getReviews().add(new ReviewModel(Integer.parseInt(cleanMessage.get(offset+1+j*3)[1]), cleanMessage.get(offset+2+j*3)[1], cleanMessage.get(offset+3+j*3)[1], artistName, albumName));
+                    result.getReviews().add(new ReviewModel(cleanMessage.get(offset+1+j*3)[1], cleanMessage.get(offset+2+j*3)[1], cleanMessage.get(offset+3+j*3)[1], artistName, albumName));
                 }
 
                 exit = true;
