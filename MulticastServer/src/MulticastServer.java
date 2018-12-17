@@ -363,18 +363,24 @@ public class MulticastServer extends Thread {
 
         // ----------- BD
 
-        String rsp = "flag|"+id+";type|share;result|n;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find upload file;";
+        String rsp = "flag|"+id+";type|share;result|n;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Retard error;";
         PreparedStatement pstmt;
         int rs;
         try {
             pstmt = con.prepareStatement("INSERT INTO allowed (upload_music_id, allowed_email, user_email) " +
-                    "SELECT upload.music_id, ?, upload.user_email" +
+                    "SELECT upload.music_id, upload.user_email, ? " +
                     "FROM upload, album a, music m " +
                     "WHERE upload.music_id = m.id " +
                     "AND a.title = ? " +
                     "AND a.artist_name = ? " +
                     "AND m.title = ?"+
                     "AND upload.user_email = ?;");
+
+            System.out.println(shareTo);
+            System.out.println(album);
+            System.out.println(artist);
+            System.out.println(title);
+            System.out.println(uploader);
 
             pstmt.setString(1, shareTo);
             pstmt.setString(2, album);
@@ -383,12 +389,12 @@ public class MulticastServer extends Thread {
             pstmt.setString(5, uploader);
             rs = pstmt.executeUpdate();
 
-            if (rs == 1)
-                rsp = "flag|"+id+";type|share;result|y;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";";
+            rsp = "flag|"+id+";type|share;result|y;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";";
 
             pstmt.close();
 
         } catch (SQLException e) {
+            e.printStackTrace();
             switch (e.getErrorCode()) {
                 case 1452: // Foreign key violation
                     System.out.println("Wrong user_email");
@@ -399,7 +405,7 @@ public class MulticastServer extends Thread {
                     rsp = "flag|"+id+";type|share;result|n;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";msg|Couldn't find your upload of `"+title+"` in "+album+" by "+artist+";";
                     break;
                 case 1062: // Duplicate entry
-                    rsp = "flag|"+id+";type|share;result|n;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";msg|You already shared this;";
+                    rsp = "flag|"+id+";type|share;result|y;title|"+title+";shareTo|"+shareTo+";uploader|"+uploader+";msg|You already shared this;";
 
             }
         }
@@ -1448,7 +1454,7 @@ public class MulticastServer extends Thread {
         try {
             pstmt = con.prepareStatement(   "select musicfilename " +
                                                  "from upload u join allowed a on u.music_id = a.upload_music_id join music m on u.music_id = m.id join album a2 on m.album_id = a2.id " +
-                                                 "where a.allowed_email = ? " +
+                                                 "where a.user_email = ? " +
                                                  "and m.title = ? " +
                                                  "and a2.title = ? " +
                                                  "and a2.artist_name = ?;");
