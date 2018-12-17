@@ -1139,12 +1139,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String dropMusicEmail = "";
 
         // Get account_id and access_token from API
-        OAuthRequest request = new OAuthRequest(Verb.POST, "http://api.dropboxapi.com/oauth2/token", service);
+        OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/oauth2/token", service);
         request.addParameter("code", code);
         request.addParameter("grant_type","authorization_code");
         request.addParameter("client_id","wbwulmkt4ykv4ry");
         request.addParameter("client_secret","n1kg0x7177alqbv");
-        request.addParameter("redirect_uri", "http://"+ip+":8080/associateDropBoxTokenAction");
+        request.addParameter("redirect_uri", "https://"+ip+":8080/associateDropBoxTokenAction");
         Response response = request.send();
         JSONObject rj = (JSONObject) JSONValue.parse(response.getBody());
         System.out.println(response.getBody());
@@ -1155,7 +1155,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
         // Get email from user's Dropbox acc
-        request = new OAuthRequest(Verb.POST, "http://api.dropboxapi.com/2/users/get_account", service);
+        request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/2/users/get_account", service);
         request.addHeader("Authorization", "Bearer " + acessToken);
         request.addHeader("Content-Type",  "application/json");
         request.addPayload("{\"account_id\": \"" + account_id + "\"}");
@@ -1209,19 +1209,19 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         try {
 
             // get account email and token
-            OAuthRequest request = new OAuthRequest(Verb.POST, "http://api.dropboxapi.com/oauth2/token", service);
+            OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/oauth2/token", service);
             request.addParameter("code", code);
             request.addParameter("grant_type","authorization_code");
             request.addParameter("client_id","wbwulmkt4ykv4ry");
             request.addParameter("client_secret","n1kg0x7177alqbv");
-            request.addParameter("redirect_uri", "http://"+ip+":8080/associateDropBoxTokenAction");
+            request.addParameter("redirect_uri", "https://"+ip+":8080/associateDropBoxTokenAction");
             Response response = request.send();
             JSONObject rj = (JSONObject) JSONValue.parse(response.getBody());
             String account_id = rj.get("account_id").toString();
             String acessToken = rj.get("access_token").toString();
 
             // Get email from user's Dropbox acc
-            request = new OAuthRequest(Verb.POST, "http://api.dropboxapi.com/2/users/get_account", service);
+            request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/2/users/get_account", service);
             request.addHeader("Authorization", "Bearer " + acessToken);
             request.addHeader("Content-Type",  "application/json");
             request.addPayload("{\"account_id\": \"" + account_id + "\"}");
@@ -1400,8 +1400,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             j.put("url",url);
 
             // get file id from url
-            // /get_shared_link_metadata - Dropbox HTTP get id
-            OAuthRequest request = new OAuthRequest(Verb.POST, "http://api.dropboxapi.com/2/sharing/get_shared_link_metadata", service);
+            // /get_shared_link_metadata - Dropbox https get id
+            OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/2/sharing/get_shared_link_metadata", service);
             request.addHeader("Authorization", "Bearer " + token);
             request.addHeader("Content-Type",  "application/json");
             request.addPayload(j.toJSONString());
@@ -1425,8 +1425,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             j.put("access_level", "viewer");
 
 
-            // /add_file_member - Dropbox HTTP - shares file with emailToShare
-            request = new OAuthRequest(Verb.POST, "http://api.dropboxapi.com/2/sharing/add_file_member", service);
+            // /add_file_member - Dropbox https - shares file with emailToShare
+            request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/2/sharing/add_file_member", service);
             request.addHeader("Authorization", "Bearer " + token);
             request.addHeader("Content-Type",  "application/json");
             request.addPayload(j.toJSONString());
@@ -1538,7 +1538,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         // get link in DropBox to fileName
         // /create_shared_link_with_settings
-        OAuthRequest request = new OAuthRequest(Verb.POST, "http://api.dropboxapi.com/2/sharing/create_shared_link_with_settings", service);
+        OAuthRequest request = new OAuthRequest(Verb.POST, "https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings", service);
         request.addHeader("Authorization", "Bearer " + userToken);
         request.addHeader("Content-Type",  "application/json");
         request.addPayload(j.toJSONString());
@@ -1609,7 +1609,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     .provider(DropBoxApi2.class)
                     .apiKey(API_APP_KEY)
                     .apiSecret(API_APP_SECRET)
-                    .callback("http://"+ip+":8080/associateDropBoxTokenAction") //
+                    .callback("https://"+ip+":8080/associateDropBoxTokenAction") //
                     .build();
 
             System.getProperties().put("java.security.policy", "policy.all");
