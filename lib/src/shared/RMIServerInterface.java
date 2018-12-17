@@ -51,7 +51,7 @@ public interface RMIServerInterface extends Remote {
 
 
     // 5.
-    public double rateAlbum(int stars, String artistName, String albumName, String review, String email) throws RemoteException;
+    public double rateAlbum(String stars, String artistName, String albumName, String review, String email) throws RemoteException;
 
     // 6.
     public String regularToEditor(String editor, String regular) throws RemoteException;

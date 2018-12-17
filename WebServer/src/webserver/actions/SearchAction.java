@@ -5,6 +5,12 @@ import com.opensymphony.xwork2.ActionSupport;
 import shared.models.manage.ManageModel;
 import webserver.services.search.SearchService;
 
+/**
+ * Generic search Action that is injected with appropriate model (ArtistModel, AlbumModel or MusicModel) and
+ * service (ArtistSearchService, AlbumSearchService, MusicSearchService) by Spring
+ * Variable `result` is an Object that holds the resulting ArtistModel, AlbumModel or MusicModel.
+ */
+
 public class SearchAction extends ActionSupport {
 
     private ManageModel inputObject;

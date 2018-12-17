@@ -109,7 +109,6 @@
 
         <!-- used to redirect both association w platform and login -->
         <action name="associateDropBoxAction" class="webserver.actions.AssociateDropBoxAction" method="execute">
-            <interceptor-ref name="defaultStack"></interceptor-ref>  <!-- Use default Stack, not loginStack -->
             <result name="redirect" type="redirect">${urlOauth}</result>
         </action>
 
@@ -120,11 +119,6 @@
             <result name="failed">/index.jsp</result>
             <result name="dropmusic">/restricted/dropmusic.jsp</result>
         </action>
-
-
-
-
-
 
 
         <!-- Associate MusicModel Dropbox - DropMusic -->
@@ -171,7 +165,7 @@
 
         <action name="addReview" class="webserver.actions.ReviewAction">
             <result name="success">/restricted/success.html</result>
-            <result name="failed">/restricted/fail.html</result>
+            <result name="error">/restricted/fail.html</result>
         </action>
 
         <action name="removeArtistAction" class="webserver.actions.RemoveArtistAction">

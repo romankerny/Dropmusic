@@ -9,6 +9,11 @@ import java.rmi.RemoteException;
 
 import java.util.Map;
 
+/**
+ * A music model following JavaBean convention
+ * Connects to RMI
+ */
+
 public class MusicModel implements Serializable, ManageModel {
     private static final long serialVersionUID = 1234675L;
 
@@ -41,6 +46,15 @@ public class MusicModel implements Serializable, ManageModel {
         //  this.musicFiles = new ConcurrentHashMap<String, MusicFile>();
     }
 
+    /**
+     * Fetches music's shareable link
+     * Calls RMI's .getMusicURL()
+     * If RemoteException then tries again
+     * @param inputModel music's info
+     * @param email to check if he's allowed
+     * @return Dropbox's shareable URL
+     */
+
     public String getURL(MusicModel inputModel, String email) {
 
         boolean r = false, exit = false;
@@ -64,6 +78,18 @@ public class MusicModel implements Serializable, ManageModel {
 
         return url;
     }
+
+    /**
+     * Associates a dropbox's shared URL to a Music in DB
+     * Calls RMI's .associateMusic()
+     * If RemoteException then tries again
+     * @param session
+     * @param artist
+     * @param album
+     * @param musicTitle
+     * @param fileName
+     * @return Whether action was successful or not
+     */
 
     public boolean associateMusic(Map<String, Object> session, String artist, String album, String musicTitle, String fileName) {
 
@@ -93,6 +119,16 @@ public class MusicModel implements Serializable, ManageModel {
 
         return rr;
     }
+
+    /**
+     * Allows an user access to this music's link
+     * @param emailToShare
+     * @param artist
+     * @param album
+     * @param title
+     * @param email
+     * @return Whether operation was successful or not
+     */
 
     public boolean shareMusic(String emailToShare, String artist, String album, String title, String email) {
 

@@ -9,6 +9,10 @@ import shared.models.manage.MusicModel;
 
 import java.util.ArrayList;
 
+/**
+ * Searches for artists, albums and songs and saves them in `artistResults`, `albumResults` and `musicResults`
+ */
+
 public class SearchAllAction extends ActionSupport {
 
     private SearchModel model;
@@ -22,6 +26,12 @@ public class SearchAllAction extends ActionSupport {
         setResults(getModel().searchAll());
         return Action.SUCCESS;
     }
+
+    /**
+     * Processes the generic Object arraylist and puts artists, albums and musics into it's arraylist
+     *
+     * @param objects ArrayList of Artist, Album, Music models
+     */
 
     public void setResults(ArrayList<Object> objects) {
         ArrayList<ArtistModel> artists = new ArrayList<>();

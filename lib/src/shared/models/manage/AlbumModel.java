@@ -4,6 +4,11 @@ import shared.models.ReviewModel;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * An album model following JavaBean convention
+ * Contains an ArrayList of reviews (ReviewModel) and songs (MusicModel)
+ */
+
 public class AlbumModel implements Serializable, ManageModel {
     private static final long serialVersionUID = 1123124L;
     private          String  title;

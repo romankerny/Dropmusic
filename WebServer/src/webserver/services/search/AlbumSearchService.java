@@ -7,13 +7,28 @@ import shared.models.manage.ManageModel;
 
 import java.rmi.RemoteException;
 
+/**
+ * Service to search for an album, uses RMI
+ */
+
 public class AlbumSearchService implements SearchService {
 
     private RMIServerInterface server;
 
+    /**
+     * Sets a valid RMIServerInterface
+     */
+
     public AlbumSearchService() {
         this.server = RMICall.waitForServer();
     }
+
+    /**
+     * Calls RMI's .searchAlbum() to get an AlbumModel
+     *
+     * @param searchModel gets casted to an AlbumModel
+     * @return returns an AlbumModel as Object
+     */
 
     @Override
     public Object search(ManageModel searchModel) {

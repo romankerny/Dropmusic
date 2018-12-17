@@ -9,6 +9,12 @@ import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+/**
+ * An artist model folowing JavaBean convention
+ * Contains an arraylist of albums (AlbumModel)
+ * Connects to RMI
+ */
+
 public class ArtistModel implements Serializable, ManageModel {
     private static final long serialVersionUID = 1234L;
 
@@ -28,6 +34,13 @@ public class ArtistModel implements Serializable, ManageModel {
         this(null, null);
     }
 
+    /**
+     * Removes an artist from DB
+     * Calls RMI's .removeArtist()
+     * If RemoteException then tries again
+     *
+     * @return
+     */
 
     public boolean removeArtist() {
 

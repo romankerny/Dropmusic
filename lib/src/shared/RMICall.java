@@ -9,9 +9,21 @@ import java.rmi.registry.LocateRegistry;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * Class to handle lookup of an RMIServer.
+ */
+
 public class RMICall {
 
     private static String ip = System.getenv("RMI_IP");
+
+    /**
+     * Models and Services call this method whenever they need RMI server's interface, if fails to lookup then keeps
+     * trying every second until succeeds.
+     *
+     * @return valid RMIServerInterface
+     */
+
     public static RMIServerInterface waitForServer() {
 
         boolean exit = false;

@@ -5,7 +5,7 @@ var album = "";
 
 window.onload = function() { // URI = ws://10.16.0.165:8080/WebSocket/ws
     connect('ws://' + window.location.host +'/ws/' + email);
-}
+};
 
 function setEmail(email) {
     this.email = email;
@@ -33,7 +33,7 @@ function connect(host) { // connect to the host websocket
 
 
 function onClose(event) {
-    console.log("closing socket")
+    console.log("closing socket");
     document.getElementById('chat').onkeydown = null;
 }
 
