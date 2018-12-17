@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * MulticastServer initializes the server and database. Creates a new Thread every time a new packet is received
  * This class contains an array of users and artist
- * Multicast's address is set to "224.3.2.2" and it's receiving port is 5213
+ * Multicast's address is set to "224.3.2.1" and it's receiving port is 5213
  *
  */
 
@@ -24,6 +24,13 @@ public class MulticastServer extends Thread {
     private String hashCode;
     private int SEND_PORT = 5214;
     private Connection con;
+
+    /**
+     * Thread's constructor
+     * @param packet Multicast UDP packet to process
+     * @param code Multicast's ID
+     * @param con Database connector
+     */
 
     MulticastServer(DatagramPacket packet, String code, Connection con) {
 
@@ -63,7 +70,7 @@ public class MulticastServer extends Thread {
      *
      * Parses datagram String in simple Tokens
      *
-     * @param msg
+     * @param msg raw protocol message
      * @return ArrayList of tokens example: (id, 54fsdsf4), (type, login) , ....
      */
 
@@ -82,6 +89,12 @@ public class MulticastServer extends Thread {
         return rtArray;
     }
 
+    /**
+     * Checks if date follows yyyy-MM-dd
+     * @param inDate date
+     * @return Whether valid or not
+     */
+
     boolean isValidDate(String inDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dateFormat.setLenient(false);
@@ -97,8 +110,6 @@ public class MulticastServer extends Thread {
      *
      * Creates a new TCP socket with random port between 5000 and 6000
      * Used upon a upload/download request.
-     *
-     *
      * @return TCPsocket
      */
 
@@ -651,8 +662,15 @@ public class MulticastServer extends Thread {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
+
+    /**
+     * Parses a result set and returns a protocol string like
+     * item_count | n; attribute_1 | value_1; attribute_2| value_2; attribute_n| value_n; ...
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
 
     public String parseResultSet(ResultSet rs) throws SQLException {
         int itemCount = 0;
@@ -669,6 +687,14 @@ public class MulticastServer extends Thread {
         return "item_count|"+itemCount+";"+info;
 
     }
+
+    /**
+     * Sends to RMI an artist's info
+     * @param id Packet's unique ID
+     * @param name Artist's name
+     * @param code Hash sent by RMI
+     * @see #sendResponseMulticast(String, String)
+     */
 
     public void getArtist(String id, String name, String code) {
 
@@ -709,6 +735,15 @@ public class MulticastServer extends Thread {
 
         sendResponseMulticast(response + "result|"+result+";"+message, code);
     }
+
+    /**
+     * Sends to RMI an album's info
+     * @param id Packet's unique ID
+     * @param artist Artist's name
+     * @param title Album title
+     * @param code Hash sent by RMI
+     * @see #sendResponseMulticast(String, String)
+     */
 
     public void getAlbum(String id, String artist, String title, String code) {
         String response = "flag|"+id+";type|getAlb;";
@@ -757,6 +792,16 @@ public class MulticastServer extends Thread {
 
         sendResponseMulticast(response + "result|"+result+";"+message, code);
     }
+
+    /**
+     * Sends to RMI a song's info
+     * @param id Packet's unique ID
+     * @param artist Artist's name
+     * @param album Album's title
+     * @param title Music's title
+     * @param code Hash sent by RMI
+     * @see #sendResponseMulticast(String, String)
+     */
 
     public void getMusic(String id, String artist, String album, String title, String code) {
         String response = "flag|"+id+";type|getMus;";
@@ -1848,9 +1893,9 @@ public class MulticastServer extends Thread {
 
 
     /**
-     *  Main loop of Multicast, starts by reading users.obj and artists.obj,
+     *  Main loop of Multicast, starts by connecting to database
      *  then proceeds to create a new MulticastSocket, joins the group and sends an `ack` to RMIServer.
-     *  Finally enters the loop of receiving a packet and creating a new MulticastServerResponse Thread to deal with it.
+     *  Finally enters the loop of receiving a packet and creating a new Thread to deal with it.
      *
      */
 
